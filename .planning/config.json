@@ -1,0 +1,16 @@
+{
+  "mode": "yolo",
+  "granularity": "standard",
+  "parallelization": true,
+  "commit_docs": true,
+  "model_profile": "balanced",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": false,
+    "nyquist_validation": true,
+    "auto_advance": false
+  },
+  "version": "1.0.0",
+  "created": "2026-09-23"
+}
