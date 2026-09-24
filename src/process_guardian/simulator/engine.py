@@ -1,11 +1,13 @@
-"""Stateful deterministic injection molding simulator engine."""
+"""Stateful deterministic injection molding simulator engine with causal physics and event injection."""
 
 from typing import List, Dict, Optional, Any
 import numpy as np
 
 from process_guardian.core.types import RegimeType, MachineContext, RawCycleTelemetry
-from process_guardian.core.constants import NOMINAL_PP_PARAMS
+from process_guardian.core.constants import NOMINAL_PP_PARAMS, NOMINAL_PROCESS_NOISE
 from process_guardian.simulator.regimes import get_regime_modifiers
+from process_guardian.simulator.physics import PhysicsState, compute_causal_effects
+from process_guardian.simulator.events import InjectionEvent, EventQueue
 
 
 class InjectionMoldingSimulator:
@@ -13,7 +15,8 @@ class InjectionMoldingSimulator:
     Deterministic cycle-level injection molding machine simulator.
     
     Generates realistic, correlated telemetry records across 9 operational regimes
-    using seeded pseudo-random number generation for 100% reproducible execution.
+    and dynamic event injections using coupled polymer physics and seeded pseudo-random
+    number generation.
     """
 
     def __init__(
@@ -30,6 +33,34 @@ class InjectionMoldingSimulator:
         self.context = context or MachineContext()
         self.history: List[RawCycleTelemetry] = []
         self._initial_drift_offsets: Dict[str, float] = {}
+
+        # Physics & Event queue
+        self.event_queue = EventQueue()
+        self.physics_state = PhysicsState()
+
+    def inject_event(
+        self,
+        event_type: str,
+        cycle: Optional[int] = None,
+        severity: float = 1.0,
+        duration: Optional[int] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> InjectionEvent:
+        """
+        Inject a specific process anomaly or operator action at a specific cycle number.
+        
+        If cycle is None, the event activates on the immediate next cycle.
+        """
+        start_cycle = self.current_cycle + 1 if cycle is None else cycle
+        event = InjectionEvent(
+            event_type=event_type,
+            start_cycle=start_cycle,
+            severity=severity,
+            duration=duration,
+            params=params or {},
+        )
+        self.event_queue.add_event(event)
+        return event
 
     def set_regime(self, regime: RegimeType, initial_offsets: Optional[Dict[str, float]] = None) -> None:
         """Switch operational regime and reset within-regime cycle counter."""
@@ -48,16 +79,15 @@ class InjectionMoldingSimulator:
         self.cycle_in_regime = 0
         self.history.clear()
         self._initial_drift_offsets.clear()
+        self.event_queue.clear()
+        self.physics_state = PhysicsState()
 
     def step(self) -> RawCycleTelemetry:
         """Advance simulation by one cycle and return generated telemetry."""
         self.current_cycle += 1
         self.cycle_in_regime += 1
 
-        # Base nominal parameters
-        params = dict(NOMINAL_PP_PARAMS)
-
-        # Get regime modifiers
+        # 1. Base modifiers from active regime
         modifiers = get_regime_modifiers(
             regime=self.active_regime,
             cycle_in_regime=self.cycle_in_regime,
@@ -65,39 +95,74 @@ class InjectionMoldingSimulator:
             initial_drift_offsets=self._initial_drift_offsets,
         )
 
-        # Apply modifiers with physical clamping
-        barrel_temp_z1 = max(150.0, params["barrel_temp_z1"] + modifiers.get("barrel_temp_z1", 0.0))
-        barrel_temp_z2 = max(160.0, params["barrel_temp_z2"] + modifiers.get("barrel_temp_z2", 0.0))
-        barrel_temp_z3 = max(170.0, params["barrel_temp_z3"] + modifiers.get("barrel_temp_z3", 0.0))
-        barrel_temp_z4 = max(170.0, params["barrel_temp_z4"] + modifiers.get("barrel_temp_z4", 0.0))
-        barrel_temp_z5 = max(170.0, params["barrel_temp_z5"] + modifiers.get("barrel_temp_z5", 0.0))
-        nozzle_temp = max(180.0, params["nozzle_temp"] + modifiers.get("nozzle_temp", 0.0))
+        # 2. Check for active scheduled events
+        active_events = self.event_queue.get_active_events(self.current_cycle)
+        regime_label = self.active_regime.value
 
-        injection_pressure = max(10.0, params["injection_pressure"] + modifiers.get("injection_pressure", 0.0))
-        peak_pressure = max(15.0, params["peak_pressure"] + modifiers.get("peak_pressure", 0.0))
-        hold_pressure = max(5.0, params["hold_pressure"] + modifiers.get("hold_pressure", 0.0))
+        for event in active_events:
+            offset = event.get_cycle_offset(self.current_cycle)
+            regime_label = f"{regime_label}+{event.event_type}" if regime_label != event.event_type else regime_label
 
-        injection_time = max(0.5, params["injection_time"] + modifiers.get("injection_time", 0.0))
-        hold_time = max(1.0, params["hold_time"] + modifiers.get("hold_time", 0.0))
-        cooling_time = max(2.0, params["cooling_time"] + modifiers.get("cooling_time", 0.0))
-        cycle_time = max(5.0, params["cycle_time"] + modifiers.get("cycle_time", 0.0))
+            if event.event_type == "thermal_drift":
+                # Gradual progressive thermal drift
+                drift_amount = 0.20 * offset * event.severity
+                modifiers["barrel_temp_z3"] = modifiers.get("barrel_temp_z3", 0.0) + drift_amount
+                modifiers["nozzle_temp"] = modifiers.get("nozzle_temp", 0.0) + (0.10 * offset * event.severity)
 
-        part_weight = max(50.0, params["part_weight"] + modifiers.get("part_weight", 0.0))
-        material_moisture = max(0.001, params["material_moisture"] + modifiers.get("material_moisture", 0.0))
-        ambient_temp = params["ambient_temp"] + modifiers.get("ambient_temp", 0.0)
-        ambient_humidity = max(10.0, min(95.0, params["ambient_humidity"] + modifiers.get("ambient_humidity", 0.0)))
+            elif event.event_type == "pressure_drift":
+                # Pressure loss
+                p_loss = -0.25 * offset * event.severity
+                modifiers["injection_pressure"] = modifiers.get("injection_pressure", 0.0) + p_loss
+                modifiers["peak_pressure"] = modifiers.get("peak_pressure", 0.0) + (-0.35 * offset * event.severity)
 
-        # Ground truth inspection flags
-        defect_flag = False
-        sink_mark_depth = 0.0
-        flash_observed = False
+            elif event.event_type == "moisture_drift":
+                # Hopper moisture surge
+                m_surge = min(0.18, 0.006 * offset * event.severity)
+                modifiers["material_moisture"] = modifiers.get("material_moisture", 0.0) + m_surge
 
-        if peak_pressure < 118.0 or part_weight < 141.5:
-            defect_flag = True
-            sink_mark_depth = round((142.5 - part_weight) * 0.06, 3)
-        elif barrel_temp_z3 > 240.0 and peak_pressure > 142.0:
-            defect_flag = True
-            flash_observed = True
+            elif event.event_type == "intervention_temp_offset":
+                # Operator or simulated controller adjustment (e.g. -3°C)
+                delta_t = event.params.get("delta_temp_z3", -3.0) * event.severity
+                modifiers["barrel_temp_z3"] = modifiers.get("barrel_temp_z3", 0.0) + delta_t
+
+            elif event.event_type == "recovery":
+                # Stabilization back toward baseline
+                decay = np.exp(-offset / 3.0)
+                # Dampen existing thermal and pressure drift
+                if "barrel_temp_z3" in modifiers:
+                    modifiers["barrel_temp_z3"] *= decay
+                if "peak_pressure" in modifiers:
+                    modifiers["peak_pressure"] *= decay
+
+        # 3. Compute causal coupled physics
+        coupled_values = compute_causal_effects(
+            base_params=NOMINAL_PP_PARAMS,
+            active_modifiers=modifiers,
+            cycle_index=self.current_cycle,
+        )
+
+        # 4. Add sensor noise (and physical clamping)
+        # SENSOR_NOISE regime has higher variance, handled in get_regime_modifiers
+        barrel_temp_z1 = max(150.0, coupled_values["barrel_temp_z1"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["barrel_temp_z1"])))
+        barrel_temp_z2 = max(160.0, coupled_values["barrel_temp_z2"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["barrel_temp_z2"])))
+        barrel_temp_z3 = max(170.0, coupled_values["barrel_temp_z3"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["barrel_temp_z3"])))
+        barrel_temp_z4 = max(170.0, coupled_values["barrel_temp_z4"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["barrel_temp_z4"])))
+        barrel_temp_z5 = max(170.0, coupled_values["barrel_temp_z5"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["barrel_temp_z5"])))
+        nozzle_temp = max(180.0, coupled_values["nozzle_temp"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["nozzle_temp"])))
+
+        injection_pressure = max(10.0, coupled_values["injection_pressure"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["injection_pressure"])))
+        peak_pressure = max(15.0, coupled_values["peak_pressure"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["peak_pressure"])))
+        hold_pressure = max(5.0, coupled_values["hold_pressure"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["hold_pressure"])))
+
+        injection_time = max(0.5, coupled_values["injection_time"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["injection_time"])))
+        hold_time = max(1.0, coupled_values["hold_time"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["hold_time"])))
+        cooling_time = max(2.0, coupled_values["cooling_time"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["cooling_time"])))
+        cycle_time = max(5.0, coupled_values["cycle_time"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["cycle_time"])))
+
+        part_weight = max(50.0, coupled_values["part_weight"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["part_weight"])))
+        material_moisture = max(0.001, coupled_values["material_moisture"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["material_moisture"])))
+        ambient_temp = coupled_values["ambient_temp"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["ambient_temp"]))
+        ambient_humidity = max(10.0, min(95.0, coupled_values["ambient_humidity"] + float(self.rng.normal(0.0, NOMINAL_PROCESS_NOISE["ambient_humidity"]))))
 
         record = RawCycleTelemetry(
             cycle_index=self.current_cycle,
@@ -118,11 +183,11 @@ class InjectionMoldingSimulator:
             material_moisture=round(material_moisture, 4),
             ambient_temp=round(ambient_temp, 2),
             ambient_humidity=round(ambient_humidity, 2),
-            sink_mark_depth=max(0.0, sink_mark_depth),
-            flash_observed=flash_observed,
-            defect_flag=defect_flag,
-            regime=self.active_regime.value,
-            timestamp_offset_s=round((self.current_cycle - 1) * params["cycle_time"], 2),
+            sink_mark_depth=coupled_values["sink_mark_depth"],
+            flash_observed=coupled_values["flash_observed"],
+            defect_flag=coupled_values["defect_flag"],
+            regime=regime_label,
+            timestamp_offset_s=round((self.current_cycle - 1) * NOMINAL_PP_PARAMS["cycle_time"], 2),
         )
 
         self.history.append(record)
