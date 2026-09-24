@@ -1,0 +1,12 @@
+.intervention-recovery {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 80px; /* Space for fixed bottom audit drawer trigger */
+}
+
+.intervention-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

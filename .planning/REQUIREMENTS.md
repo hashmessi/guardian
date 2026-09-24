@@ -49,62 +49,63 @@ Requirements for October 2 prototype demo. Each maps to roadmap phases.
 
 ### Intervention
 
-- [ ] **INTV-01**: System evaluates at least 4 candidate actions (A0: continue monitoring, A1: temperature adjustment, A2: pressure adjustment, A3: cycle/process adjustment, A4: material inspection/check)
-- [ ] **INTV-02**: Every candidate action is checked against operating envelope, recipe limits, max permitted parameter delta, machine safety bounds, intervention policy
-- [ ] **INTV-03**: System uses surrogate model (learned response surface / constrained regression) to estimate post-intervention quality risk for each candidate
-- [ ] **INTV-04**: System optimizes minimize(predicted_quality_risk + λ×intervention_cost + μ×process_disruption) subject to machine/recipe/envelope constraints
-- [ ] **INTV-05**: System outputs comparison table (Do nothing → X% risk, Pressure → Y% risk, Temperature → Z% risk, etc.) with recommended action
+- [x] **INTV-01**: System evaluates at least 4 candidate actions (A0: continue monitoring, A1: temperature adjustment, A2: pressure adjustment, A3: cycle/process adjustment, A4: material inspection/check)
+- [x] **INTV-02**: Every candidate action is checked against operating envelope, recipe limits, max permitted parameter delta, machine safety bounds, intervention policy
+- [x] **INTV-03**: System uses surrogate model (learned response surface / constrained regression) to estimate post-intervention quality risk for each candidate
+- [x] **INTV-04**: System optimizes minimize(predicted_quality_risk + λ×intervention_cost + μ×process_disruption) subject to machine/recipe/envelope constraints
+- [x] **INTV-05**: System outputs comparison table (Do nothing → X% risk, Pressure → Y% risk, Temperature → Z% risk, etc.) with recommended action
 
 ### Recommendation
 
-- [ ] **RCMD-01**: Every recommendation contains: ACTION, WHY, EVIDENCE, EXPECTED EFFECT, CONFIDENCE, OPERATING LIMIT, RECOVERY CHECK
-- [ ] **RCMD-02**: System supports 3 operator modes — HIGH CONFIDENCE → recommend action; MEDIUM → request additional QC sample; LOW → ABSTAIN + monitor
-- [ ] **RCMD-03**: ABSTAIN is a product feature — system must refuse to act when confidence is low
+- [x] **RCMD-01**: Every recommendation contains: ACTION, WHY, EVIDENCE, EXPECTED EFFECT, CONFIDENCE, OPERATING LIMIT, RECOVERY CHECK
+- [x] **RCMD-02**: System supports 3 operator modes — HIGH CONFIDENCE → recommend action; MEDIUM → request additional QC sample; LOW → ABSTAIN + monitor
+- [x] **RCMD-03**: ABSTAIN is a product feature — system must refuse to act when confidence is low
 
 ### Recovery
 
-- [ ] **RECV-01**: After intervention, system confirms parameter movement in expected direction
-- [ ] **RECV-02**: System re-evaluates drift and recomputes quality risk post-intervention
-- [ ] **RECV-03**: System checks stability window (not immediate release — verifies sustained recovery)
-- [ ] **RECV-04**: System verifies Quality Contract conditions before releasing production
-- [ ] **RECV-05**: System produces recovery status output: risk before/after, stability before/after, recovery status (VERIFIED/FAILED), release decision
+- [x] **RECV-01**: After intervention, system confirms parameter movement in expected direction
+- [x] **RECV-02**: System re-evaluates drift and recomputes quality risk post-intervention
+- [x] **RECV-03**: System checks stability window (not immediate release — verifies sustained recovery)
+- [x] **RECV-04**: System verifies Quality Contract conditions before releasing production
+- [x] **RECV-05**: System produces recovery status output: risk before/after, stability before/after, recovery status (VERIFIED/FAILED), release decision
 
 ### Containment
 
-- [ ] **CNTN-01**: System identifies last-known-good cycle
-- [ ] **CNTN-02**: System identifies suspect window (potentially affected cycles between drift detection and recovery)
-- [ ] **CNTN-03**: System identifies intervention cycle, recovery cycle, and release cycle
-- [ ] **CNTN-04**: System answers "which production should we inspect, quarantine, or release?"
+- [x] **CNTN-01**: System identifies last-known-good cycle
+- [x] **CNTN-02**: System identifies suspect window (potentially affected cycles between drift detection and recovery)
+- [x] **CNTN-03**: System identifies intervention cycle, recovery cycle, and release cycle
+- [x] **CNTN-04**: System answers "which production should we inspect, quarantine, or release?"
 
 ### State Machine
 
-- [ ] **STMC-01**: System implements explicit state machine: HEALTHY → DRIFT_SUSPECTED → DRIFT_CONFIRMED → QUALITY_RISK_HIGH → DIAGNOSING → INTERVENTION_EVALUATION → (ABSTAIN|QC_REQUIRED|RECOMMEND) → APPLIED → RECOVERY_CHECK → (FAILED→REASSESS|VERIFIED→RELEASE) → INTERVENTION_MEMORY
-- [ ] **STMC-02**: State machine exists explicitly in code, not hidden inside UI logic
+- [x] **STMC-01**: System implements explicit state machine: HEALTHY → DRIFT_SUSPECTED → DRIFT_CONFIRMED → QUALITY_RISK_HIGH → DIAGNOSING → INTERVENTION_EVALUATION → (ABSTAIN|QC_REQUIRED|RECOMMEND) → APPLIED → RECOVERY_CHECK → (FAILED→REASSESS|VERIFIED→RELEASE) → INTERVENTION_MEMORY
+- [x] **STMC-02**: State machine exists explicitly in code, not hidden inside UI logic
 
 ### API
 
-- [ ] **API-01**: FastAPI ingestion endpoints: POST /api/cycles, POST /api/events, POST /api/checkpoints
-- [ ] **API-02**: Process state endpoints: GET /api/process/current, GET /api/process/fingerprint, GET /api/process/drift
-- [ ] **API-03**: Quality endpoints: GET /api/quality/risk, GET /api/quality/contract
-- [ ] **API-04**: Intervention endpoints: POST /api/interventions/simulate, GET /api/interventions/recommendation, POST /api/interventions/apply-demo, GET /api/interventions/history
-- [ ] **API-05**: Recovery/containment endpoints: GET /api/recovery/status, GET /api/containment/window, POST /api/containment/release
+- [x] **API-01**: FastAPI ingestion endpoints: POST /api/cycles, POST /api/events, POST /api/checkpoints
+- [x] **API-02**: Process state endpoints: GET /api/process/current, GET /api/process/fingerprint, GET /api/process/drift
+- [x] **API-03**: Quality endpoints: GET /api/quality/risk, GET /api/quality/contract
+- [x] **API-04**: Intervention endpoints: POST /api/interventions/simulate, GET /api/interventions/recommendation, POST /api/interventions/apply-demo, GET /api/interventions/history
+- [x] **API-05**: Recovery/containment endpoints: GET /api/recovery/status, GET /api/containment/window, POST /api/containment/release
 
 ### Storage
 
-- [ ] **STOR-01**: SQLite database with tables: machines, molds, parts, recipes, materials, cycles, process_fingerprints, quality_contracts, drift_events, quality_predictions, intervention_candidates, intervention_recommendations, intervention_applications, recovery_events, containment_windows, checkpoints, audit_log
-- [ ] **STOR-02**: Event model uses consistent event object schema (event_id, machine_id, mold_id, part_id, recipe_id, cycle_id, timestamp, event_type, severity, signals, quality_risk, confidence)
+- [x] **STOR-01**: SQLite database with tables: machines, molds, parts, recipes, materials, cycles, process_fingerprints, quality_contracts, drift_events, quality_predictions, intervention_candidates, intervention_recommendations, intervention_applications, recovery_events, containment_windows, checkpoints, audit_log
+- [x] **STOR-02**: Event model uses consistent event object schema (event_id, machine_id, mold_id, part_id, recipe_id, cycle_id, timestamp, event_type, severity, signals, quality_risk, confidence)
 
 ### UI
 
-- [ ] **UI-01**: Screen 1 — Live Process: shows machine/mold/part/recipe context, process stability %, quality risk %, current cycle, drift status, and signal bars (temperature, pressure, moisture, cycle time)
-- [ ] **UI-02**: Screen 2 — Incident Diagnosis: shows risk escalation (3% → 72%), lead time, confidence, ranked contributors with percentages, affected cycle window
-- [ ] **UI-03**: Screen 3 — Intervention + Recovery: shows candidate actions with risk percentages, recommended action with expected effect and envelope compliance, "Apply Demo Intervention" button, recovery verification (risk before/after, stability before/after, release status)
+- [x] **UI-01**: Screen 1 — Live Process: shows machine/mold/part/recipe context, process stability %, quality risk %, current cycle, drift status, and signal bars (temperature, pressure, moisture, cycle time)
+- [x] **UI-02**: Screen 2 — Incident Diagnosis: shows risk escalation (3% → 72%), lead time, confidence, ranked contributors with percentages, affected cycle window
+- [x] **UI-03**: Screen 3 — Intervention + Recovery: shows candidate actions with risk percentages, recommended action with expected effect and envelope compliance, "Apply Demo Intervention" button, recovery verification (risk before/after, stability before/after, release status)
 
 ### Trust & Audit
 
-- [ ] **TRST-01**: Every event creates auditable chain: signal change → drift evidence → risk estimate → cause evidence → candidate actions → selected action → expected outcome → observed outcome → recovery decision → production disposition
-- [ ] **TRST-02**: Audit log stored in database
-- [ ] **TRST-03**: Operator can answer: What happened? Why did the system act? What did it recommend? What changed? Did recovery occur? Which cycles were exposed?
+- [x] **TRST-01**: Every event creates auditable chain: signal change → drift evidence → risk estimate → cause evidence → candidate actions → selected action → expected outcome → observed outcome → recovery decision → production disposition
+- [x] **TRST-02**: Audit log stored in database
+- [x] **TRST-03**: Operator can answer: What happened? Why did the system act? What did it recommend? What changed? Did recovery occur? Which cycles were exposed?
+
 
 ### Demo
 
@@ -181,54 +182,54 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SIM-01 | Phase 1 | Pending |
-| SIM-02 | Phase 1 | Pending |
-| SIM-03 | Phase 1 | Pending |
-| SIM-04 | Phase 1 | Pending |
-| SIM-05 | Phase 1 | Pending |
-| DADP-01 | Phase 1 | Pending |
-| DADP-02 | Phase 1 | Pending |
-| DADP-03 | Phase 1 | Pending |
-| FPRN-01 | Phase 2 | Pending |
-| FPRN-02 | Phase 2 | Pending |
-| FPRN-03 | Phase 2 | Pending |
-| DRFT-01 | Phase 2 | Pending |
-| DRFT-02 | Phase 2 | Pending |
-| DRFT-03 | Phase 2 | Pending |
-| DRFT-04 | Phase 2 | Pending |
-| QRSK-01 | Phase 3 | Pending |
-| QRSK-02 | Phase 3 | Pending |
-| QRSK-03 | Phase 3 | Pending |
-| QRSK-04 | Phase 3 | Pending |
-| ROOT-01 | Phase 3 | Pending |
-| ROOT-02 | Phase 3 | Pending |
-| ROOT-03 | Phase 3 | Pending |
-| INTV-01 | Phase 4 | Pending |
-| INTV-02 | Phase 4 | Pending |
-| INTV-03 | Phase 4 | Pending |
-| INTV-04 | Phase 4 | Pending |
-| INTV-05 | Phase 4 | Pending |
-| RCMD-01 | Phase 4 | Pending |
-| RCMD-02 | Phase 4 | Pending |
-| RCMD-03 | Phase 4 | Pending |
-| RECV-01 | Phase 5 | Pending |
-| RECV-02 | Phase 5 | Pending |
-| RECV-03 | Phase 5 | Pending |
-| RECV-04 | Phase 5 | Pending |
-| RECV-05 | Phase 5 | Pending |
-| CNTN-01 | Phase 5 | Pending |
-| CNTN-02 | Phase 5 | Pending |
-| CNTN-03 | Phase 5 | Pending |
-| CNTN-04 | Phase 5 | Pending |
-| STMC-01 | Phase 5 | Pending |
-| STMC-02 | Phase 5 | Pending |
-| API-01 | Phase 6 | Pending |
-| API-02 | Phase 6 | Pending |
-| API-03 | Phase 6 | Pending |
-| API-04 | Phase 6 | Pending |
-| API-05 | Phase 6 | Pending |
-| STOR-01 | Phase 6 | Pending |
-| STOR-02 | Phase 6 | Pending |
+| SIM-01 | Phase 1 | Complete |
+| SIM-02 | Phase 1 | Complete |
+| SIM-03 | Phase 1 | Complete |
+| SIM-04 | Phase 1 | Complete |
+| SIM-05 | Phase 1 | Complete |
+| DADP-01 | Phase 1 | Complete |
+| DADP-02 | Phase 1 | Complete |
+| DADP-03 | Phase 1 | Complete |
+| FPRN-01 | Phase 2 | Complete |
+| FPRN-02 | Phase 2 | Complete |
+| FPRN-03 | Phase 2 | Complete |
+| DRFT-01 | Phase 2 | Complete |
+| DRFT-02 | Phase 2 | Complete |
+| DRFT-03 | Phase 2 | Complete |
+| DRFT-04 | Phase 2 | Complete |
+| QRSK-01 | Phase 3 | Complete |
+| QRSK-02 | Phase 3 | Complete |
+| QRSK-03 | Phase 3 | Complete |
+| QRSK-04 | Phase 3 | Complete |
+| ROOT-01 | Phase 3 | Complete |
+| ROOT-02 | Phase 3 | Complete |
+| ROOT-03 | Phase 3 | Complete |
+| INTV-01 | Phase 4 | Complete |
+| INTV-02 | Phase 4 | Complete |
+| INTV-03 | Phase 4 | Complete |
+| INTV-04 | Phase 4 | Complete |
+| INTV-05 | Phase 4 | Complete |
+| RCMD-01 | Phase 4 | Complete |
+| RCMD-02 | Phase 4 | Complete |
+| RCMD-03 | Phase 4 | Complete |
+| RECV-01 | Phase 5 | Complete |
+| RECV-02 | Phase 5 | Complete |
+| RECV-03 | Phase 5 | Complete |
+| RECV-04 | Phase 5 | Complete |
+| RECV-05 | Phase 5 | Complete |
+| CNTN-01 | Phase 5 | Complete |
+| CNTN-02 | Phase 5 | Complete |
+| CNTN-03 | Phase 5 | Complete |
+| CNTN-04 | Phase 5 | Complete |
+| STMC-01 | Phase 5 | Complete |
+| STMC-02 | Phase 5 | Complete |
+| API-01 | Phase 6 | Complete |
+| API-02 | Phase 6 | Complete |
+| API-03 | Phase 6 | Complete |
+| API-04 | Phase 6 | Complete |
+| API-05 | Phase 6 | Complete |
+| STOR-01 | Phase 6 | Complete |
+| STOR-02 | Phase 6 | Complete |
 | UI-01 | Phase 7 | Pending |
 | UI-02 | Phase 7 | Pending |
 | UI-03 | Phase 7 | Pending |

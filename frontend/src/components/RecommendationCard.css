@@ -1,0 +1,116 @@
+/* RecommendationCard.css */
+/* CRITICAL: The Apply button is the ONLY wine-filled button in the entire UI. No drop shadows. */
+
+.recommendation-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 24px;
+  box-shadow: none;
+}
+
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.recommendation-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .recommendation-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rec-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rec-field--full {
+  grid-column: 1 / -1;
+}
+
+.rec-field__label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+.rec-field__value {
+  font-size: 13px;
+  font-weight: var(--fw-editorial);
+  color: var(--color-charcoal);
+  line-height: 1.5;
+}
+
+.rec-field__value strong {
+  font-weight: var(--fw-data);
+}
+
+/* Primary Action Button: THE ONLY MIDNIGHT WINE FILLED BUTTON IN THE SYSTEM */
+.apply-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: var(--r-button);
+  font-size: 14px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.apply-btn--active {
+  background-color: var(--color-wine);
+  color: #ffffff;
+}
+
+.apply-btn--active:hover {
+  opacity: 0.92;
+}
+
+.apply-btn--disabled {
+  background-color: var(--color-mist);
+  color: var(--color-stone);
+  cursor: not-allowed;
+}
+
+.apply-btn--applying {
+  background-color: var(--color-wine);
+  color: #ffffff;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.apply-btn--done {
+  background-color: var(--color-lagoon);
+  color: #ffffff;
+  cursor: default;
+}
+
+.apply-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  background-color: rgba(66, 29, 36, 0.08);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+  color: var(--color-wine);
+  font-size: 12px;
+}

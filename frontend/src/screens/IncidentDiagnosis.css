@@ -1,0 +1,212 @@
+.incident-diagnosis {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .incident-diagnosis {
+    grid-template-columns: 1fr;
+  }
+}
+
+.incident-diagnosis__left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.incident-diagnosis__right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Risk Escalation Card */
+.escalation-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 24px;
+  box-shadow: none;
+}
+
+.escalation-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 16px 0 20px 0;
+}
+
+.escalation-point {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.escalation-point__label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.escalation-point__value {
+  font-size: 32px;
+  font-weight: var(--fw-data);
+}
+
+.escalation-point__value--baseline {
+  color: var(--color-stone);
+}
+
+.escalation-point__value--current {
+  color: var(--color-wine);
+}
+
+.escalation-arrow {
+  font-size: 24px;
+  color: var(--color-stone);
+  margin-top: 14px;
+}
+
+.escalation-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  border-top: var(--border-hairline);
+  padding-top: 16px;
+}
+
+.escalation-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.escalation-meta-label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+}
+
+.escalation-meta-value {
+  font-size: 16px;
+  font-weight: var(--fw-data);
+  color: var(--color-charcoal);
+}
+
+/* Drift Evidence Table */
+.evidence-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+}
+
+.drift-evidence-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.drift-evidence-table th {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: var(--border-hairline);
+}
+
+.drift-evidence-table td {
+  font-size: 13px;
+  color: var(--color-charcoal);
+  padding: 10px 6px;
+  border-bottom: var(--border-hairline);
+}
+
+.drift-evidence-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Affected Cycle Window Card */
+.window-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+}
+
+.cycle-window-bar-container {
+  margin: 20px 0 16px 0;
+  position: relative;
+}
+
+.cycle-window-bar {
+  position: relative;
+  height: 6px;
+  background-color: var(--color-mist);
+  border-radius: 3px;
+  width: 100%;
+}
+
+.cycle-window-suspect-range {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: var(--color-wine);
+  border-radius: 3px;
+}
+
+.cycle-window-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+/* Confidence Arc Gauge */
+.confidence-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+  text-align: center;
+}
+
+.arc-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  position: relative;
+}
+
+.arc-gauge-svg {
+  display: block;
+}
+
+.arc-gauge-text {
+  font-size: 26px;
+  font-weight: var(--fw-data);
+  color: var(--color-charcoal);
+  line-height: 1;
+}
+
+.arc-gauge-label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  margin-top: 4px;
+}

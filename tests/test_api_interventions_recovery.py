@@ -1,0 +1,122 @@
+"""Unit and integration tests for Quality (API-03), Interventions (API-04), and Recovery/Containment (API-05) endpoints."""
+
+import pytest
+from dataclasses import asdict
+from fastapi.testclient import TestClient
+
+from process_guardian.api.app import create_app
+from process_guardian.api.dependencies import ServiceContainer, set_service_container
+from process_guardian.simulator.scenarios import build_regime_scenario, build_demo_scenario
+from process_guardian.core.types import RegimeType
+
+
+@pytest.fixture
+def client():
+    # Fresh isolated in-memory container for test
+    container = ServiceContainer(db_path=":memory:", auto_apply_intervention=False)
+    set_service_container(container)
+    app = create_app()
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+def test_quality_endpoints(client):
+    """Verify GET /api/quality/risk and GET /api/quality/contract."""
+    # 1. Quality contract query
+    res_contract = client.get("/api/quality/contract?part_id=AUTO-HOUSING-A")
+    assert res_contract.status_code == 200
+    contract = res_contract.json()
+    assert contract["part_id"] == "AUTO-HOUSING-A"
+    assert contract["target_weight_g"] == 142.5
+    assert contract["weight_min_g"] == 141.0
+    assert contract["weight_max_g"] == 144.0
+    assert contract["max_sink_mark_mm"] == 0.08
+    assert contract["allow_flash"] is False
+
+    # 2. Quality risk query before cycles
+    res_risk_pre = client.get("/api/quality/risk?machine_id=IMM-01")
+    assert res_risk_pre.status_code == 200
+    risk_pre = res_risk_pre.json()
+    assert risk_pre["risk_probability"] <= 0.35
+    assert risk_pre["risk_state"] == "LOW"
+
+
+def test_interventions_and_recommendation_flow(client):
+    """Verify simulation, recommendation retrieval, and demo intervention application."""
+    # Ingest 10 healthy cycles
+    sim = build_regime_scenario(RegimeType.HEALTHY, cycles=10, seed=42)
+    batch = [asdict(sim.step()) for _ in range(10)]
+    client.post("/api/cycles", json={"cycles": batch})
+
+    # 1. Simulate Candidate Actions
+    res_sim = client.post("/api/interventions/simulate", json={"machine_id": "IMM-01"})
+    assert res_sim.status_code == 200
+    sim_data = res_sim.json()
+    assert len(sim_data["candidates"]) >= 4
+    assert sim_data["recommended_action_id"] in ["A0", "A1", "A2", "A3", "A4"]
+
+    # 2. Recommendation Endpoint
+    res_rec = client.get("/api/interventions/recommendation?machine_id=IMM-01")
+    assert res_rec.status_code == 200
+    rec_data = res_rec.json()
+    assert "action" in rec_data
+    assert "why" in rec_data
+    assert "evidence" in rec_data
+    assert "expected_effect" in rec_data
+    assert "confidence" in rec_data
+    assert "operating_limit" in rec_data
+    assert "recovery_check" in rec_data
+
+    # 3. Apply Demo Intervention
+    res_apply = client.post(
+        "/api/interventions/apply-demo",
+        json={"machine_id": "IMM-01", "action_id": "A1", "applied_by": "LEAD_OP_01"},
+    )
+    assert res_apply.status_code == 200
+    apply_data = res_apply.json()
+    assert apply_data["status"] == "APPLIED"
+    assert apply_data["new_state"] == "RECOVERY_CHECK"
+    assert apply_data["action_id"] == "A1"
+
+    # 4. Intervention History Endpoint
+    res_hist = client.get("/api/interventions/history?machine_id=IMM-01")
+    assert res_hist.status_code == 200
+    hist_data = res_hist.json()
+    assert len(hist_data["applications"]) == 1
+    assert hist_data["applications"][0]["action_id"] == "A1"
+    assert hist_data["applications"][0]["applied_by"] == "LEAD_OP_01"
+
+
+def test_recovery_and_containment_endpoints(client):
+    """Verify recovery verification tracking, containment window inspection, and batch release."""
+    # Ingest 10 healthy cycles
+    sim = build_regime_scenario(RegimeType.HEALTHY, cycles=10, seed=42)
+    batch = [asdict(sim.step()) for _ in range(10)]
+    client.post("/api/cycles", json={"cycles": batch})
+
+    # Apply an intervention to start recovery tracking
+    client.post("/api/interventions/apply-demo", json={"machine_id": "IMM-01", "action_id": "A1"})
+
+    # 1. Recovery Status
+    res_recov = client.get("/api/recovery/status?machine_id=IMM-01")
+    assert res_recov.status_code == 200
+    recov_data = res_recov.json()
+    assert recov_data["is_monitoring"] is True
+    assert recov_data["required_stable_cycles"] == 3
+
+    # 2. Containment Window
+    res_win = client.get("/api/containment/window?machine_id=IMM-01")
+    assert res_win.status_code == 200
+    win_data = res_win.json()
+    assert win_data["machine_id"] == "IMM-01"
+    assert win_data["suspect_cycle_count"] >= 0
+
+    # 3. Authorize Production Release
+    res_rel = client.post(
+        "/api/containment/release",
+        json={"machine_id": "IMM-01", "release_notes": "Dimensional QC passed 100%", "operator_id": "QC_MGR"},
+    )
+    assert res_rel.status_code == 200
+    rel_data = res_rel.json()
+    assert rel_data["status"] == "RELEASE_AUTHORIZED"
+    assert "QC_MGR" in rel_data["message"]

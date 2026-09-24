@@ -1,0 +1,69 @@
+.tab-strip {
+  display: flex;
+  align-items: stretch;
+  background-color: var(--color-white);
+  border-bottom: var(--border-hairline);
+  padding: 0 24px;
+  gap: 8px;
+}
+
+.tab-strip__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: var(--fw-editorial);
+  color: var(--color-charcoal);
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  border-radius: 6px 6px 0 0;
+}
+
+.tab-strip__tab:hover {
+  background-color: var(--color-parchment);
+}
+
+.tab-strip__tab--active {
+  background-color: var(--color-lilac);
+  border-bottom: 2px solid var(--color-violet);
+  font-weight: var(--fw-label);
+  color: var(--color-charcoal);
+}
+
+.tab-badge--wine {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-wine);
+}
+
+.tab-badge--warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  font-weight: var(--fw-data);
+  background-color: var(--color-wine);
+  color: #ffffff;
+}
+
+.tab-badge--info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  font-weight: var(--fw-data);
+  background-color: var(--color-violet);
+  color: #ffffff;
+}

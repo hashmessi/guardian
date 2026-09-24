@@ -1,0 +1,134 @@
+@import './tokens.css';
+
+/* CSS Reset & Baseline Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-weight: var(--fw-normal);
+  color: var(--color-charcoal);
+  background-color: var(--color-parchment);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* Typography Utilities */
+.editorial-title {
+  font-weight: var(--fw-editorial);
+  color: var(--color-charcoal);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.label-section {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-2);
+  display: block;
+}
+
+/* Status Badges / Pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pill--wine {
+  background-color: var(--color-wine);
+  color: #ffffff;
+}
+
+.pill--lagoon {
+  background-color: var(--color-lagoon);
+  color: #ffffff;
+}
+
+.pill--violet {
+  background-color: var(--color-violet);
+  color: #ffffff;
+}
+
+.pill--lilac {
+  background-color: var(--color-lilac);
+  color: var(--color-charcoal);
+}
+
+.pill--mist {
+  background-color: var(--color-mist);
+  color: var(--color-charcoal);
+}
+
+.pill--stone {
+  background-color: #e5e3dc;
+  color: var(--color-stone);
+}
+
+/* Container Cards */
+/* No drop shadows on cards - depth via layering and border contrast */
+.card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: var(--sp-5);
+  box-shadow: none;
+}
+
+/* Focus and Accessible Outlines */
+:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+
+/* Buttons and Clickables */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-parchment);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-mist);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-stone);
+}

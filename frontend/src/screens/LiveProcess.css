@@ -1,0 +1,126 @@
+.live-process {
+  display: grid;
+  grid-template-columns: 8fr 4fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .live-process {
+    grid-template-columns: 1fr;
+  }
+}
+
+.live-process__left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.live-process__right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Quality Contract Card */
+.contract-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+}
+
+.contract-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.quality-contract-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.quality-contract-table th {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+  text-align: left;
+  padding: 8px 4px;
+  border-bottom: var(--border-hairline);
+}
+
+.quality-contract-table td {
+  font-size: 13px;
+  color: var(--color-charcoal);
+  padding: 10px 4px;
+  border-bottom: var(--border-hairline);
+}
+
+.quality-contract-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Operational Context Card */
+.context-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+}
+
+.context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.context-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.context-item__label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.context-item__value {
+  font-size: 13px;
+  font-weight: var(--fw-editorial);
+  color: var(--color-charcoal);
+}
+
+/* System State Card */
+.system-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: none;
+}
+
+.system-status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: var(--color-parchment);
+  border-radius: var(--r-md);
+  margin-top: 10px;
+}
+
+.system-status-state {
+  font-size: 14px;
+  font-weight: var(--fw-data);
+}

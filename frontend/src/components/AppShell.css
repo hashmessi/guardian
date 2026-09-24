@@ -1,0 +1,168 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-parchment);
+}
+
+/* Zone 1: Brand Bar */
+.app-shell__brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background-color: var(--color-parchment);
+  border-bottom: var(--border-hairline);
+}
+
+.brand-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.brand-wordmark {
+  font-size: 15px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.1em;
+  color: var(--color-charcoal);
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  font-size: 12px;
+  color: var(--color-stone);
+  letter-spacing: 0.02em;
+}
+
+.brand-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.simulation-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-mist);
+  transition: background-color 0.4s ease;
+}
+
+.pulse-dot--active {
+  background-color: var(--color-lagoon);
+}
+
+/* Zone 2: Scenario & Machine Context */
+.app-shell__context {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background-color: var(--color-parchment);
+  border-bottom: var(--border-hairline);
+  font-size: 12px;
+}
+
+.scenario-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-wine);
+}
+
+.machine-context {
+  color: var(--color-charcoal);
+  font-weight: var(--fw-normal);
+  letter-spacing: 0.03em;
+}
+
+.cycle-num-highlight {
+  font-weight: var(--fw-data);
+  color: var(--color-wine);
+}
+
+/* Zone 3: PS02 Hero Stats */
+.app-shell__hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px 24px;
+  background-color: var(--color-parchment);
+  border-bottom: var(--border-hairline);
+}
+
+/* Hero Stat Card - NO box-shadow */
+.hero-stat-card {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: none; /* Explicitly NO box-shadow */
+}
+
+.hero-stat-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-stat-card__label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+.hero-stat-card__bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.hero-stat-card__value {
+  font-size: 30px;
+  font-weight: var(--fw-data);
+  color: var(--color-charcoal);
+  line-height: 1;
+}
+
+.hero-stat-card__unit {
+  font-size: 14px;
+  font-weight: var(--fw-normal);
+  color: var(--color-stone);
+  margin-left: 4px;
+}
+
+.hero-stat-card__subtext {
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+/* Main Content Area */
+.app-shell__content {
+  flex: 1;
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 24px;
+}
