@@ -13,13 +13,23 @@ export function RecommendationCard({
   const action = recommendation?.action || 'Decrease barrel temp zone 3 by -3.0 °C (A1)';
   const why = recommendation?.why || 'Thermal drift in zone 3 is the leading contributor to projected sink mark quality contract violation.';
   
-  // Format evidence whether dict or string
+  // Format evidence cleanly whether dict or string
   let evidenceStr = 'EWMA departure confirmed over 14 consecutive cycles with positive z-score excursion +2.8σ.';
   if (recommendation?.evidence) {
     if (typeof recommendation.evidence === 'string') {
       evidenceStr = recommendation.evidence;
     } else if (typeof recommendation.evidence === 'object') {
-      evidenceStr = JSON.stringify(recommendation.evidence).replace(/["{}]/g, '').replace(/,/g, ', ');
+      const ev = recommendation.evidence;
+      const parts = [];
+      if (ev.target_signal) parts.push(`Signal: ${ev.target_signal.replace(/_/g, ' ')}`);
+      if (ev.current_value !== undefined && ev.nominal_value !== undefined) {
+        parts.push(`Current: ${Number(ev.current_value).toFixed(1)}°C (Nominal: ${Number(ev.nominal_value).toFixed(1)}°C)`);
+      }
+      if (ev.departure_sigma !== undefined) parts.push(`Departure: +${Number(ev.departure_sigma).toFixed(1)}σ`);
+      if (ev.drift_status) parts.push(`Status: ${ev.drift_status}`);
+      if (ev.trend) parts.push(`Trend: ${ev.trend}`);
+      
+      evidenceStr = parts.length > 0 ? parts.join(' · ') : JSON.stringify(ev).replace(/["{}]/g, '').replace(/,/g, ', ');
     }
   }
 
@@ -62,21 +72,21 @@ export function RecommendationCard({
         {/* Field 1: Action */}
         <div className="rec-field rec-field--full">
           <span className="rec-field__label">1. Recommended Action</span>
-          <span className="rec-field__value" style={{ fontSize: '15px', color: 'var(--color-wine)', fontWeight: 'var(--fw-data)' }}>
-            {action}
-          </span>
+          <div className="rec-action-callout">
+            <span className="rec-action-text">{action}</span>
+          </div>
         </div>
 
         {/* Field 2: Why */}
-        <div className="rec-field">
+        <div className="rec-field rec-field--full">
           <span className="rec-field__label">2. Physical Justification (Why)</span>
           <span className="rec-field__value">{why}</span>
         </div>
 
         {/* Field 3: Evidence */}
-        <div className="rec-field">
+        <div className="rec-field rec-field--full">
           <span className="rec-field__label">3. Diagnostic Evidence</span>
-          <span className="rec-field__value">{evidenceStr}</span>
+          <span className="rec-field__value rec-field__value--evidence">{evidenceStr}</span>
         </div>
 
         {/* Field 4: Expected Effect */}

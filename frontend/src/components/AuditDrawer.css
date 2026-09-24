@@ -1,22 +1,46 @@
 /* AuditDrawer.css */
+/* In-flow collapsible audit trail card -- no fixed overlays, no card obstruction */
 
 .audit-drawer-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  pointer-events: none;
+  width: 100%;
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  box-shadow: none;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .audit-drawer__trigger-bar {
-  pointer-events: auto;
-  background-color: var(--color-parchment);
-  border-top: var(--border-hairline);
-  padding: 10px 24px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  padding: 16px 20px;
+  background-color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.audit-drawer__trigger-bar:hover {
+  background-color: #faf9f6;
+}
+
+.audit-trigger-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.audit-trigger-subtext {
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+.audit-trigger-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .audit-drawer__trigger-btn {
@@ -31,7 +55,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: var(--r-sm);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -39,39 +63,48 @@
 
 .audit-drawer__trigger-btn:hover {
   text-decoration: underline;
-  background-color: rgba(113, 76, 182, 0.06);
+  background-color: rgba(113, 76, 182, 0.08);
 }
 
+.audit-export-btn {
+  background-color: transparent;
+  border: 1px solid var(--color-stone);
+  color: var(--color-charcoal);
+  border-radius: var(--r-md);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: var(--fw-label);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.audit-export-btn:hover {
+  background-color: var(--color-parchment);
+  border-color: var(--color-charcoal);
+}
+
+/* Expandable Tray */
 .audit-drawer__tray {
-  pointer-events: auto;
-  background-color: var(--color-white);
-  border-top: var(--border-hairline);
-  max-height: 48vh;
+  max-height: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: none;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  opacity: 0;
+  border-top: none;
 }
 
 .audit-drawer__tray--open {
-  transform: translateY(0);
-}
-
-.audit-drawer__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: var(--border-hairline);
-  background-color: #faf9f6;
+  max-height: 900px;
+  opacity: 1;
+  border-top: var(--border-hairline);
 }
 
 .audit-drawer__content {
   padding: 20px 24px;
+  max-height: 480px;
   overflow-y: auto;
-  flex: 1;
 }
 
 .audit-timeline {
@@ -144,34 +177,6 @@
 .audit-event__desc {
   font-size: 13px;
   color: var(--color-charcoal);
-  line-height: 1.4;
+  line-height: 1.45;
   margin-left: 2px;
-}
-
-.audit-drawer__footer {
-  padding: 12px 24px;
-  border-top: var(--border-hairline);
-  display: flex;
-  justify-content: flex-end;
-  background-color: var(--color-parchment);
-}
-
-.audit-export-btn {
-  background-color: transparent;
-  border: 1px solid var(--color-stone);
-  color: var(--color-charcoal);
-  border-radius: var(--r-md);
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: var(--fw-label);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.audit-export-btn:hover {
-  background-color: var(--color-white);
-  border-color: var(--color-charcoal);
 }

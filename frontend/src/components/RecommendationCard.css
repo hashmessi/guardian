@@ -5,7 +5,7 @@
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 24px;
+  padding: 20px;
   box-shadow: none;
 }
 
@@ -13,17 +13,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .recommendation-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
-  margin-bottom: 24px;
+  gap: 12px 18px;
+  margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .recommendation-fields {
     grid-template-columns: 1fr;
   }
@@ -32,7 +32,7 @@
 .rec-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .rec-field--full {
@@ -47,11 +47,36 @@
   color: var(--color-stone);
 }
 
+.rec-action-callout {
+  padding: 10px 14px;
+  background-color: var(--color-parchment);
+  border-left: 3px solid var(--color-wine);
+  border-radius: var(--r-sm);
+  margin-top: 2px;
+}
+
+.rec-action-text {
+  font-size: 14px;
+  font-weight: var(--fw-data);
+  color: var(--color-wine);
+  line-height: 1.4;
+}
+
 .rec-field__value {
   font-size: 13px;
   font-weight: var(--fw-editorial);
   color: var(--color-charcoal);
-  line-height: 1.5;
+  line-height: 1.45;
+}
+
+.rec-field__value--evidence {
+  font-size: 12px;
+  color: var(--color-charcoal);
+  background-color: #faf9f6;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  margin-top: 2px;
 }
 
 .rec-field__value strong {

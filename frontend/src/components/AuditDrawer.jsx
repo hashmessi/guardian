@@ -11,9 +11,9 @@ export function AuditDrawer({
   const [isOpen, setIsOpen] = useState(false);
 
   const suspectStart = containmentData?.suspect_start_cycle ?? 420;
-  const currentCycle = driftData?.current_cycle ?? 437;
+  const currentCycle = driftData?.current_cycle ?? 441;
   const lastGood = containmentData?.last_known_good_cycle ?? 418;
-  const riskPct = riskData?.risk_percentage ?? 72.4;
+  const riskPct = riskData?.risk_percentage ?? 95.0;
   const recAction = recommendationData?.action ?? 'Decrease barrel temp zone 3 by -3.0 °C (A1)';
 
   // 10 Immutable Closed-Loop Evidence Chain Steps (TRST-01)
@@ -24,7 +24,7 @@ export function AuditDrawer({
       pillClass: 'pill--violet',
       dotClass: 'audit-event__dot--violet',
       cycle: suspectStart,
-      desc: 'Thermocouple Zone 3 departed baseline normal envelope (235.0 °C nominal → 238.4 °C observed).',
+      desc: 'Thermocouple Zone 3 departed baseline normal envelope (220.0 °C nominal → 234.5 °C observed).',
     },
     {
       step: 2,
@@ -48,7 +48,7 @@ export function AuditDrawer({
       pillClass: 'pill--violet',
       dotClass: 'audit-event__dot--violet',
       cycle: suspectStart + 5,
-      desc: 'Physical attribution engine isolated Barrel Temperature Zone 3 as primary root cause (76.8% relative attribution).',
+      desc: 'Physical attribution engine isolated Barrel Temperature Zone 3 as primary root cause (58.1% relative attribution).',
     },
     {
       step: 5,
@@ -72,15 +72,15 @@ export function AuditDrawer({
       pillClass: 'pill--mist',
       dotClass: 'audit-event__dot--mist',
       cycle: suspectStart + 7,
-      desc: 'Predicted defect risk reduction from 72.4% to 8.2% within 5 cooling stabilization cycles.',
+      desc: 'Predicted defect risk reduction from 95.0% to 41.1% within 3 cooling stabilization cycles.',
     },
     {
       step: 8,
       type: 'OBSERVED OUTCOME',
       pillClass: 'pill--lagoon',
       dotClass: 'audit-event__dot--lagoon',
-      cycle: currentCycle - 5,
-      desc: 'Physical sensor confirmed thermocouple drop of -2.8 °C. Defect risk declined to 8.2%, stability restored to 96.5%.',
+      cycle: currentCycle - 2,
+      desc: 'Physical sensor confirmed thermocouple drop of -2.8 °C. Defect risk declined to 25.3%, stability restored to 71.0%.',
     },
     {
       step: 9,
@@ -88,7 +88,7 @@ export function AuditDrawer({
       pillClass: 'pill--lagoon',
       dotClass: 'audit-event__dot--lagoon',
       cycle: currentCycle,
-      desc: 'Closed-loop recovery verified across 5 consecutive stable cycles. Production gate released.',
+      desc: 'Closed-loop recovery verified across 3 consecutive stable cycles. Production gate released.',
     },
     {
       step: 10,
@@ -100,12 +100,13 @@ export function AuditDrawer({
     },
   ];
 
-  const handleExport = () => {
+  const handleExport = (e) => {
+    e.stopPropagation();
     const payload = {
       export_timestamp: new Date().toISOString(),
-      machine_id: 'HTF-200',
-      mold_id: 'GMB-48A',
-      part_id: 'Automotive Bracket',
+      machine_id: 'IMM-01',
+      mold_id: 'MOLD-HOUSING-04',
+      part_id: 'PART-AUTO-HOUSING-A',
       scenario: 'THERMAL_DRIFT',
       evidence_chain: auditEvents,
       summary: {
@@ -113,8 +114,6 @@ export function AuditDrawer({
         suspect_start_cycle: suspectStart,
         current_cycle: currentCycle,
         quarantined_cycle_count: currentCycle - suspectStart + 1,
-        final_risk_pct: 8.2,
-        final_stability_pct: 96.5,
         status: 'VERIFIED_RELEASED',
       },
     };
@@ -132,35 +131,51 @@ export function AuditDrawer({
 
   return (
     <div className="audit-drawer-container">
-      {/* Drawer Trigger Button */}
-      <div className="audit-drawer__trigger-bar">
-        <button
-          type="button"
-          id="btn-view-evidence-chain"
-          className="audit-drawer__trigger-btn"
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-expanded={isOpen}
-        >
-          <span>{isOpen ? '▲ Hide Evidence Chain' : '▼ View Evidence Chain (10-Event Audit Trail)'}</span>
-        </button>
-      </div>
-
-      {/* Sliding Drawer Tray */}
-      <div className={`audit-drawer__tray ${isOpen ? 'audit-drawer__tray--open' : ''}`}>
-        <div className="audit-drawer__header">
+      {/* Trigger & Header Bar */}
+      <div
+        className="audit-drawer__trigger-bar"
+        onClick={() => setIsOpen((prev) => !prev)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsOpen((prev) => !prev); }}
+      >
+        <div className="audit-trigger-left">
           <span className="label-section" style={{ margin: 0 }}>
             CLOSED-LOOP AUDIT TRAIL — IMMUTABLE EVIDENCE CHAIN (TRST-01, TRST-02)
           </span>
-          <button
-            type="button"
-            className="audit-drawer__trigger-btn"
-            onClick={() => setIsOpen(false)}
-            aria-label="Close Audit Trail Drawer"
-          >
-            ✕
-          </button>
+          <span className="audit-trigger-subtext">
+            10 Decision Events Recorded for Cycle #{currentCycle}
+          </span>
         </div>
 
+        <div className="audit-trigger-right">
+          <button
+            type="button"
+            id="btn-export-audit-log"
+            className="audit-export-btn"
+            onClick={handleExport}
+            title="Download audit evidence trail as JSON"
+          >
+            <span>📥 Export JSON</span>
+          </button>
+
+          <button
+            type="button"
+            id="btn-view-evidence-chain"
+            className="audit-drawer__trigger-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((prev) => !prev);
+            }}
+            aria-expanded={isOpen}
+          >
+            <span>{isOpen ? '▲ Hide Evidence Chain' : '▼ View Evidence Chain (10-Event Audit Trail)'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Expandable Timeline Content Tray */}
+      <div className={`audit-drawer__tray ${isOpen ? 'audit-drawer__tray--open' : ''}`}>
         <div className="audit-drawer__content">
           <div className="audit-timeline">
             {auditEvents.map((ev) => (
@@ -176,17 +191,6 @@ export function AuditDrawer({
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="audit-drawer__footer">
-          <button
-            type="button"
-            id="btn-export-audit-log"
-            className="audit-export-btn"
-            onClick={handleExport}
-          >
-            <span>📥 Export Audit Log (JSON)</span>
-          </button>
         </div>
       </div>
     </div>

@@ -36,30 +36,33 @@ export function InterventionRecovery() {
 
   return (
     <div id="panel-intervention" role="tabpanel" aria-labelledby="tab-intervention" className="intervention-recovery">
-      {/* Zone A: Candidate Comparison Table */}
-      <div className="intervention-section">
-        <span className="label-section">EVALUATED CORRECTIVE CANDIDATE ACTIONS</span>
-        <CandidateTable
-          candidates={recommendationData?.candidate_comparison || []}
-          recommendedId="A1"
-          isAbstain={isAbstain}
-          abstainReason={recommendationData?.abstain_reason}
-        />
+      {/* Top 2-Column Grid: Candidates on Left (7fr), Recommendation Contract on Right (5fr) */}
+      <div className="intervention-top-grid">
+        {/* Left Column (7fr): Evaluated Candidate Actions */}
+        <div className="intervention-section">
+          <span className="label-section">EVALUATED CORRECTIVE CANDIDATE ACTIONS</span>
+          <CandidateTable
+            candidates={recommendationData?.candidate_comparison || []}
+            recommendedId="A1"
+            isAbstain={isAbstain}
+            abstainReason={recommendationData?.abstain_reason}
+          />
+        </div>
+
+        {/* Right Column (5fr): 7-Field Recommendation Card & Apply Action */}
+        <div className="intervention-section">
+          <RecommendationCard
+            recommendation={recommendationData}
+            isAbstain={isAbstain}
+            onApply={handleApply}
+            isApplying={isApplying}
+            applied={applied}
+            applyError={applyError}
+          />
+        </div>
       </div>
 
-      {/* Zone B: 7-Field Recommendation Card with Single Primary Wine Apply Action */}
-      <div className="intervention-section">
-        <RecommendationCard
-          recommendation={recommendationData}
-          isAbstain={isAbstain}
-          onApply={handleApply}
-          isApplying={isApplying}
-          applied={applied}
-          applyError={applyError}
-        />
-      </div>
-
-      {/* Zone C: Recovery Verification & Scrap Containment (Appears post-apply) */}
+      {/* Middle Section: Closed-Loop Recovery Verification (Full Width, Appears Post-Apply) */}
       {showRecovery && (
         <div className="intervention-section">
           <RecoveryPanel
@@ -70,14 +73,16 @@ export function InterventionRecovery() {
         </div>
       )}
 
-      {/* Persistent Audit Drawer Trigger & Tray */}
-      <AuditDrawer
-        driftData={driftData}
-        riskData={riskData}
-        recommendationData={recommendationData}
-        recoveryData={recoveryData}
-        containmentData={containmentData}
-      />
+      {/* Bottom Section: In-Flow Collapsible Audit Trail Card */}
+      <div className="intervention-section">
+        <AuditDrawer
+          driftData={driftData}
+          riskData={riskData}
+          recommendationData={recommendationData}
+          recoveryData={recoveryData}
+          containmentData={containmentData}
+        />
+      </div>
     </div>
   );
 }

@@ -4,10 +4,11 @@
   border-radius: var(--r-card);
   padding: 20px;
   box-shadow: none;
+  overflow-x: auto;
 }
 
 .abstain-banner {
-  padding: 14px 18px;
+  padding: 12px 16px;
   background-color: #edebe4;
   border-left: 4px solid var(--color-stone);
   border-radius: var(--r-md);
@@ -23,6 +24,7 @@
 .candidate-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 580px;
 }
 
 .candidate-table th {
@@ -31,7 +33,7 @@
   color: var(--color-stone);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 10px 12px;
+  padding: 10px 8px;
   border-bottom: var(--border-hairline);
   text-align: left;
 }
@@ -39,7 +41,7 @@
 .candidate-table td {
   font-size: 13px;
   color: var(--color-charcoal);
-  padding: 12px;
+  padding: 11px 8px;
   border-bottom: var(--border-hairline);
   transition: background-color 0.2s ease;
 }
