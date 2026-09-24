@@ -114,10 +114,10 @@ def compute_causal_effects(
     sink_mark = 0.0
     flash = False
 
-    if causal_p_peak < 120.0 or causal_weight < 141.2:
+    if causal_p_peak < 118.0 or causal_weight < 140.5:
         defect_flag = True
         sink_mark = max(0.0, (142.5 - causal_weight) * 0.05)
-    elif delta_z3 > 8.0 and causal_p_peak > 138.0:
+    elif delta_z3 > 4.5 or causal_weight > 144.5:
         defect_flag = True
         flash = True
 

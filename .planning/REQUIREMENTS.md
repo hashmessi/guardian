@@ -23,16 +23,16 @@ Requirements for October 2 prototype demo. Each maps to roadmap phases.
 
 ### Process Fingerprint
 
-- [ ] **FPRN-01**: System builds context-specific baseline (machine + mold + part + recipe + material + environment) using rolling distributions and operating envelope
-- [ ] **FPRN-02**: System avoids global thresholds — learns what normal looks like for each production context
-- [ ] **FPRN-03**: System stores and retrieves fingerprints per production context
+- [x] **FPRN-01**: System builds context-specific baseline (machine + mold + part + recipe + material + environment) using rolling distributions and operating envelope
+- [x] **FPRN-02**: System avoids global thresholds — learns what normal looks like for each production context
+- [x] **FPRN-03**: System stores and retrieves fingerprints per production context
 
 ### Drift Detection
 
-- [ ] **DRFT-01**: System detects process-state change (not merely threshold violation) using EWMA, CUSUM, rolling mean/variance, slope/trend, multivariate distance
-- [ ] **DRFT-02**: System produces structured drift output: drift boolean, severity score, lead-cycle count, contributing signal list
-- [ ] **DRFT-03**: System detects injected drift before Quality Contract violation in the primary demo scenario
-- [ ] **DRFT-04**: System avoids false drift alerts on healthy/noisy data
+- [x] **DRFT-01**: System detects process-state change (not merely threshold violation) using EWMA, CUSUM, rolling mean/variance, slope/trend, multivariate distance
+- [x] **DRFT-02**: System produces structured drift output: drift boolean, severity score, lead-cycle count, contributing signal list
+- [x] **DRFT-03**: System detects injected drift before Quality Contract violation in the primary demo scenario
+- [x] **DRFT-04**: System avoids false drift alerts on healthy/noisy data
 
 ### Quality Risk
 
