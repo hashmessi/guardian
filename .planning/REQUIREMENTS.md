@@ -36,16 +36,16 @@ Requirements for October 2 prototype demo. Each maps to roadmap phases.
 
 ### Quality Risk
 
-- [ ] **QRSK-01**: System produces calibrated quality risk probability (0-1) with confidence score using XGBoost/LightGBM
-- [ ] **QRSK-02**: System uses temporal feature engineering (current value, rolling mean/std, trend/slope, delta from fingerprint, lag features, interaction features, process-phase features, material moisture, machine context)
-- [ ] **QRSK-03**: System evaluates risk against a defined Quality Contract (part-specific targets and tolerances)
-- [ ] **QRSK-04**: System classifies risk state (LOW / MEDIUM / HIGH) with corresponding operator modes
+- [x] **QRSK-01**: System produces calibrated quality risk probability (0-1) with confidence score using XGBoost/LightGBM
+- [x] **QRSK-02**: System uses temporal feature engineering (current value, rolling mean/std, trend/slope, delta from fingerprint, lag features, interaction features, process-phase features, material moisture, machine context)
+- [x] **QRSK-03**: System evaluates risk against a defined Quality Contract (part-specific targets and tolerances)
+- [x] **QRSK-04**: System classifies risk state (LOW / MEDIUM / HIGH) with corresponding operator modes
 
 ### Root Cause
 
-- [ ] **ROOT-01**: System provides ranked likely contributors with percentage contribution (e.g., Temperature 68%, Pressure 21%, Cycle 8%, Other 3%)
-- [ ] **ROOT-02**: System provides supporting evidence for each contributor (variance changes, distribution shifts, similar past events)
-- [ ] **ROOT-03**: System uses honest language: "likely contributor", "evidence", "modeled effect", "confidence" — never "guaranteed cause"
+- [x] **ROOT-01**: System provides ranked likely contributors with percentage contribution (e.g., Temperature 68%, Pressure 21%, Cycle 8%, Other 3%)
+- [x] **ROOT-02**: System provides supporting evidence for each contributor (variance changes, distribution shifts, similar past events)
+- [x] **ROOT-03**: System uses honest language: "likely contributor", "evidence", "modeled effect", "confidence" — never "guaranteed cause"
 
 ### Intervention
 
