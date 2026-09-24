@@ -9,17 +9,17 @@ Requirements for October 2 prototype demo. Each maps to roadmap phases.
 
 ### Simulator
 
-- [ ] **SIM-01**: System can generate realistic cycle-level telemetry with correlated process variables (temperature, pressure, cycle time, moisture, part weight)
-- [ ] **SIM-02**: System supports deterministic baseline regimes (healthy, thermal drift, pressure drift, moisture drift, cycle instability, combined drift, sensor noise, recovery, unseen drift)
-- [ ] **SIM-03**: Operator can inject specific events at specific cycle numbers via `inject_event("thermal_drift", cycle=420)` API
-- [ ] **SIM-04**: Simulator produces correlated causal-like relationships (moisture ↑ → melt behavior → pressure shift → cycle variation → quality variance)
-- [ ] **SIM-05**: Demo scenario is deterministic and fully repeatable with one-click reset
+- [x] **SIM-01**: System can generate realistic cycle-level telemetry with correlated process variables (temperature, pressure, cycle time, moisture, part weight)
+- [x] **SIM-02**: System supports deterministic baseline regimes (healthy, thermal drift, pressure drift, moisture drift, cycle instability, combined drift, sensor noise, recovery, unseen drift)
+- [x] **SIM-03**: Operator can inject specific events at specific cycle numbers via `inject_event("thermal_drift", cycle=420)` API
+- [x] **SIM-04**: Simulator produces correlated causal-like relationships (moisture ↑ → melt behavior → pressure shift → cycle variation → quality variance)
+- [x] **SIM-05**: Demo scenario is deterministic and fully repeatable with one-click reset
 
 ### Data Adapter
 
-- [ ] **DADP-01**: System normalizes units, timestamps, and sequences cycles from simulator telemetry
-- [ ] **DADP-02**: System validates signal ranges and flags missing signals
-- [ ] **DADP-03**: System attaches machine/mold/recipe/material context to each cycle record
+- [x] **DADP-01**: System normalizes units, timestamps, and sequences cycles from simulator telemetry
+- [x] **DADP-02**: System validates signal ranges and flags missing signals
+- [x] **DADP-03**: System attaches machine/mold/recipe/material context to each cycle record
 
 ### Process Fingerprint
 

@@ -11,16 +11,16 @@ See: .planning/PROJECT.md (updated 2026-09-23)
 
 **V1.0 — October 2 Prototype Demo**
 - Total phases: 8
-- Completed: 0
-- Current: Phase 1 (not started)
+- Completed: 1
+- Current: Phase 2 (Process Fingerprint + Drift Sentinel)
 - Build window: 23 Sep - 2 Oct 2026
 
 ## Phase Status
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Digital Factory + Data Foundation | Planned (4 plans ready) |
-| 2 | Process Fingerprint + Drift Sentinel | Not Started |
+| 1 | Digital Factory + Data Foundation | Complete (13/13 tests green) |
+| 2 | Process Fingerprint + Drift Sentinel | Ready to Plan |
 | 3 | Quality Risk + Root-Cause Evidence | Not Started |
 | 4 | Intervention Engine + Recommendation | Not Started |
 | 5 | Recovery Verifier + Scrap Containment + State Machine | Not Started |
