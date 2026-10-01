@@ -31,9 +31,9 @@ All 61 requirements across Phases 1 through 8 are validated and frozen in `DEMO_
 
 ### Category 1: Real-World Molding Evidence & Grounding (EVID)
 
-- [ ] **EVID-01**: System integrates an external measured injection-molding benchmark dataset adapter (public SKZ/Fraunhofer 564-part PP/ABS production dataset) to benchmark real-world process-quality correlations.
-- [ ] **EVID-02**: System includes an automated grounding benchmark report comparing simulator drift dynamics against real industrial automotive study findings (non-linear moisture threshold 3% vs 22%, within-machine-limits visual scrap).
-- [ ] **EVID-03**: System enforces strict 4-level epistemic evidence labeling across all UI elements and API responses (Level 1: Challenge, Level 2: External Measured, Level 3: Software Invariant, Level 4: Controlled Counterfactual).
+- [x] **EVID-01**: System integrates an external measured injection-molding benchmark dataset adapter (public SKZ/Fraunhofer 564-part PP/ABS production dataset) to benchmark real-world process-quality correlations.
+- [x] **EVID-02**: System includes an automated grounding benchmark report comparing simulator drift dynamics against real industrial automotive study findings (non-linear moisture threshold 3% vs 22%, within-machine-limits visual scrap).
+- [x] **EVID-03**: System enforces strict 4-level epistemic evidence labeling across all UI elements and API responses (Level 1: Challenge, Level 2: External Measured, Level 3: Software Invariant, Level 4: Controlled Counterfactual).
 
 ### Category 2: Decision Economics (ECON)
 
@@ -72,9 +72,9 @@ All 61 requirements across Phases 1 through 8 are validated and frozen in `DEMO_
 
 | Requirement | Phase | Status |
 |---|---|---|
-| EVID-01 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
-| EVID-02 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
-| EVID-03 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
+| EVID-01 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
+| EVID-02 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
+| EVID-03 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
 | ECON-01 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
 | ECON-02 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
 | QCHK-01 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |

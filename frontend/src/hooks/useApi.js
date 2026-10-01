@@ -77,3 +77,73 @@ export async function applyIntervention(actionId = null) {
 
   return await response.json();
 }
+
+/**
+ * Resets the demo session to pristine baseline, creating an isolated run while preserving audit history.
+ */
+export async function resetDemoSession(machineId = 'IMM-01') {
+  const response = await fetch(`${BASE_URL}/api/demo/reset`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      machine_id: machineId,
+      seed_baseline: true,
+      baseline_cycles: 60,
+      notes: 'Frontend one-click replay reset'
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Demo reset failed [${response.status}]: ${errorText}`);
+  }
+
+  return await response.json();
+}
+
+/**
+ * Fetches economic impact evaluation with configurable scrap cost per part.
+ */
+export async function fetchEconomicImpact(partCost = 450.0, machineId = 'IMM-01') {
+  const response = await fetch(`${BASE_URL}/api/demo/economic-impact?part_cost=${partCost}&machine_id=${machineId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch economic impact: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+/**
+ * Fetches the 4-level industrial evidence framework contracts.
+ */
+export async function fetchEvidenceLevels() {
+  const response = await fetch(`${BASE_URL}/api/evidence/levels`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch evidence levels: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+/**
+ * Fetches external measured molding dataset benchmark and limits flaw analysis.
+ */
+export async function fetchExternalBenchmark() {
+  const response = await fetch(`${BASE_URL}/api/evidence/external-benchmark`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch external benchmark: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+/**
+ * Fetches the automated empirical grounding report comparing factory cases.
+ */
+export async function fetchGroundingReport() {
+  const response = await fetch(`${BASE_URL}/api/evidence/grounding-report`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch grounding report: ${response.statusText}`);
+  }
+  return await response.json();
+}
+

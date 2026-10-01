@@ -5,14 +5,14 @@
 See: `.planning/PROJECT.md` (updated 2026-10-01 for Milestone v1.1)
 
 **Core value:** The closed operational decision loop: detect drift → diagnose cause → evaluate cost of waiting vs cost of acting → recommend minimum-effective action → verify recovery via physical QC sample → contain affected suspect lot.
-**Current focus:** Milestone v1.1 — Dynamic Quality Reaction & Counterfactual Evidence Engine
+**Current focus:** Phase 10 — Cost-of-Waiting Decision Economics (ECON-01, ECON-02)
 
 ## Current Milestone
 
 **v1.1 — Dynamic Quality Reaction & Counterfactual Evidence Engine**
 - Build window: 2026-10-01 to 2026-10-02 (Final Evaluation Prep)
 - Goal: Prove to automotive industry evaluators that Process Guardian's dynamic quality reaction policy reduces modeled scrap exposure and suspect containment using real-world measured molding benchmarks, cost-of-waiting economics, and controlled counterfactual replay.
-- Status: Defining Requirements & Phase Roadmap
+- Status: Phase 9 Complete; Executing Phase 10
 
 ## Milestone v1.0 Shipped Summary
 
@@ -30,8 +30,8 @@ Completed 2026-10-01 (Demo Freeze Enacted, 97/97 tests green, 10/10 scenarios pa
 
 | Phase | Name | Focus | Status |
 |---|---|---|---|
-| 9 | Real-World Molding Evidence & Grounding | External dataset benchmark (SKZ/Fraunhofer 564-part PP/ABS, 2026 automotive study) & epistemic levels | Scoped |
-| 10 | Cost-of-Waiting Decision Economics | Parametric CoPQ model & Decision Value ($ExpectedLoss_{wait} - Cost_{act}$) | Scoped |
+| 9 | Real-World Molding Evidence & Grounding | External dataset benchmark (SKZ/Fraunhofer 564-part PP/ABS, 2026 automotive study) & epistemic levels | Complete (108/108 tests green, EVID-01..03) |
+| 10 | Cost-of-Waiting Decision Economics | Parametric CoPQ model & Decision Value ($ExpectedLoss_{wait} - Cost_{act}$) | Up Next |
 | 11 | Physical QC Verification & Operational Poka-Yoke | State machine `MANDATORY_QC_CHECKPOINT`, CTQ sampling, PS02 operational checkpoints | Scoped |
 | 12 | Controlled Counterfactual Replay Canvas | Dual-mode replay (Guardian OFF vs ON), suspect lot collapse, side-by-side comparative UI | Scoped |
 | 13 | Automotive Judge Hardening & Final Rehearsal | Evaluation script, pitch defensibility, demo freeze certification | Scoped |

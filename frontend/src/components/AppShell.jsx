@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './AppShell.css';
-import { usePolling } from '../hooks/useApi';
+import { usePolling, resetDemoSession } from '../hooks/useApi';
+import { EvidenceModal } from './EvidenceModal';
 
 export function AppShell({ activeTab, onTabChange, children }) {
   // Pulse dot state for simulation stream indicator
   const [pulseActive, setPulseActive] = useState(true);
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetStatus, setResetStatus] = useState(null);
+  const [showEvidenceModal, setShowEvidenceModal] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,6 +46,21 @@ export function AppShell({ activeTab, onTabChange, children }) {
   const isPressureDrifting = contributing.some((s) => s.includes('pressure')) || injPressure > 92;
   const isMoistureDrifting = contributing.some((s) => s.includes('moisture')) || moisture > 0.20;
 
+  const handleResetDemo = async () => {
+    setIsResetting(true);
+    setResetStatus('Resetting session...');
+    try {
+      await resetDemoSession(machineId);
+      setResetStatus('✓ Baseline reset');
+      setTimeout(() => {
+        window.location.reload();
+      }, 400);
+    } catch (err) {
+      setResetStatus(`Error: ${err.message}`);
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="app-shell">
       {/* Zone 1: Brand Bar */}
@@ -51,6 +70,9 @@ export function AppShell({ activeTab, onTabChange, children }) {
           <span className="brand-subtitle">Injection Process Intelligence</span>
         </div>
         <div className="brand-right">
+          <div className="prototype-badge" title="Safety interlock active: simulation & advisory mode only, no PLC write-back">
+            <span>PROTOTYPE ADVISORY · NO PLC WRITE-BACK</span>
+          </div>
           <div className="simulation-indicator">
             <span className={`pulse-dot ${pulseActive ? 'pulse-dot--active' : ''}`} />
             <span>SIMULATION · 2s STREAM</span>
@@ -58,22 +80,45 @@ export function AppShell({ activeTab, onTabChange, children }) {
         </div>
       </header>
 
-      {/* Zone 2: Scenario + Dynamic Machine Context */}
+      {/* Zone 2: Scenario + Dynamic Machine Context + One-Click Reset + Evidence Stack */}
       <div className="app-shell__context">
-        <div className="scenario-badge">
-          <span>DEMO · THERMAL DRIFT</span>
+        <div className="context-left">
+          <div className="scenario-badge">
+            <span>DEMO · THERMAL DRIFT</span>
+          </div>
+          <button
+            id="demo-reset-btn"
+            className="demo-reset-btn"
+            onClick={handleResetDemo}
+            disabled={isResetting}
+            title="Reset scenario to pristine baseline while preserving immutable audit logs"
+          >
+            {isResetting ? 'RESETTING...' : '↺ RESET DEMO'}
+          </button>
+          <button
+            id="evidence-modal-btn"
+            className="evidence-modal-btn"
+            onClick={() => setShowEvidenceModal(true)}
+            title="Inspect 4-Level Industrial Evidence & Grounding Benchmark (SKZ/Fraunhofer 564 Parts)"
+          >
+            📊 INDUSTRIAL EVIDENCE [L2]
+          </button>
+          {resetStatus && <span className="reset-status-msg">{resetStatus}</span>}
         </div>
         <div className="machine-context">
           <span>{machineId}</span> · <span>{moldId}</span> · <span>{partId}</span> · <span>{recipeId}</span> · <span className="cycle-num-highlight num">Cycle #{cycleNumber}</span>
         </div>
       </div>
 
-      {/* Zone 3: PS02 Hero Stats (4 Cards - No Box Shadows) */}
+      {/* Zone 3: PS02 Hero Stats (4 Cards with Epistemic Badges) */}
       <section className="app-shell__hero-stats" aria-label="Process Overview Metrics">
         {/* Card 1: Barrel Temp */}
         <div className="hero-stat-card">
           <div className="hero-stat-card__top">
-            <span className="hero-stat-card__label">BARREL TEMP</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="hero-stat-card__label">BARREL TEMP</span>
+              <span className="epistemic-tag epistemic-tag--l2">L2 MEASURED</span>
+            </div>
             <span className={`pill ${isTempDrifting ? 'pill--wine' : 'pill--lagoon'}`}>
               {isTempDrifting ? 'DRIFT' : 'NORMAL'}
             </span>
@@ -90,7 +135,10 @@ export function AppShell({ activeTab, onTabChange, children }) {
         {/* Card 2: Injection Pressure */}
         <div className="hero-stat-card">
           <div className="hero-stat-card__top">
-            <span className="hero-stat-card__label">INJ. PRESSURE</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="hero-stat-card__label">INJ. PRESSURE</span>
+              <span className="epistemic-tag epistemic-tag--l2">L2 MEASURED</span>
+            </div>
             <span className={`pill ${isPressureDrifting ? 'pill--wine' : 'pill--lagoon'}`}>
               {isPressureDrifting ? 'DRIFT' : 'NORMAL'}
             </span>
@@ -107,7 +155,10 @@ export function AppShell({ activeTab, onTabChange, children }) {
         {/* Card 3: Material Moisture */}
         <div className="hero-stat-card">
           <div className="hero-stat-card__top">
-            <span className="hero-stat-card__label">MOISTURE</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="hero-stat-card__label">MOISTURE</span>
+              <span className="epistemic-tag epistemic-tag--l2">L2 BENCHMARK</span>
+            </div>
             <span className={`pill ${isMoistureDrifting ? 'pill--wine' : 'pill--lagoon'}`}>
               {isMoistureDrifting ? 'DEVIATION' : 'NORMAL'}
             </span>
@@ -124,7 +175,10 @@ export function AppShell({ activeTab, onTabChange, children }) {
         {/* Card 4: Quality Risk */}
         <div className="hero-stat-card">
           <div className="hero-stat-card__top">
-            <span className="hero-stat-card__label">QUALITY RISK</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="hero-stat-card__label">QUALITY RISK</span>
+              <span className="epistemic-tag epistemic-tag--l3">L3 CALIBRATED</span>
+            </div>
             <span className={`pill ${qualityRiskPct >= 50 ? 'pill--wine' : qualityRiskPct >= 20 ? 'pill--violet' : 'pill--lagoon'}`}>
               {riskState === 'HIGH' ? 'HIGH RISK' : riskState === 'MEDIUM' ? 'ELEVATED' : 'STABLE'}
             </span>
@@ -143,6 +197,17 @@ export function AppShell({ activeTab, onTabChange, children }) {
       <main className="app-shell__content">
         {children}
       </main>
+
+      {/* Evidence & Grounding Modal */}
+      <EvidenceModal
+        isOpen={showEvidenceModal}
+        onClose={() => setShowEvidenceModal(false)}
+      />
+
+      {/* Persistent Disclaimer & Safety Footer */}
+      <footer className="app-shell__footer">
+        <span>PROCESS GUARDIAN MVP · MODELED SIMULATION DATA · ADVISORY INTERVENTION ONLY · NO DIRECT PLC WRITE-BACK</span>
+      </footer>
     </div>
   );
 }
