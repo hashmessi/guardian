@@ -1,254 +1,86 @@
 # Requirements: Process Guardian
 
-**Defined:** 2026-09-23
-**Core Value:** Complete closed-loop intervention decision system — detect drift → diagnose → evaluate constrained actions → recommend minimum-cost intervention → verify recovery → contain affected production
+**Defined:** 2026-10-01  
+**Milestone:** v1.1 — Dynamic Quality Reaction & Counterfactual Evidence Engine  
+**Core Value:** The closed operational decision loop: detect drift → diagnose cause → evaluate cost of waiting vs cost of acting → recommend minimum-effective action → verify recovery via physical QC sample → contain affected suspect lot.
 
-## v1 Requirements
+---
 
-Requirements for October 2 prototype demo. Each maps to roadmap phases.
+## v1.0 Validated Requirements (Completed)
 
-### Simulator
+All 61 requirements across Phases 1 through 8 are validated and frozen in `DEMO_FREEZE.md`:
 
-- [x] **SIM-01**: System can generate realistic cycle-level telemetry with correlated process variables (temperature, pressure, cycle time, moisture, part weight)
-- [x] **SIM-02**: System supports deterministic baseline regimes (healthy, thermal drift, pressure drift, moisture drift, cycle instability, combined drift, sensor noise, recovery, unseen drift)
-- [x] **SIM-03**: Operator can inject specific events at specific cycle numbers via `inject_event("thermal_drift", cycle=420)` API
-- [x] **SIM-04**: Simulator produces correlated causal-like relationships (moisture ↑ → melt behavior → pressure shift → cycle variation → quality variance)
-- [x] **SIM-05**: Demo scenario is deterministic and fully repeatable with one-click reset
+- **Simulator Core (SIM-01..05)**: Cycle telemetry, deterministic baseline regimes, event injection API, causal physics dynamics, repeatable demo reset.
+- **Data Adapter (DADP-01..03)**: Normalization, signal validation, context enrichment.
+- **Process Fingerprint (FPRN-01..03)**: Multi-context envelope, dynamic baselines, storage.
+- **Drift Sentinel (DRFT-01..04)**: EWMA/CUSUM/Hotelling $T^2$, structured drift payload, early warning lead-time, noise rejection.
+- **Quality Risk (QRSK-01..04)**: Calibrated probabilities, 158-feature temporal pipeline, Quality Contract evaluation, operator risk modes.
+- **Root Cause (ROOT-01..03)**: Ranked percentage attribution, empirical evidence chain, honest epistemic language.
+- **Intervention (INTV-01..05)**: A0-A4 candidate evaluation, 5-layer envelope boundary checks, forward surrogate model, constrained cost-disruption optimization, candidate comparison.
+- **Recommendation (RCMD-01..03)**: 7-field recommendation contract, 3 operator modes, mandatory ABSTAIN gate.
+- **Recovery (RECV-01..05)**: Parameter shift confirmation, post-intervention telemetry recalculation, consecutive stability window, Quality Contract check, recovery status contract.
+- **Containment (CNTN-01..04)**: Last-known-good cycle, suspect window quarantine, transition cycle tracking, disposition logic.
+- **State Machine (STMC-01..02)**: Explicit 13-state FSM with legal transition validation and audit trail.
+- **API & Storage (API-01..05, STOR-01..02)**: 17 SQLite schema tables, unified event bus, 14 operational FastAPI REST endpoints.
+- **Industrial UI (UI-01..03, TRST-01..03)**: 3 primary screens, immutable audit trail, zero box-shadow industrial tokens.
+- **Validation & Safety (DEMO-01..03, SAFE-01..04)**: 10-scenario validation suite (100% pass), deterministic reset, read-only invariants, synthetic disclosures.
 
-### Data Adapter
+---
 
-- [x] **DADP-01**: System normalizes units, timestamps, and sequences cycles from simulator telemetry
-- [x] **DADP-02**: System validates signal ranges and flags missing signals
-- [x] **DADP-03**: System attaches machine/mold/recipe/material context to each cycle record
+## v1.1 Scoped Requirements: Dynamic Quality Reaction & Counterfactual Evidence
 
-### Process Fingerprint
+### Category 1: Real-World Molding Evidence & Grounding (EVID)
 
-- [x] **FPRN-01**: System builds context-specific baseline (machine + mold + part + recipe + material + environment) using rolling distributions and operating envelope
-- [x] **FPRN-02**: System avoids global thresholds — learns what normal looks like for each production context
-- [x] **FPRN-03**: System stores and retrieves fingerprints per production context
+- [ ] **EVID-01**: System integrates an external measured injection-molding benchmark dataset adapter (public SKZ/Fraunhofer 564-part PP/ABS production dataset) to benchmark real-world process-quality correlations.
+- [ ] **EVID-02**: System includes an automated grounding benchmark report comparing simulator drift dynamics against real industrial automotive study findings (non-linear moisture threshold 3% vs 22%, within-machine-limits visual scrap).
+- [ ] **EVID-03**: System enforces strict 4-level epistemic evidence labeling across all UI elements and API responses (Level 1: Challenge, Level 2: External Measured, Level 3: Software Invariant, Level 4: Controlled Counterfactual).
 
-### Drift Detection
+### Category 2: Decision Economics (ECON)
 
-- [x] **DRFT-01**: System detects process-state change (not merely threshold violation) using EWMA, CUSUM, rolling mean/variance, slope/trend, multivariate distance
-- [x] **DRFT-02**: System produces structured drift output: drift boolean, severity score, lead-cycle count, contributing signal list
-- [x] **DRFT-03**: System detects injected drift before Quality Contract violation in the primary demo scenario
-- [x] **DRFT-04**: System avoids false drift alerts on healthy/noisy data
+- [ ] **ECON-01**: System implements a parametric Cost of Poor Quality (CoPQ) model calculating resin weight, machine hourly burden rate, energy kWh tariff, and secondary sorting costs.
+- [ ] **ECON-02**: System calculates real-time Cost of Waiting vs Cost of Acting ($ExpectedLoss_{wait} - Cost_{act} = DecisionValue$) with an explicit economic intervention threshold.
 
-### Quality Risk
+### Category 3: Quality Checkpoint & Operational Poka-Yoke (QCHK)
 
-- [x] **QRSK-01**: System produces calibrated quality risk probability (0-1) with confidence score using XGBoost/LightGBM
-- [x] **QRSK-02**: System uses temporal feature engineering (current value, rolling mean/std, trend/slope, delta from fingerprint, lag features, interaction features, process-phase features, material moisture, machine context)
-- [x] **QRSK-03**: System evaluates risk against a defined Quality Contract (part-specific targets and tolerances)
-- [x] **QRSK-04**: System classifies risk state (LOW / MEDIUM / HIGH) with corresponding operator modes
+- [ ] **QCHK-01**: State machine incorporates `MANDATORY_QC_CHECKPOINT` requiring recorded physical CTQ measurement (part weight / visual blemish pass-fail) post-parameter stabilization before `RELEASE`.
+- [ ] **QCHK-02**: System evaluates PS02 shop-floor operational checkpoints: recipe verification lock, resin moisture batch sign-off, and mold-release spray interval tracking.
 
-### Root Cause
+### Category 4: Controlled Counterfactual Replay (CRPL)
 
-- [x] **ROOT-01**: System provides ranked likely contributors with percentage contribution (e.g., Temperature 68%, Pressure 21%, Cycle 8%, Other 3%)
-- [x] **ROOT-02**: System provides supporting evidence for each contributor (variance changes, distribution shifts, similar past events)
-- [x] **ROOT-03**: System uses honest language: "likely contributor", "evidence", "modeled effect", "confidence" — never "guaranteed cause"
+- [ ] **CRPL-01**: System provides a controlled counterfactual replay engine that runs identical drift event streams in dual mode: Guardian OFF (Status Quo) vs Guardian ON (Dynamic Quality Reaction).
+- [ ] **CRPL-02**: System renders a side-by-side counterfactual comparative evidence view displaying timeline divergence, suspect lot containment reduction (>75%), and avoided financial loss.
 
-### Intervention
+### Category 5: Physical Scrap Containment Boundary (CNTN)
 
-- [x] **INTV-01**: System evaluates at least 4 candidate actions (A0: continue monitoring, A1: temperature adjustment, A2: pressure adjustment, A3: cycle/process adjustment, A4: material inspection/check)
-- [x] **INTV-02**: Every candidate action is checked against operating envelope, recipe limits, max permitted parameter delta, machine safety bounds, intervention policy
-- [x] **INTV-03**: System uses surrogate model (learned response surface / constrained regression) to estimate post-intervention quality risk for each candidate
-- [x] **INTV-04**: System optimizes minimize(predicted_quality_risk + λ×intervention_cost + μ×process_disruption) subject to machine/recipe/envelope constraints
-- [x] **INTV-05**: System outputs comparison table (Do nothing → X% risk, Pressure → Y% risk, Temperature → Z% risk, etc.) with recommended action
+- [ ] **CNTN-05**: System renders a physical scrap containment boundary card explicitly displaying cycle milestones: Last Verified Good, Drift Start, Suspect Lot, Action Applied, Stabilized, QC Passed, and Lot Release.
 
-### Recommendation
-
-- [x] **RCMD-01**: Every recommendation contains: ACTION, WHY, EVIDENCE, EXPECTED EFFECT, CONFIDENCE, OPERATING LIMIT, RECOVERY CHECK
-- [x] **RCMD-02**: System supports 3 operator modes — HIGH CONFIDENCE → recommend action; MEDIUM → request additional QC sample; LOW → ABSTAIN + monitor
-- [x] **RCMD-03**: ABSTAIN is a product feature — system must refuse to act when confidence is low
-
-### Recovery
-
-- [x] **RECV-01**: After intervention, system confirms parameter movement in expected direction
-- [x] **RECV-02**: System re-evaluates drift and recomputes quality risk post-intervention
-- [x] **RECV-03**: System checks stability window (not immediate release — verifies sustained recovery)
-- [x] **RECV-04**: System verifies Quality Contract conditions before releasing production
-- [x] **RECV-05**: System produces recovery status output: risk before/after, stability before/after, recovery status (VERIFIED/FAILED), release decision
-
-### Containment
-
-- [x] **CNTN-01**: System identifies last-known-good cycle
-- [x] **CNTN-02**: System identifies suspect window (potentially affected cycles between drift detection and recovery)
-- [x] **CNTN-03**: System identifies intervention cycle, recovery cycle, and release cycle
-- [x] **CNTN-04**: System answers "which production should we inspect, quarantine, or release?"
-
-### State Machine
-
-- [x] **STMC-01**: System implements explicit state machine: HEALTHY → DRIFT_SUSPECTED → DRIFT_CONFIRMED → QUALITY_RISK_HIGH → DIAGNOSING → INTERVENTION_EVALUATION → (ABSTAIN|QC_REQUIRED|RECOMMEND) → APPLIED → RECOVERY_CHECK → (FAILED→REASSESS|VERIFIED→RELEASE) → INTERVENTION_MEMORY
-- [x] **STMC-02**: State machine exists explicitly in code, not hidden inside UI logic
-
-### API
-
-- [x] **API-01**: FastAPI ingestion endpoints: POST /api/cycles, POST /api/events, POST /api/checkpoints
-- [x] **API-02**: Process state endpoints: GET /api/process/current, GET /api/process/fingerprint, GET /api/process/drift
-- [x] **API-03**: Quality endpoints: GET /api/quality/risk, GET /api/quality/contract
-- [x] **API-04**: Intervention endpoints: POST /api/interventions/simulate, GET /api/interventions/recommendation, POST /api/interventions/apply-demo, GET /api/interventions/history
-- [x] **API-05**: Recovery/containment endpoints: GET /api/recovery/status, GET /api/containment/window, POST /api/containment/release
-
-### Storage
-
-- [x] **STOR-01**: SQLite database with tables: machines, molds, parts, recipes, materials, cycles, process_fingerprints, quality_contracts, drift_events, quality_predictions, intervention_candidates, intervention_recommendations, intervention_applications, recovery_events, containment_windows, checkpoints, audit_log
-- [x] **STOR-02**: Event model uses consistent event object schema (event_id, machine_id, mold_id, part_id, recipe_id, cycle_id, timestamp, event_type, severity, signals, quality_risk, confidence)
-
-### UI
-
-- [x] **UI-01**: Screen 1 — Live Process: shows machine/mold/part/recipe context, process stability %, quality risk %, current cycle, drift status, and signal bars (temperature, pressure, moisture, cycle time)
-- [x] **UI-02**: Screen 2 — Incident Diagnosis: shows risk escalation (3% → 72%), lead time, confidence, ranked contributors with percentages, affected cycle window
-- [x] **UI-03**: Screen 3 — Intervention + Recovery: shows candidate actions with risk percentages, recommended action with expected effect and envelope compliance, "Apply Demo Intervention" button, recovery verification (risk before/after, stability before/after, release status)
-
-### Trust & Audit
-
-- [x] **TRST-01**: Every event creates auditable chain: signal change → drift evidence → risk estimate → cause evidence → candidate actions → selected action → expected outcome → observed outcome → recovery decision → production disposition
-- [x] **TRST-02**: Audit log stored in database
-- [x] **TRST-03**: Operator can answer: What happened? Why did the system act? What did it recommend? What changed? Did recovery occur? Which cycles were exposed?
-
-
-### Demo
-
-- [ ] **DEMO-01**: Complete 10-step demo story: healthy production → hidden drift → early warning → quality risk escalation → root-cause evidence → candidate interventions → minimum-cost recommendation → recovery verification → scrap containment/release → economic interpretation
-- [ ] **DEMO-02**: One-click scenario reset for deterministic replay
-- [ ] **DEMO-03**: All synthetic/modelled values clearly labeled as prototype results
-
-### Safety
-
-- [ ] **SAFE-01**: Read-only machine integration — no automatic PLC write-back
-- [ ] **SAFE-02**: No recommendation outside validated operating limits
-- [ ] **SAFE-03**: No forced action when confidence is low — ABSTAIN mandatory
-- [ ] **SAFE-04**: All interventions are simulated/demo-applied only
-
-## v2 Requirements
-
-Deferred to post-October-2 releases. Tracked but not in current roadmap.
-
-### V1.1 — Real Plant Adapter
-
-- **PLNT-01**: OPC-UA adapter for live machine data
-- **PLNT-02**: Modbus / PLC adapter
-- **PLNT-03**: Retrofit sensor gateway integration
-- **PLNT-04**: Real moisture measurement integration
-
-### V1.2 — Quality Feedback Loop
-
-- **QFDB-01**: Weighing station integration
-- **QFDB-02**: Inline vision / surface QC integration
-- **QFDB-03**: Dimensional inspection integration
-
-### V1.3 — Adaptive Learning
-
-- **ADPT-01**: Drift-triggered sample request
-- **ADPT-02**: Incremental model updates
-- **ADPT-03**: Machine-specific recalibration
-
-### V1.4 — Multi-Machine
-
-- **MULT-01**: Plant-level process fingerprinting
-- **MULT-02**: Cross-machine pattern search
-
-### V2 — Controlled Automation
-
-- **AUTO-01**: Approved machine-control hooks
-- **AUTO-02**: Policy engine with role-based authorization
-- **AUTO-03**: Safety interlocks
-- **AUTO-04**: Shadow-mode validation before automatic action
+---
 
 ## Out of Scope
 
-Explicitly excluded. Documented to prevent scope creep.
+| Excluded Item | Rationale |
+|---|---|
+| Hardware sensor rigs (DHT11, ESP32, breadboards) | Prototype is software decision layer; hardware is not needed for judge evidence and introduces physical failure modes. |
+| Generic charts / dashboards | UI is an evidence canvas for decisions, not passive telemetry graphing. |
+| LLMs / Chatbots | Deterministic epistemic contracts and math are required for automotive auditability. |
+| Autonomous PLC write-back | Direct machine actuation violates safety protocols; operator-in-the-loop advisory is mandatory. |
+| Cloud infrastructure / microservices | Local SQLite and deterministic in-memory replay guarantee 100% demo reliability. |
 
-| Feature | Reason |
-|---------|--------|
-| Chatbot / conversational AI | Dilutes intervention focus, not core to decision loop |
-| Mobile application | Web-first, desktop shop-floor display |
-| ERP / CRM / blockchain integration | Enterprise integration deferred post-prototype |
-| Full MES replacement | Too broad, not the product thesis |
-| Broad computer vision system | Defer inline vision to V1.2 |
-| Deep learning models | XGBoost/LightGBM sufficient for MVP risk |
-| 20+ intervention types | 4-5 validated actions demonstrate the loop |
-| Autonomous PLC write-back | Safety — requires plant-specific validation |
-| Hardware-dependent demo | Software-first, simulator-driven |
-| Decorative digital twin / 3D viz | Not a visualization product |
-| Multi-industry support | Automotive injection-molding wedge only |
-| Cloud / Postgres deployment | SQLite local-first for prototype |
-| Real-time streaming (Kafka etc.) | Cycle-level batch sufficient for demo |
-| Multi-language i18n | English prototype only |
+---
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
-|-------------|-------|--------|
-| SIM-01 | Phase 1 | Complete |
-| SIM-02 | Phase 1 | Complete |
-| SIM-03 | Phase 1 | Complete |
-| SIM-04 | Phase 1 | Complete |
-| SIM-05 | Phase 1 | Complete |
-| DADP-01 | Phase 1 | Complete |
-| DADP-02 | Phase 1 | Complete |
-| DADP-03 | Phase 1 | Complete |
-| FPRN-01 | Phase 2 | Complete |
-| FPRN-02 | Phase 2 | Complete |
-| FPRN-03 | Phase 2 | Complete |
-| DRFT-01 | Phase 2 | Complete |
-| DRFT-02 | Phase 2 | Complete |
-| DRFT-03 | Phase 2 | Complete |
-| DRFT-04 | Phase 2 | Complete |
-| QRSK-01 | Phase 3 | Complete |
-| QRSK-02 | Phase 3 | Complete |
-| QRSK-03 | Phase 3 | Complete |
-| QRSK-04 | Phase 3 | Complete |
-| ROOT-01 | Phase 3 | Complete |
-| ROOT-02 | Phase 3 | Complete |
-| ROOT-03 | Phase 3 | Complete |
-| INTV-01 | Phase 4 | Complete |
-| INTV-02 | Phase 4 | Complete |
-| INTV-03 | Phase 4 | Complete |
-| INTV-04 | Phase 4 | Complete |
-| INTV-05 | Phase 4 | Complete |
-| RCMD-01 | Phase 4 | Complete |
-| RCMD-02 | Phase 4 | Complete |
-| RCMD-03 | Phase 4 | Complete |
-| RECV-01 | Phase 5 | Complete |
-| RECV-02 | Phase 5 | Complete |
-| RECV-03 | Phase 5 | Complete |
-| RECV-04 | Phase 5 | Complete |
-| RECV-05 | Phase 5 | Complete |
-| CNTN-01 | Phase 5 | Complete |
-| CNTN-02 | Phase 5 | Complete |
-| CNTN-03 | Phase 5 | Complete |
-| CNTN-04 | Phase 5 | Complete |
-| STMC-01 | Phase 5 | Complete |
-| STMC-02 | Phase 5 | Complete |
-| API-01 | Phase 6 | Complete |
-| API-02 | Phase 6 | Complete |
-| API-03 | Phase 6 | Complete |
-| API-04 | Phase 6 | Complete |
-| API-05 | Phase 6 | Complete |
-| STOR-01 | Phase 6 | Complete |
-| STOR-02 | Phase 6 | Complete |
-| UI-01 | Phase 7 | Pending |
-| UI-02 | Phase 7 | Pending |
-| UI-03 | Phase 7 | Pending |
-| TRST-01 | Phase 7 | Pending |
-| TRST-02 | Phase 7 | Pending |
-| TRST-03 | Phase 7 | Pending |
-| DEMO-01 | Phase 8 | Pending |
-| DEMO-02 | Phase 8 | Pending |
-| DEMO-03 | Phase 8 | Pending |
-| SAFE-01 | Phase 8 | Pending |
-| SAFE-02 | Phase 8 | Pending |
-| SAFE-03 | Phase 8 | Pending |
-| SAFE-04 | Phase 8 | Pending |
+|---|---|---|
+| EVID-01 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
+| EVID-02 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
+| EVID-03 | Phase 9: Real-World Molding Evidence & Grounding | Scoped |
+| ECON-01 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
+| ECON-02 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
+| QCHK-01 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
+| QCHK-02 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
+| CNTN-05 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
+| CRPL-01 | Phase 12: Controlled Counterfactual Replay Canvas | Scoped |
+| CRPL-02 | Phase 12: Controlled Counterfactual Replay Canvas | Scoped |
 
-**Coverage:**
-- v1 requirements: 61 total
-- Mapped to phases: 61
-- Unmapped: 0 ✓
-
----
-*Requirements defined: 2026-09-23*
-*Last updated: 2026-09-23 after initial definition*
+**Coverage:** 10 new scoped requirements mapped across 4 focused implementation phases (Phases 9–12) followed by Phase 13 (Automotive Judge Hardening & Final Rehearsal).
