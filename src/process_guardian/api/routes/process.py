@@ -1,8 +1,9 @@
 """Process state REST endpoints for current stability, baseline fingerprint, and drift sentinel (API-02)."""
 
-from typing import Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import Dict, Any, List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime, timezone
+from pydantic import BaseModel
 
 from process_guardian.api.schemas import (
     ProcessCurrentResponse,
@@ -125,10 +126,28 @@ def get_process_drift(
     Get Drift Sentinel multi-detector diagnostics, severity score, and lead-cycle calculation.
     """
     orchestrator = container.orchestrator
-    drift_events = container.repository.list_drift_events(machine_id, limit=1)
     latest_cycle = container.repository.get_latest_cycle(machine_id)
     cycle_idx = latest_cycle.cycle_index if latest_cycle else 0
 
+    if orchestrator and orchestrator.results_history:
+        latest_res = orchestrator.results_history[-1]
+        drift_out = latest_res.drift_output
+        if drift_out and drift_out.drift:
+            return ProcessDriftResponse(
+                machine_id=machine_id,
+                current_cycle=latest_res.cycle_index,
+                drift=True,
+                severity=round(drift_out.severity, 2),
+                lead_cycles=drift_out.lead_cycles or 0,
+                contributing_signals=drift_out.signals,
+                detectors={
+                    "multivariate_distance": round(drift_out.metrics.multivariate_distance, 2),
+                    "cusum_breached": drift_out.metrics.cusum_breached,
+                    "ewma_breached": drift_out.metrics.ewma_breached,
+                },
+            )
+
+    drift_events = container.repository.list_drift_events(machine_id, limit=1)
     if not drift_events:
         return ProcessDriftResponse(
             machine_id=machine_id,
@@ -149,4 +168,53 @@ def get_process_drift(
         lead_cycles=latest_drift.lead_cycles,
         contributing_signals=latest_drift.signals_json,
         detectors=latest_drift.details_json,
+    )
+
+
+class AuditTrailEntry(BaseModel):
+    """One state transition the engine actually recorded."""
+    step: int
+    cycle_index: int
+    timestamp: str
+    from_state: str
+    to_state: str
+    reason: str
+
+
+class AuditTrailResponse(BaseModel):
+    machine_id: str
+    entries: List[AuditTrailEntry]
+    total: int
+
+
+@router.get("/audit-trail", response_model=AuditTrailResponse, status_code=status.HTTP_200_OK)
+def get_audit_trail(
+    limit: int = Query(40, ge=1, le=200, description="Maximum entries to return (most recent last)"),
+    container: ServiceContainer = Depends(get_service_container),
+) -> AuditTrailResponse:
+    """Return the engine's recorded state-transition history.
+
+    This is the real decision trail: every entry is a transition the state machine
+    actually executed, with the cycle it happened on and the reason it recorded at
+    the time. Nothing here is composed for display.
+    """
+    orchestrator = container.orchestrator
+    history = orchestrator.get_state_transition_history() if orchestrator else []
+    window = history[-limit:]
+    offset = len(history) - len(window)
+
+    return AuditTrailResponse(
+        machine_id=container.machine_id,
+        entries=[
+            AuditTrailEntry(
+                step=offset + i + 1,
+                cycle_index=t.cycle_index,
+                timestamp=t.timestamp,
+                from_state=t.from_state.value,
+                to_state=t.to_state.value,
+                reason=t.reason,
+            )
+            for i, t in enumerate(window)
+        ],
+        total=len(history),
     )

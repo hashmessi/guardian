@@ -9,6 +9,7 @@ from process_guardian.quality.model import QualityRiskModel
 from process_guardian.quality.schemas import QualityRiskOutput
 from process_guardian.root_cause.analyzer import RootCauseAnalyzer
 from process_guardian.root_cause.schemas import RootCauseReport
+from process_guardian.llm.human_channel import HumanChannelSignal
 
 
 class QualityEngine:
@@ -33,10 +34,12 @@ class QualityEngine:
         self,
         record: NormalizedCycleRecord,
         drift_output: Optional[DriftOutput] = None,
+        human_channel_signal: Optional[HumanChannelSignal] = None,
+        human_channel_confirmed: bool = False,
     ) -> Tuple[QualityRiskOutput, RootCauseReport]:
         """
         Evaluate an incoming cycle record end-to-end.
-        
+
         Returns:
             Tuple of (QualityRiskOutput, RootCauseReport)
         """
@@ -49,6 +52,8 @@ class QualityEngine:
             fingerprint=self.fingerprint,
             drift_output=drift_output,
             risk_output=risk_output,
+            human_channel_signal=human_channel_signal,
+            human_channel_confirmed=human_channel_confirmed,
         )
 
         return risk_output, root_cause_report

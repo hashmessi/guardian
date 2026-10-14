@@ -1,0 +1,275 @@
+/**
+ * CoPQModal.css
+ * Industrial Modal for Parametric Cost of Poor Quality (CoPQ) model inspection & tuning.
+ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(41, 40, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--sp-4);
+}
+
+.copq-modal {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-card);
+  width: 100%;
+  max-width: 960px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.copq-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--color-mist);
+  background: var(--color-parchment);
+}
+
+.copq-modal__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: 2px;
+}
+
+.copq-modal__title {
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  color: var(--color-charcoal);
+  margin: 0;
+}
+
+.copq-modal__subtitle {
+  font-size: 12px;
+  color: var(--color-stone);
+  margin: 0;
+}
+
+.copq-modal__close {
+  background: none;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-stone);
+  font-size: 14px;
+}
+
+.copq-modal__close:hover {
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+}
+
+.copq-modal__body {
+  padding: var(--sp-6);
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--sp-6);
+}
+
+/* Left Form Grid */
+.copq-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.copq-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.copq-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.copq-field label {
+  font-size: 11px;
+  font-weight: var(--fw-label);
+  color: var(--color-charcoal);
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm);
+  background: var(--color-parchment);
+  overflow: hidden;
+}
+
+.input-with-unit input {
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: var(--fw-data);
+  color: var(--color-charcoal);
+  width: 100%;
+  outline: none;
+}
+
+.input-with-unit span {
+  font-size: 10px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.input-with-unit:focus-within {
+  border-color: var(--color-violet);
+  background: var(--color-white);
+}
+
+/* Right Summary Card */
+.copq-summary-card {
+  background: var(--color-parchment);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.copq-summary-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: var(--sp-3);
+  font-size: 12px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-charcoal);
+}
+
+.summary-row--direct {
+  border-top: 1px dashed var(--color-mist);
+  padding-top: 6px;
+  font-weight: var(--fw-label);
+  color: var(--color-charcoal);
+}
+
+.summary-row--total {
+  border-top: 2px solid var(--color-mist);
+  padding-top: 8px;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  color: var(--color-wine);
+}
+
+.copq-insight-box {
+  background: var(--color-white);
+  border: 1px solid rgba(113, 76, 182, 0.2);
+  border-left: 3px solid var(--color-violet);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  margin-top: var(--sp-4);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-charcoal);
+}
+
+.copq-insight-title {
+  font-weight: var(--fw-bold);
+  color: var(--color-violet);
+  margin-bottom: 2px;
+}
+
+/* Footer */
+.copq-modal__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-6);
+  border-top: 1px solid var(--color-mist);
+  background: var(--color-parchment);
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.save-status-msg {
+  font-size: 12px;
+  font-weight: var(--fw-label);
+  color: var(--color-lagoon);
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-charcoal);
+}
+
+.btn-primary {
+  background: var(--color-wine);
+  border: 1px solid var(--color-wine);
+  border-radius: var(--r-sm);
+  padding: 6px 14px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+  .copq-modal__body {
+    grid-template-columns: 1fr;
+  }
+}

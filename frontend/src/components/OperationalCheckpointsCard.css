@@ -1,0 +1,99 @@
+/* =========================================================================
+   OperationalCheckpointsCard.css — bold single-row trigger bar.
+   Full gate detail lives in OperationalCheckpointsModal.css.
+   ========================================================================= */
+
+.op-trigger-bar {
+  width: 100%;
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-left: 4px solid var(--color-wine, #421d24);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.op-trigger-bar:hover {
+  background: #fbfaf7;
+  border-left-color: var(--color-lagoon, #0c4243);
+}
+
+.op-trigger-bar:focus-visible {
+  outline: 2px solid var(--color-violet, #714cb6);
+  outline-offset: 2px;
+}
+
+.op-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.op-trigger-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.op-bar-chip {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+
+.op-bar-chip--pass {
+  background: rgba(12, 66, 67, 0.1);
+  color: var(--color-lagoon, #0c4243);
+}
+
+.op-bar-chip--warn {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+}
+
+.op-bar-chip--fail {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+}
+
+.op-bar-chip--unknown {
+  background: var(--color-mist, #e3e3e2);
+  color: var(--color-stone, #666666);
+}
+
+.op-clearance-pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.op-clearance-pill--cleared {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.22);
+}
+
+.op-clearance-pill--gated {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.22);
+}
+
+.op-trigger-cta {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-wine, #421d24);
+  white-space: nowrap;
+}

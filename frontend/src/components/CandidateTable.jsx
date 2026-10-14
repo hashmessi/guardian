@@ -60,10 +60,22 @@ export function CandidateTable({
   ];
 
   return (
-    <div className="candidate-table-container">
+    <div className="candidate-table-container" id="candidate-table-container">
+      <div className="candidate-table-header">
+        <div className="candidate-table-title-group">
+          <span className="label-section" style={{ margin: 0 }}>
+            EVALUATED ACTION CANDIDATES
+          </span>
+          <span className="candidate-table-subtitle">
+            Surrogate Constrained Optimization · Minimum-Cost Feasible Selection
+          </span>
+        </div>
+        <span className="pill pill--mist">4 CANDIDATES EVALUATED</span>
+      </div>
+
       {isAbstain && (
         <div className="abstain-banner">
-          <span>⛔</span>
+          <span className="pill pill--wine">SAFETY POLICY ACTIVE</span>
           <span>
             <strong>ABSTAIN:</strong> {abstainReason || 'Confidence below threshold or physical boundary violation. System refuses to act without operator verification.'}
           </span>

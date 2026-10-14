@@ -41,6 +41,7 @@ class EvidenceGenerator:
         "cycle_time": ("Total Cycle Duration", "Timing"),
         "part_weight": ("Molded Part Weight", "Quality"),
         "material_moisture": ("Resin Moisture Content", "Material"),
+        "human_channel": ("Operator Shift Note (Human Channel)", "Material"),
     }
 
     def generate_signal_evidence(

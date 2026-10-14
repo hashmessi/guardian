@@ -128,11 +128,49 @@ class InjectionMoldingSimulator:
             elif event.event_type == "recovery":
                 # Stabilization back toward baseline
                 decay = np.exp(-offset / 3.0)
-                # Dampen existing thermal and pressure drift
-                if "barrel_temp_z3" in modifiers:
-                    modifiers["barrel_temp_z3"] *= decay
-                if "peak_pressure" in modifiers:
-                    modifiers["peak_pressure"] *= decay
+                # Dampen existing thermal, pressure, and moisture drift
+                for sig in ("barrel_temp_z3", "nozzle_temp", "injection_pressure", "peak_pressure", "material_moisture"):
+                    if sig in modifiers:
+                        modifiers[sig] *= decay
+
+            elif event.event_type == "sudden_shift":
+                # Instantaneous step shift (e.g. +15°C heater runaway / sensor slip)
+                step_val = float(event.params.get("delta_temp_z3", 15.0)) * event.severity
+                modifiers["barrel_temp_z3"] = modifiers.get("barrel_temp_z3", 0.0) + step_val
+
+            elif event.event_type == "signal_drift":
+                # Generic linear signal drift on any telemetry parameter
+                sig = event.params.get("signal", "barrel_temp_z3")
+                rate = float(event.params.get("rate", 0.20))
+                max_drift = event.params.get("max_drift")
+                drift_val = rate * offset * event.severity
+                if max_drift is not None:
+                    drift_val = min(float(max_drift), drift_val) if rate > 0 else max(float(max_drift), drift_val)
+                modifiers[sig] = modifiers.get(sig, 0.0) + drift_val
+
+            elif event.event_type in ("parameter_offset", "parameter_step"):
+                # Discrete parameter bias (e.g. clerical recipe entry error or fixed setting bias)
+                sig = event.params.get("signal", "barrel_temp_z2")
+                delta_val = float(event.params.get("delta", 0.0)) * event.severity
+                modifiers[sig] = modifiers.get(sig, 0.0) + delta_val
+
+            elif event.event_type == "intervention_pressure_offset":
+                # Operator or controller pressure boost
+                delta_p = float(event.params.get("delta_injection_pressure", 4.0)) * event.severity
+                modifiers["injection_pressure"] = modifiers.get("injection_pressure", 0.0) + delta_p
+                modifiers["peak_pressure"] = modifiers.get("peak_pressure", 0.0) + delta_p
+
+            elif event.event_type == "persistent_drift":
+                # Severe or recalcitrant failure that outpaces intervention
+                sig = event.params.get("signal", "barrel_temp_z3")
+                rate = float(event.params.get("rate", 0.35))
+                modifiers[sig] = modifiers.get(sig, 0.0) + (rate * offset * event.severity)
+
+            elif event.event_type == "noise_burst":
+                # Temporary industrial electromagnetic/sensor noise burst
+                scale = float(event.params.get("scale", 3.0))
+                for param, noise_std in NOMINAL_PROCESS_NOISE.items():
+                    modifiers[param] = modifiers.get(param, 0.0) + float(self.rng.normal(0.0, noise_std * scale))
 
         # 3. Compute causal coupled physics
         coupled_values = compute_causal_effects(

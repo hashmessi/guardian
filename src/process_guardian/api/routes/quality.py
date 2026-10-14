@@ -25,10 +25,40 @@ def get_quality_risk(
     Get real-time calibrated quality risk prediction, confidence, operator mode,
     and ranked root cause physical contributors (Screen 2 support).
     """
-    latest_pred = container.repository.get_latest_prediction(machine_id)
+    orchestrator = container.orchestrator
     latest_cycle = container.repository.get_latest_cycle(machine_id)
     cycle_idx = latest_cycle.cycle_index if latest_cycle else 0
 
+    if orchestrator and orchestrator.results_history:
+        latest_res = orchestrator.results_history[-1]
+        risk_out = latest_res.risk_output
+        root_out = latest_res.root_cause_report
+        if risk_out:
+            items: List[RootCauseContributorItem] = []
+            if root_out and root_out.contributors:
+                for c in root_out.contributors:
+                    items.append(
+                        RootCauseContributorItem(
+                            signal_name=c.signal_name,
+                            percentage=round(c.contribution_pct, 1),
+                            subsystem=c.category,
+                            direction="POSITIVE" if c.z_score > 0 else "NEGATIVE",
+                            evidence_text=c.evidence,
+                        )
+                    )
+            return QualityRiskResponse(
+                machine_id=machine_id,
+                cycle_index=latest_res.cycle_index,
+                risk_probability=risk_out.risk_probability,
+                risk_percentage=round(risk_out.risk_probability * 100, 1),
+                confidence=risk_out.confidence,
+                risk_state=risk_out.risk_state.value,
+                operator_mode=risk_out.operator_mode.value,
+                root_cause_isolated=len(items) > 0,
+                contributors=items,
+            )
+
+    latest_pred = container.repository.get_latest_prediction(machine_id)
     if not latest_pred:
         return QualityRiskResponse(
             machine_id=machine_id,

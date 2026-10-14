@@ -8,52 +8,51 @@ export function RecommendationCard({
   isApplying = false,
   applied = false,
   applyError = null,
+  netBenefit = null,
+  costWait = null,
+  costAct = null,
 }) {
-  // 7 Contract Fields fallback defaults matching calibrated scenario
-  const action = recommendation?.action || 'Decrease barrel temp zone 3 by -3.0 °C (A1)';
-  const why = recommendation?.why || 'Thermal drift in zone 3 is the leading contributor to projected sink mark quality contract violation.';
+  const inr = (v) =>
+    v == null ? '—' : `${v < 0 ? '-' : '+'}₹${Math.abs(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+  const rawAction = recommendation?.action || '';
   
-  // Format evidence cleanly whether dict or string
-  let evidenceStr = 'EWMA departure confirmed over 14 consecutive cycles with positive z-score excursion +2.8σ.';
-  if (recommendation?.evidence) {
-    if (typeof recommendation.evidence === 'string') {
-      evidenceStr = recommendation.evidence;
-    } else if (typeof recommendation.evidence === 'object') {
-      const ev = recommendation.evidence;
-      const parts = [];
-      if (ev.target_signal) parts.push(`Signal: ${ev.target_signal.replace(/_/g, ' ')}`);
-      if (ev.current_value !== undefined && ev.nominal_value !== undefined) {
-        parts.push(`Current: ${Number(ev.current_value).toFixed(1)}°C (Nominal: ${Number(ev.nominal_value).toFixed(1)}°C)`);
-      }
-      if (ev.departure_sigma !== undefined) parts.push(`Departure: +${Number(ev.departure_sigma).toFixed(1)}σ`);
-      if (ev.drift_status) parts.push(`Status: ${ev.drift_status}`);
-      if (ev.trend) parts.push(`Trend: ${ev.trend}`);
-      
-      evidenceStr = parts.length > 0 ? parts.join(' · ') : JSON.stringify(ev).replace(/["{}]/g, '').replace(/,/g, ', ');
-    }
-  }
+  const formatActionTitle = (raw) => {
+    if (!raw) return 'EVALUATING CONSTRAINED INTERVENTIONS...';
+    return raw
+      .replace(/barrel_temp_z3/gi, 'Zone 3 Temperature')
+      .replace(/barrel_temp_z1/gi, 'Zone 1 Temperature')
+      .replace(/barrel_temp_z2/gi, 'Zone 2 Temperature')
+      .replace(/injection_pressure/gi, 'Injection Pressure')
+      .replace(/hold_pressure/gi, 'Holding Pressure')
+      .replace(/material_moisture/gi, 'Resin Moisture')
+      .replace(/cooling_time/gi, 'Cooling Time')
+      .toUpperCase();
+  };
 
-  const expectedEffect = recommendation?.expected_effect || 'Reduces quality contract risk from 72.4% to 8.2% within 5 stabilization cycles.';
-  const confidence = recommendation?.confidence ? `${(recommendation.confidence * 100).toFixed(0)}%` : '96%';
-  const operatingLimit = recommendation?.operating_limit || 'Safe zone: 225.0 °C to 245.0 °C. Target 235.0 °C preserves 10.0 °C margin.';
-  const recoveryCheck = recommendation?.recovery_check || 'Verify physical thermocouple drop ≥ 2.5 °C and 5 consecutive stable cycles.';
+  const dominantAction = isAbstain
+    ? (recommendation?.abstain_reason ? `ABSTAIN — ${recommendation.abstain_reason.toUpperCase()}` : 'ABSTAIN — OPERATOR VERIFICATION REQUIRED')
+    : formatActionTitle(rawAction);
 
-  // Determine button state
+  const why = recommendation?.why || 'Physical parameter deviation requires correction to restore quality contract safety margin.';
+  const operatingLimit = recommendation?.operating_limit || 'Parameter adjustment verified within calibrated safe operating envelope.';
+  const expectedEffect = recommendation?.expected_effect || 'Reduces projected defect risk and returns process parameters toward nominal baseline.';
+
+  // Button state
   let btnClass = 'apply-btn--active';
-  let btnLabel = 'Apply Demo Intervention';
+  let btnLabel = 'LOG OPERATOR ACTION';
   let btnDisabled = false;
 
   if (isAbstain) {
     btnClass = 'apply-btn--disabled';
-    btnLabel = 'ABSTAIN — Intervention Blocked';
+    btnLabel = 'ABSTAIN — INTERVENTION BLOCKED BY SAFETY POLICY';
     btnDisabled = true;
   } else if (isApplying) {
     btnClass = 'apply-btn--applying';
-    btnLabel = 'Applying Corrective Action...';
+    btnLabel = 'LOGGING…';
     btnDisabled = true;
   } else if (applied) {
     btnClass = 'apply-btn--done';
-    btnLabel = '✓ Intervention Applied — Monitoring Recovery';
+    btnLabel = '✓ ACTION LOGGED — MONITORING RECOVERY';
     btnDisabled = true;
   }
 
@@ -61,60 +60,56 @@ export function RecommendationCard({
     <div className="recommendation-card">
       <div className="recommendation-header">
         <span className="label-section" style={{ margin: 0 }}>
-          RECOMMENDED MINIMUM-COST ACTION (7-FIELD CONTRACT)
+          RECOMMENDED CORRECTIVE ACTION
         </span>
         <span className={`pill ${isAbstain ? 'pill--stone' : 'pill--wine'}`}>
-          {isAbstain ? 'ABSTAIN MODE' : 'DIRECT RECOMMENDATION'}
+          {isAbstain ? 'SAFETY ABSTAIN' : 'MINIMUM-EFFECTIVE SELECTION'}
         </span>
       </div>
 
-      <div className="recommendation-fields">
-        {/* Field 1: Action */}
-        <div className="rec-field rec-field--full">
-          <span className="rec-field__label">1. Recommended Action</span>
-          <div className="rec-action-callout">
-            <span className="rec-action-text">{action}</span>
-          </div>
-        </div>
-
-        {/* Field 2: Why */}
-        <div className="rec-field rec-field--full">
-          <span className="rec-field__label">2. Physical Justification (Why)</span>
-          <span className="rec-field__value">{why}</span>
-        </div>
-
-        {/* Field 3: Evidence */}
-        <div className="rec-field rec-field--full">
-          <span className="rec-field__label">3. Diagnostic Evidence</span>
-          <span className="rec-field__value rec-field__value--evidence">{evidenceStr}</span>
-        </div>
-
-        {/* Field 4: Expected Effect */}
-        <div className="rec-field">
-          <span className="rec-field__label">4. Modeled Outcome</span>
-          <span className="rec-field__value">{expectedEffect}</span>
-        </div>
-
-        {/* Field 5: Model Confidence */}
-        <div className="rec-field">
-          <span className="rec-field__label">5. Decision Confidence</span>
-          <span className="rec-field__value num"><strong>{confidence}</strong> (Calibrated surrogate envelope)</span>
-        </div>
-
-        {/* Field 6: Operating Limit */}
-        <div className="rec-field">
-          <span className="rec-field__label">6. Physical Constraint Boundary</span>
-          <span className="rec-field__value">{operatingLimit}</span>
-        </div>
-
-        {/* Field 7: Recovery Check */}
-        <div className="rec-field">
-          <span className="rec-field__label">7. Verification Criteria</span>
-          <span className="rec-field__value">{recoveryCheck}</span>
+      {/* Lock 10 & 11: Dominant Action Callout */}
+      <div className="dominant-action-callout">
+        <div className="dominant-action-title">{dominantAction}</div>
+        <div className="dominant-action-subtext">
+          {isAbstain
+            ? 'Intervention locked by Process Guardian safety policy · Manual inspection required'
+            : 'Advisory recommendation · Non-invasive supervisory guidance · Operator enters setpoint on machine PLC'}
         </div>
       </div>
 
-      {/* THE ONLY MIDNIGHT WINE (#421d24) FILLED BUTTON IN THE UI */}
+      {/* 3 Physical & Operational Support Attributes + Reconciled Economics */}
+      <div className="rec-attributes-grid">
+        <div className="rec-attr-card">
+          <span className="rec-attr-label">Physical Justification (Why)</span>
+          <span className="rec-attr-value">{why}</span>
+        </div>
+
+        <div className="rec-attr-card">
+          <span className="rec-attr-label">Safe Constraint Envelope</span>
+          <span className="rec-attr-value">{operatingLimit}</span>
+        </div>
+
+        <div className="rec-attr-card">
+          <span className="rec-attr-label">Modeled Risk Reduction</span>
+          <span className="rec-attr-value">{expectedEffect}</span>
+        </div>
+
+        {/* Lock 14: Dominant Economic Number */}
+        <div className="rec-attr-card rec-attr-card--econ">
+          <div className="rec-attr-label">
+            <span>{netBenefit != null && netBenefit < 0 ? 'COST OF ACTING NOW' : 'NET BENEFIT OF ACTING'}</span>
+            <span className="econ-modeled-pill">MODELED</span>
+          </div>
+          <div className="rec-econ-headline num">{inr(netBenefit)}</div>
+          <div className="rec-econ-detail">
+            {costWait != null && costAct != null
+              ? `₹${costWait.toFixed(0)} projected scrap exposure vs ₹${costAct.toFixed(0)} to intervene`
+              : 'Waiting for the engine to price this decision'}
+          </div>
+        </div>
+      </div>
+
+      {/* Dominant Action Button */}
       <button
         type="button"
         id="btn-apply-intervention"

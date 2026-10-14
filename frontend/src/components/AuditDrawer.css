@@ -180,3 +180,10 @@
   line-height: 1.45;
   margin-left: 2px;
 }
+
+.audit-empty {
+  padding: 20px 4px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-stone, #666666);
+}

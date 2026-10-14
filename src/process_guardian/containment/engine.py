@@ -25,11 +25,12 @@ class ScrapContainmentEngine:
         self.machine_id = machine_id
         self.parts_per_cycle = parts_per_cycle
 
-        # Milestone cycles (CNTN-01..03)
+        # Milestone cycles (CNTN-01..03, CNTN-05)
         self.drift_start_cycle: Optional[int] = None
         self.last_known_good_cycle: Optional[int] = None
         self.intervention_cycle: Optional[int] = None
         self.recovery_cycle: Optional[int] = None
+        self.stabilization_cycle: Optional[int] = None
         self.release_cycle: Optional[int] = None
         self.latest_evaluated_cycle: int = 0
 
@@ -52,11 +53,18 @@ class ScrapContainmentEngine:
         Record verified recovery cycle and authorization of production release (CNTN-03).
         """
         self.recovery_cycle = recovery_cycle
+        self.stabilization_cycle = recovery_cycle
         self.release_cycle = release_cycle if release_cycle is not None else (recovery_cycle + 1)
+
+    def record_stabilization(self, cycle_index: int) -> None:
+        """Record the cycle when post-intervention parameter stabilization completed (CNTN-05)."""
+        self.stabilization_cycle = cycle_index
+        if self.recovery_cycle is None:
+            self.recovery_cycle = cycle_index
 
     def get_containment_window(self) -> ContainmentWindow:
         """
-        Compute the bounded suspect containment window and part counts (CNTN-01..03).
+        Compute the bounded suspect containment window and part counts (CNTN-01..03, CNTN-05).
         """
         if self.drift_start_cycle is None:
             return ContainmentWindow(
@@ -65,6 +73,7 @@ class ScrapContainmentEngine:
                 suspect_end_cycle=None,
                 intervention_cycle=None,
                 recovery_cycle=None,
+                stabilization_cycle=None,
                 release_cycle=None,
                 suspect_cycle_count=0,
                 quarantined_part_count=0,
@@ -81,6 +90,7 @@ class ScrapContainmentEngine:
             suspect_end_cycle=suspect_end,
             intervention_cycle=self.intervention_cycle,
             recovery_cycle=self.recovery_cycle,
+            stabilization_cycle=self.stabilization_cycle or self.recovery_cycle,
             release_cycle=self.release_cycle,
             suspect_cycle_count=suspect_count,
             quarantined_part_count=suspect_count * self.parts_per_cycle,

@@ -47,6 +47,7 @@ from process_guardian.containment.schemas import (
     BatchDispositionReport,
 )
 from process_guardian.containment.engine import ScrapContainmentEngine
+from process_guardian.llm.human_channel import HumanChannelSignal, BoundedChoice, CONFIDENCE_THRESHOLD
 
 
 class OrchestratorCycleResult(BaseModel):
@@ -110,15 +111,31 @@ class ClosedLoopOrchestrator:
         self.results_history: List[OrchestratorCycleResult] = []
         self.pending_recommendation: Optional[Tuple[InterventionRecommendation, InterventionComparisonTable]] = None
         self.applied_action: Optional[CandidateAction] = None
+        self.active_human_channel_signal: Optional[HumanChannelSignal] = None
 
     @property
     def current_state(self) -> ProcessState:
         """Current operational state of the machine."""
         return self.state_machine.current_state
 
-    def step(self, raw_or_record: Union[Dict[str, Any], RawTelemetryPayload, NormalizedCycleRecord]) -> OrchestratorCycleResult:
+    def step(
+        self,
+        raw_or_record: Union[Dict[str, Any], RawTelemetryPayload, NormalizedCycleRecord],
+        human_channel_signal: Optional[HumanChannelSignal] = None,
+    ) -> OrchestratorCycleResult:
         """
         Execute one operational cycle step through the complete closed decision loop.
+
+        human_channel_signal (P1, scope_plan.md Sec.3, "the one demo that wins"):
+        when the machine is HEALTHY on sensors alone -- no drift, T2 quiet -- a
+        confident NO on a sensor-blind question (e.g. "resin lot dried & signed?")
+        is evidence sensors cannot yet see. It is folded into root-cause attribution
+        either way via QualityEngine.evaluate_cycle(); here it additionally forces
+        the state machine to treat it as an incident worth a physical check, exactly
+        the same way a genuine drift reading would -- it does not invent a sensor
+        reading, it routes to QC_REQUIRED (verify, don't guess). An UNKNOWN or
+        low-confidence signal, or one arriving after the machine already left
+        HEALTHY, changes nothing (SAFE-03).
         """
         # 1. Normalize Telemetry
         if isinstance(raw_or_record, NormalizedCycleRecord):
@@ -137,13 +154,62 @@ class ClosedLoopOrchestrator:
         drift_out = self.sentinel.evaluate(record)
 
         # 3. Quality Contract Risk Prediction & Root Cause Isolation
-        risk_out, root_out = self.quality_engine.evaluate_cycle(record, drift_output=drift_out)
+        # Reuse the signal that drove a prior flip for every cycle the hold remains
+        # active (cleared on return to HEALTHY below) -- otherwise root-cause
+        # attribution reverts to flickering between noise-driven sensor z-scores
+        # once the triggering cycle has passed (scope_plan.md P1 persistence bug).
+        # True only once the hold is already active from a prior cycle (never on
+        # the triggering cycle itself, which still competes honestly against
+        # sensor evidence before any transition is made).
+        human_channel_confirmed = human_channel_signal is None and self.active_human_channel_signal is not None
+        effective_human_channel_signal = (
+            human_channel_signal if human_channel_signal is not None else self.active_human_channel_signal
+        )
+        risk_out, root_out = self.quality_engine.evaluate_cycle(
+            record,
+            drift_output=drift_out,
+            human_channel_signal=effective_human_channel_signal,
+            human_channel_confirmed=human_channel_confirmed,
+        )
         self.risk_history[cycle_idx] = risk_out.risk_probability
 
         # Decision outputs for this cycle
         recommendation: Optional[InterventionRecommendation] = None
         comparison_table: Optional[InterventionComparisonTable] = None
         recovery_output: Optional[RecoveryEvaluationOutput] = None
+
+        # 3b. Human-channel flip (P1): a confident risk-indicating signal while the
+        # machine is HEALTHY on sensors alone routes straight to a physical check,
+        # the same way a confirmed sensor drift would. Reusing the existing
+        # HEALTHY -> DRIFT_CONFIRMED -> QC_REQUIRED path (both already legal
+        # transitions) rather than inventing a parallel state.
+        if (
+            self.state_machine.current_state == ProcessState.HEALTHY
+            and human_channel_signal is not None
+            and human_channel_signal.choice == BoundedChoice.NO
+            and human_channel_signal.confidence >= CONFIDENCE_THRESHOLD
+        ):
+            t_flip1 = self.state_machine.transition_to(
+                to_state=ProcessState.DRIFT_CONFIRMED,
+                cycle_index=cycle_idx,
+                timestamp=timestamp,
+                reason=(
+                    "Operator shift note flags a material risk sensors have not yet "
+                    f'confirmed: "{human_channel_signal.raw_text}"'
+                ),
+                metadata={"human_channel_question": human_channel_signal.question.value},
+            )
+            step_transitions.append(t_flip1)
+            self.containment_engine.record_drift_detection(cycle_idx)
+            self.active_human_channel_signal = human_channel_signal
+
+            t_flip2 = self.state_machine.transition_to(
+                to_state=ProcessState.QC_REQUIRED,
+                cycle_index=cycle_idx,
+                timestamp=timestamp,
+                reason="Material provenance unconfirmed by sensors -- physical moisture/QC verification requested.",
+            )
+            step_transitions.append(t_flip2)
 
         # 4. State Machine & Closed-Loop Decision Engine
         current = self.state_machine.current_state
@@ -313,6 +379,7 @@ class ClosedLoopOrchestrator:
                     reason="Machine restored to stationary healthy baseline monitoring",
                 )
                 step_transitions.append(t_health)
+                self.active_human_channel_signal = None
 
             elif (
                 recovery_output.release_decision == ReleaseDecision.REJECTED_QUARANTINE

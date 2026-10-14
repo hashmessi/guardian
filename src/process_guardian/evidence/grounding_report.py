@@ -1,14 +1,17 @@
 """Grounding Benchmark Report Engine (EVID-02).
 
-Benchmarks Process Guardian against empirical industrial molding findings:
-1. 2026 Automotive Injection Study (1,524 parts / 254 cycles):
-   - Machine limits accepted 100% of cycles, but downstream camera found 8.3% scrap.
-   - Process Guardian multi-variable sentinel flags drift with 9-cycle early lead time.
-2. Non-Linear Moisture Scrap Threshold:
-   - Scrap remains low (~2.8%) between 0.05% and 0.15% moisture.
-   - Non-linear cliff at >0.20% moisture surges scrap to 23.4% due to hydrolytic degradation.
-3. 2025 Tier-1 Automotive Scrap Optimization Benchmark:
-   - Demonstrates that constrained reaction policies reduce scrap from ~20% to <1.5%.
+Every case in this report carries a `source_type` stating what kind of evidence
+it is. Only one kind is an outside measurement; the rest are this system's own
+modelled behaviour, and are labelled as such rather than dressed up as studies.
+
+  PUBLISHED_DATASET  a real, citable third-party experiment (DOI below)
+  COMPUTED_ON_REPLICA  computed by us on the replica of that experiment's design
+  MODELLED_ASSUMPTION  a parameter we chose, calibrated to published practice
+  OWN_SIMULATION       the result of our own deterministic replay
+
+No case in this report is a measured result from a production plant. Process
+Guardian has not been deployed on a machine, and this report must never imply
+otherwise.
 """
 
 from __future__ import annotations
@@ -18,10 +21,23 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from process_guardian.evidence.benchmark_dataset import (
+    BENCHMARK_CITATION,
+    BENCHMARK_DOI,
+    BENCHMARK_PROVENANCE_NOTE,
+    ExternalBenchmarkAdapter,
+)
+
+# Resin moisture has two distinct thresholds; conflating them reads as sloppy.
+# The gate is the conservative limit a plant signs off against; the knee is
+# where our model's scrap penalty accelerates.
+MOISTURE_PROCESS_GATE_PCT = 0.15
+MOISTURE_MODELLED_KNEE_PCT = 0.18
+
 
 @dataclass
 class GroundingTestCaseResult:
-    """Individual industrial benchmark comparison result."""
+    """Individual benchmark comparison result, with its evidence class."""
 
     case_id: str
     title: str
@@ -33,6 +49,8 @@ class GroundingTestCaseResult:
     scrap_reduction_pct: float
     is_conclusive: bool
     evidence_summary: str
+    source_type: str = "OWN_SIMULATION"
+    citation: Optional[str] = None
 
 
 @dataclass
@@ -55,69 +73,109 @@ class GroundingBenchmarkEngine:
     @classmethod
     def generate_report(cls) -> GroundingReport:
         """Run empirical benchmark comparisons and assemble report."""
+        # Case 1 is the only outside-anchored comparison, and even then the
+        # numbers are computed on the replica, not read off the original parts.
+        flaw = ExternalBenchmarkAdapter.evaluate_machine_limits_flaw()
+        escape_pct = flaw["escaped_defects_percentage"]
+        univariate_catch = flaw["conventional_spc_catch_rate"]
+        multivariate_catch = flaw["guardian_multivariate_catch_rate"]
+        uplift = flaw["catch_rate_uplift_at_equal_cost"]
+        matched_fa = flaw["matched_false_alarm_rate_pct"]
+        rescued = flaw["guardian_rescued_defects_count"]
+
         case_1 = GroundingTestCaseResult(
-            case_id="IND-CASE-2026-01",
-            title="In-Envelope Defect Escape vs Multivariate Drift Lead Time",
-            empirical_reference="2026 Automotive Component Injection-Molding Case (1,524 parts / 254 cycles, 100% camera QC)",
-            conventional_spc_behavior="Accepted 100% of cycles (254/254) within individual machine limit bands (+-3 sigma).",
-            conventional_defect_escape_rate_pct=100.0,
-            process_guardian_behavior=(
-                "Hotelling T^2 and CUSUM detected subtle covariance shift between switchover pressure "
-                "and barrel temperature at cycle 18."
+            case_id="EVID-REPLICA-01",
+            title="Defects Inside Tolerance: Univariate Limits vs Multivariate Distance",
+            empirical_reference=(
+                f"Replica of the published SKZ/Fraunhofer ProBayes DoE "
+                f"({flaw['total_evaluated_parts']} parts, {flaw['total_defective_parts']} defective)"
             ),
-            process_guardian_lead_time_cycles=9.2,
-            scrap_reduction_pct=83.5,
+            source_type="COMPUTED_ON_REPLICA",
+            citation=f"{BENCHMARK_CITATION} | DOI {BENCHMARK_DOI}",
+            conventional_spc_behavior=(
+                f"Accepted {flaw['escaped_defects_count']} of {flaw['total_defective_parts']} defective parts "
+                f"({escape_pct}%) because every individual parameter stayed inside its tolerance band. "
+                f"Catch rate {univariate_catch}%."
+            ),
+            conventional_defect_escape_rate_pct=escape_pct,
+            process_guardian_behavior=(
+                f"Hotelling T^2 distance from the good-part population, thresholded to stop the same share of "
+                f"good parts ({matched_fa}%), catches {multivariate_catch}% of the same defects -- "
+                f"{uplift}x more at identical operator cost, including {rescued} the machine limits accepted."
+            ),
+            process_guardian_lead_time_cycles=0.0,  # per-part dataset: no cycle sequence to lead
+            scrap_reduction_pct=0.0,  # detection comparison only; no intervention applied here
             is_conclusive=True,
             evidence_summary=(
-                "Univariate SPC machine limit alarms completely missed the thermal-viscosity drift "
-                "because all individual signals stayed within nominal bands. Process Guardian caught the "
-                "coupled drift 9.2 cycles before the first defective part appeared."
+                "Univariate tolerance checking misses defects whose individual signals all sit inside their "
+                "bands while the combination has moved. Both detectors were held to the same false-alarm rate "
+                f"on good parts, so the {uplift}x gap is not bought by alarming more often. "
+                f"{BENCHMARK_PROVENANCE_NOTE}"
             ),
         )
 
         case_2 = GroundingTestCaseResult(
-            case_id="IND-CASE-2026-02",
-            title="Non-Linear Hygroscopic Moisture Scrap Cliff",
-            empirical_reference="2026 Resin Drying & Moisture Sensitivity Study (PA66-GF30 & PBT Automotive Connectors)",
-            conventional_spc_behavior="Assumes linear scrap model or ignores raw-material moisture in machine controller.",
-            conventional_defect_escape_rate_pct=72.0,
-            process_guardian_behavior=(
-                "Calibrated Quality Risk applies non-linear polymer hydrolysis penalty when moisture > 0.18%, "
-                "escalating risk from 4.2% to 78.6% and triggering immediate drying hopper verification."
+            case_id="MODEL-MOISTURE-01",
+            title="Non-Linear Hygroscopic Moisture Penalty (Model Assumption)",
+            empirical_reference=(
+                "No public per-lot moisture/scrap dataset was used. The accelerating penalty above the "
+                f"{MOISTURE_MODELLED_KNEE_PCT}% knee is OUR MODEL'S assumption, shaped by the standard "
+                "polymer-drying practice that hygroscopic resins (PA, PBT) hydrolyse when moulded wet."
             ),
-            process_guardian_lead_time_cycles=14.0,
-            scrap_reduction_pct=79.2,
-            is_conclusive=True,
+            source_type="MODELLED_ASSUMPTION",
+            citation=None,
+            conventional_spc_behavior=(
+                "Machine controllers do not read hopper moisture at all, so no parameter limit can trip on it."
+            ),
+            conventional_defect_escape_rate_pct=100.0,
+            process_guardian_behavior=(
+                f"Quality Risk applies a non-linear penalty above {MOISTURE_MODELLED_KNEE_PCT}% moisture and "
+                f"the operational checkpoint blocks release above the {MOISTURE_PROCESS_GATE_PCT}% process gate, "
+                "requiring a drying sign-off instead of a machine-parameter change."
+            ),
+            process_guardian_lead_time_cycles=0.0,
+            scrap_reduction_pct=0.0,
+            is_conclusive=False,  # an assumption is not a finding
             evidence_summary=(
-                "Scrap rate exhibits a steep threshold effect: 2.8% scrap at 0.10% moisture, escalating non-linearly "
-                "to 23.4% scrap above 0.20% moisture. Process Guardian captures the exact threshold rather than a naive linear fit."
+                "Stated as a tunable model parameter, not a measured curve. Its value to a plant is the "
+                "behaviour it drives: a moisture excursion is answered with drying and a sign-off, never by "
+                "trimming machine settings to mask a raw-material problem."
             ),
         )
 
         case_3 = GroundingTestCaseResult(
-            case_id="IND-CASE-2025-01",
-            title="Constrained Intervention vs Uncontrolled Scrap Cascade",
-            empirical_reference="2025 Tier-1 Automotive Injection Molding Scrap Reduction Study",
-            conventional_spc_behavior="Line continues running until quality sorting flags bin of rejected parts (delay > 45 min).",
-            conventional_defect_escape_rate_pct=65.0,
-            process_guardian_behavior=(
-                "Minimum-effective intervention (A1: -3°C heater trim) within 5-layer envelope followed by "
-                "consecutive 3-cycle stabilization and physical QC checkpoint verification."
+            case_id="OWN-REPLAY-01",
+            title="Constrained Intervention vs Doing Nothing (Our Own Replay)",
+            empirical_reference=(
+                "Process Guardian's deterministic dual-stream replay: the identical event stream run with "
+                "Guardian OFF and Guardian ON. This is our own simulation, not an industry study."
             ),
-            process_guardian_lead_time_cycles=11.5,
-            scrap_reduction_pct=88.2,
-            is_conclusive=True,
+            source_type="OWN_SIMULATION",
+            citation=None,
+            conventional_spc_behavior=(
+                "Guardian OFF: the line keeps running until downstream sorting finds the defective bin."
+            ),
+            conventional_defect_escape_rate_pct=0.0,
+            process_guardian_behavior=(
+                "Guardian ON: minimum-effective adjustment inside the 5-layer envelope, then a consecutive "
+                "stability window and a physical QC checkpoint before the lot is released."
+            ),
+            process_guardian_lead_time_cycles=0.0,
+            scrap_reduction_pct=0.0,  # read the live counterfactual run; no frozen figure claimed
+            is_conclusive=False,
             evidence_summary=(
-                "Validates that automated minimum-cost parameter correction within envelope constraints "
-                "recovers stability and eliminates recurring thermal scrap runs."
+                "Measures the decision policy, not the world: it shows the loop closes and the suspect window "
+                "collapses on identical inputs. Per-scenario figures come from the counterfactual replay the "
+                "judge can re-run, so none are frozen into this report."
             ),
         )
 
+        # Shape of the modelled penalty, not a measured scrap curve.
         moisture_curve = {
             "0.05%": 1.8,
-            "0.10% (Optimal)": 2.8,
-            "0.15%": 3.4,
-            "0.18% (Critical Knee)": 8.5,
+            "0.10%": 2.8,
+            f"{MOISTURE_PROCESS_GATE_PCT}% (process gate)": 3.4,
+            f"{MOISTURE_MODELLED_KNEE_PCT}% (modelled knee)": 8.5,
             "0.22%": 22.1,
             "0.25%": 26.4,
         }
@@ -125,20 +183,30 @@ class GroundingBenchmarkEngine:
         return GroundingReport(
             report_id="GBR-2026-V11",
             timestamp="2026-10-01T23:30:00Z",
-            overall_status="GROUNDED_EMPIRICALLY",
-            benchmark_dataset="SKZ/Fraunhofer Public Dataset (564 parts) + 2026 Automotive Component Case",
+            overall_status="PARTIALLY_GROUNDED",
+            benchmark_dataset=(
+                f"Replica of published SKZ/Fraunhofer ProBayes DoE (DOI {BENCHMARK_DOI}) "
+                "+ own deterministic replay"
+            ),
             key_findings=[
-                "Conventional machine parameter limits fail to catch 42% of defects occurring in multi-variable drift.",
-                "Process Guardian's Drift Sentinel provides 9.2 to 14.0 cycles of early warning lead time.",
-                "Resin moisture scrap is non-linear: scrap jumps 8x once moisture crosses the 0.18% threshold.",
-                "Automated minimum-effective intervention reduces suspect scrap lot containment by >80%.",
+                f"On the replica dataset, {escape_pct}% of defective parts passed every individual machine "
+                "parameter limit.",
+                f"At the same false-alarm rate on good parts ({matched_fa}%), multivariate distance catches "
+                f"{multivariate_catch}% of defects against {univariate_catch}% for univariate limits ({uplift}x).",
+                f"Resin moisture is handled with a modelled non-linear penalty above {MOISTURE_MODELLED_KNEE_PCT}% "
+                f"and a hard release gate at {MOISTURE_PROCESS_GATE_PCT}% -- an assumption, not a measurement.",
+                "Suspect-lot reduction figures come from our own dual-stream replay and are modelled, "
+                "not observed in a plant.",
             ],
             test_cases=[case_1, case_2, case_3],
             non_linear_moisture_curve=moisture_curve,
             conclusion_for_evaluators=(
-                "Process Guardian's architecture is directly calibrated against measured industrial failure patterns. "
-                "It solves the exact blind spot of existing injection molding machine controllers: detecting multi-signal "
-                "drift before single-parameter thresholds trip, containing suspect production, and verifying physical recovery."
+                "One comparison here is anchored to a published experiment's design; the rest is this system's "
+                "own modelled behaviour, and each case says which it is. What the evidence supports is narrow "
+                "and specific: checking parameters one at a time misses defects that a multivariate distance "
+                "catches at the same false-alarm cost, and a constrained reaction policy closes the loop from "
+                "that detection through verified recovery to a contained lot. What it does not support is any "
+                "claim about scrap reduction on a real machine -- that needs a plant trial we have not run."
             ),
         )
 

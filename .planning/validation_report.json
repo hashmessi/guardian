@@ -1,0 +1,156 @@
+{
+  "timestamp": "2026-10-01T17:05:26Z",
+  "total_scenarios": 10,
+  "passed_count": 10,
+  "failed_count": 0,
+  "pass_rate": 100.0,
+  "total_duration_sec": 12.49,
+  "all_passed": true,
+  "results": [
+    {
+      "scenario_id": 1,
+      "name": "healthy_baseline",
+      "title": "Scenario 1: Healthy Baseline Operation",
+      "feature_tested": "False-Positive Avoidance & Process Stability",
+      "passed": true,
+      "cycles_evaluated": 60,
+      "metrics": {
+        "avg_risk": 0.09651666666666667,
+        "max_risk": 0.192,
+        "drift_alerts": 0,
+        "interventions": 0
+      },
+      "failure_reasons": [],
+      "summary": "Zero false drift alerts or interventions across 60 nominal cycles."
+    },
+    {
+      "scenario_id": 2,
+      "name": "thermal_drift",
+      "title": "Scenario 2: Thermal Drift (Complete Closed Loop)",
+      "feature_tested": "Full Closed Operational Decision Loop",
+      "passed": true,
+      "cycles_evaluated": 450,
+      "metrics": {
+        "drift_detected_cycle": 432,
+        "high_risk_cycle": 441,
+        "lead_time_cycles": 9,
+        "release_cycle": 444,
+        "quarantined_cycles": 13
+      },
+      "failure_reasons": [],
+      "summary": "Full loop verified: drift at cycle 432, lead-time 9 cycles, A1 recommended, recovered cycle 444."
+    },
+    {
+      "scenario_id": 3,
+      "name": "pressure_drift",
+      "title": "Scenario 3: Progressive Pressure Drift",
+      "feature_tested": "Pressure Drift Detection & Root-Cause Attribution",
+      "passed": true,
+      "cycles_evaluated": 64,
+      "metrics": {
+        "drift_detected": true,
+        "pressure_attributed": true
+      },
+      "failure_reasons": [],
+      "summary": "Pressure drift detected and attributed accurately to hydraulic/injection pressure."
+    },
+    {
+      "scenario_id": 4,
+      "name": "moisture_drift",
+      "title": "Scenario 4: Material Moisture Drift",
+      "feature_tested": "Material-Specific Anomaly Detection & Hopper Action Escalation",
+      "passed": true,
+      "cycles_evaluated": 64,
+      "metrics": {
+        "moisture_drift_detected": true,
+        "moisture_attributed": true
+      },
+      "failure_reasons": [],
+      "summary": "Moisture drift accurately isolated to material hygroscopic ingress."
+    },
+    {
+      "scenario_id": 5,
+      "name": "sensor_noise",
+      "title": "Scenario 5: Sensor Noise Robustness",
+      "feature_tested": "Multi-Method Statistical Filtering Against False Positives",
+      "passed": true,
+      "cycles_evaluated": 60,
+      "metrics": {
+        "confirmed_drift_cycles": 0,
+        "false_interventions": 0
+      },
+      "failure_reasons": [],
+      "summary": "Statistical filters successfully rejected high-frequency sensor noise without triggering interventions."
+    },
+    {
+      "scenario_id": 6,
+      "name": "combined_drift",
+      "title": "Scenario 6: Combined Multi-Signal Drift",
+      "feature_tested": "Multivariate Mahalanobis Detection & Compound Attribution",
+      "passed": true,
+      "cycles_evaluated": 60,
+      "metrics": {
+        "multivariate_drift_detected": true,
+        "temp_and_moisture_ranked": true
+      },
+      "failure_reasons": [],
+      "summary": "Multivariate detection confirmed and compound thermal+moisture contributors ranked."
+    },
+    {
+      "scenario_id": 7,
+      "name": "sustained_recovery",
+      "title": "Scenario 7: Sustained Recovery Verification",
+      "feature_tested": "Multi-Cycle Cooling Window & Verification Before Release",
+      "passed": true,
+      "cycles_evaluated": 447,
+      "metrics": {
+        "recovery_entered": true,
+        "release_verified": true
+      },
+      "failure_reasons": [],
+      "summary": "3-cycle stability window strictly enforced; verified release occurred only after stability."
+    },
+    {
+      "scenario_id": 8,
+      "name": "missing_signal",
+      "title": "Scenario 8: Missing Signal Resilience",
+      "feature_tested": "Sensor Dropout Handling & Graceful Quality Degradation",
+      "passed": true,
+      "cycles_evaluated": 40,
+      "metrics": {
+        "missing_flags_logged": 10,
+        "crashes": 0
+      },
+      "failure_reasons": [],
+      "summary": "Telemetry pipeline safely imputed nominal fallbacks and flagged MISSING_SIGNAL without failure."
+    },
+    {
+      "scenario_id": 9,
+      "name": "unseen_drift",
+      "title": "Scenario 9: Unseen Drift Trust Boundary (Mandatory ABSTAIN)",
+      "feature_tested": "Epistemic Trust Boundary & SAFE-03 Mandatory ABSTAIN",
+      "passed": true,
+      "cycles_evaluated": 60,
+      "metrics": {
+        "abstain_triggered": true,
+        "unvalidated_action_prevented": true
+      },
+      "failure_reasons": [],
+      "summary": "ABSTAIN_AND_MONITOR safely engaged; prevented blind parameter tampering under model uncertainty."
+    },
+    {
+      "scenario_id": 10,
+      "name": "sudden_step_shift",
+      "title": "Scenario 10: Sudden Step Shift (Fast Containment)",
+      "feature_tested": "Fast-Response CUSUM Detection & Immediate Quarantine",
+      "passed": true,
+      "cycles_evaluated": 54,
+      "metrics": {
+        "fast_alert_cycle": 36,
+        "quarantine_activated": true
+      },
+      "failure_reasons": [],
+      "summary": "Instantaneous step shift triggered immediate alert at cycle 36 and isolated quarantine."
+    }
+  ]
+}

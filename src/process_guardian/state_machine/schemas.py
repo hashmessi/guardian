@@ -7,7 +7,12 @@ from pydantic import BaseModel, Field
 
 class ProcessState(str, Enum):
     """
-    The 13 canonical operational states of the Process Guardian decision loop (STMC-01).
+    The 12 canonical operational states of the Process Guardian decision loop (STMC-01).
+
+    QC_REQUIRED is a *hold* state: the engine has evidence it cannot resolve with a
+    machine-side parameter change (a sensor-blind material/procedural signal) and
+    hands the decision to a human physical check. It is not a release gate, and the
+    engine never claims to verify the physical check itself.
     """
     HEALTHY = "HEALTHY"
     DRIFT_SUSPECTED = "DRIFT_SUSPECTED"

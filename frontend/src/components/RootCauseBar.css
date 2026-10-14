@@ -1,89 +1,129 @@
-.root-cause-bar {
-  margin-bottom: 16px;
-  background-color: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--r-card);
-  padding: 16px;
-  box-shadow: none;
+/* =========================================================================
+   RootCauseBar.css — Sleek Borderless Row Component
+   Eliminates nested card boxes and visual noise per DESIGN (4).md.
+   ========================================================================= */
+
+.root-cause-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  background: transparent;
 }
 
-.root-cause-bar__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.root-cause-row:last-child {
+  border-bottom: none;
+}
+
+.root-cause-row--top {
+  padding: 12px 14px;
+  background: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-left: 3px solid var(--color-wine, #421d24);
+  border-radius: 10px;
   margin-bottom: 8px;
 }
 
-.root-cause-bar__label-group {
+.root-cause-row__left {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
-.root-cause-bar__rank {
+.root-cause-row__rank {
   font-size: 11px;
-  font-weight: var(--fw-label);
-  width: 20px;
-  height: 20px;
+  font-weight: 600;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-parchment);
-  color: var(--color-stone);
+  background-color: var(--color-parchment, #f2f0eb);
+  color: var(--color-stone, #666666);
+  flex-shrink: 0;
 }
 
-.root-cause-bar__rank--top {
-  background-color: var(--color-wine);
+.root-cause-row__rank--top {
+  background-color: var(--color-wine, #421d24);
   color: #ffffff;
 }
 
-.root-cause-bar__label {
-  font-size: 14px;
-  font-weight: var(--fw-label);
-  color: var(--color-charcoal);
-  text-transform: capitalize;
+.root-cause-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.root-cause-bar__percentage {
-  font-size: 15px;
-  font-weight: var(--fw-data);
-  color: var(--color-charcoal);
-}
-
-.root-cause-bar__percentage--top {
-  color: var(--color-wine);
-}
-
-.root-cause-bar__track {
-  width: 100%;
-  height: 8px;
-  background-color: var(--color-mist);
-  border-radius: 4px;
+.root-cause-row__label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-charcoal, #292827);
+  white-space: nowrap;
   overflow: hidden;
-  margin-bottom: 8px;
+  text-overflow: ellipsis;
 }
 
-.root-cause-bar__fill {
+.root-cause-row--top .root-cause-row__label {
+  font-weight: 600;
+}
+
+.root-cause-row__evidence {
+  font-size: 11.5px;
+  color: var(--color-stone, #666666);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.root-cause-row__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 130px;
+}
+
+.root-cause-row__bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.root-cause-row__track {
+  flex: 1;
+  height: 4px;
+  background-color: var(--color-mist, #e3e3e2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.root-cause-row__fill {
   height: 100%;
-  border-radius: 4px;
+  background-color: var(--color-charcoal, #292827);
+  border-radius: 2px;
   transition: width 0.3s ease;
 }
 
-.root-cause-bar__fill--top {
-  background-color: var(--color-wine);
+.root-cause-row__fill--top {
+  background-color: var(--color-wine, #421d24);
 }
 
-.root-cause-bar__fill--secondary {
-  background-color: var(--color-violet);
-  opacity: 0.75;
+.root-cause-row__percentage {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  text-align: right;
 }
 
-.root-cause-bar__evidence {
-  font-size: 12px;
-  color: var(--color-stone);
-  line-height: 1.4;
-  margin-top: 4px;
-  border-top: 1px dashed var(--color-mist);
-  padding-top: 6px;
+.root-cause-row__percentage--top {
+  color: var(--color-wine, #421d24);
+  font-weight: 700;
 }

@@ -2,9 +2,29 @@
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 20px;
+  padding: 20px 24px;
   box-shadow: none;
   overflow-x: auto;
+}
+
+.candidate-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  padding-bottom: 12px;
+}
+
+.candidate-table-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.candidate-table-subtitle {
+  font-size: 11px;
+  color: var(--color-stone, #666666);
 }
 
 .abstain-banner {

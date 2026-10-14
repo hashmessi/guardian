@@ -1,0 +1,644 @@
+/* =========================================================================
+   FrontPage.css — Superhuman Editorial Showcase for Ragam Polymolds (PS02)
+   Warm Parchment canvas, Paper White cards, Soft Mist hairline borders.
+   Strictly following DESIGN (4).md: NO dark generic AI slopes, NO drop shadows.
+   ========================================================================= */
+
+.front-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8px 16px 48px;
+  color: var(--color-charcoal, #292827);
+  font-family: var(--font-family);
+  background: transparent;
+}
+
+/* =========================================================================
+   1. Hero Section & Flagship Demo Box
+   ========================================================================= */
+.fp-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fp-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill, 999px);
+  background-color: rgba(12, 66, 67, 0.08);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+  color: var(--color-lagoon, #0c4243);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.fp-hero__title {
+  font-size: 32px;
+  font-weight: var(--fw-editorial, 460);
+  color: var(--color-charcoal, #292827);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.fp-hero__subtitle {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-stone, #666666);
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 860px;
+}
+
+/* Flagship Card (Scenario S06 Boss Box) */
+.flagship-demo-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-left: 4px solid var(--color-wine, #421d24);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-top: 8px;
+  box-shadow: none;
+}
+
+.flagship-demo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 900px;
+}
+
+.flagship-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-flagship {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge-scenario {
+  background: var(--color-lilac, #d4c7ff);
+  color: var(--color-charcoal, #292827);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.badge-spec {
+  color: var(--color-stone, #666666);
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-left: 4px;
+}
+
+.flagship-title {
+  font-size: 20px;
+  font-weight: var(--fw-editorial, 460);
+  color: var(--color-charcoal, #292827);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.flagship-description {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-stone, #666666);
+  margin: 0;
+}
+
+.btn-run-flagship {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+}
+
+.btn-run-flagship:hover {
+  background: #32141a;
+}
+
+.btn-run-flagship:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================================
+   2. Scenarios Filter Bar & Grid
+   ========================================================================= */
+.fp-scenarios-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scenarios-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  background: var(--color-white, #ffffff);
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  box-shadow: none;
+}
+
+.filter-chip:hover {
+  background: #f7f6f2;
+  border-color: var(--color-stone, #666666);
+}
+
+.filter-chip--active {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  border-color: var(--color-wine, #421d24);
+  font-weight: 600;
+}
+
+.scenarios-count {
+  font-size: 11px;
+  color: var(--color-stone, #666666);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Grid */
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .scenarios-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scenario Card */
+.scenario-card {
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+
+.scenario-card:hover {
+  border-color: rgba(41, 40, 39, 0.28);
+}
+
+.scenario-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.code-badge {
+  background: var(--color-parchment, #f2f0eb);
+  color: var(--color-charcoal, #292827);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  font-variant-numeric: tabular-nums;
+}
+
+.cat-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cat-badge--thermal {
+  background: rgba(113, 76, 182, 0.08);
+  color: var(--color-violet, #714cb6);
+  border: 1px solid rgba(113, 76, 182, 0.2);
+}
+
+.cat-badge--pressure {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.cat-badge--material {
+  background: rgba(212, 199, 255, 0.35);
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-lilac, #d4c7ff);
+}
+
+.cat-badge--config {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+}
+
+.cat-badge--operational {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.cat-badge--compound {
+  background: rgba(113, 76, 182, 0.12);
+  color: var(--color-violet, #714cb6);
+  border: 1px solid var(--color-violet, #714cb6);
+}
+
+.cat-badge--safety, .cat-badge--lifecycle {
+  background: #f7f6f2;
+  color: var(--color-stone, #666666);
+  border: 1px solid var(--color-mist, #e3e3e2);
+}
+
+.meta-info {
+  font-size: 11px;
+  color: var(--color-stone, #666666);
+  font-variant-numeric: tabular-nums;
+}
+
+.scenario-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.scenario-card__desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-stone, #666666);
+  margin: 0;
+}
+
+/* =========================================================================
+   3. The 3-Stage Closed-Loop Box:
+   ● DETECT ───── DIAGNOSE ───── ACT & VERIFY
+   ========================================================================= */
+.closed-loop-box {
+  background: #f9f8f5;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: none;
+}
+
+/* Horizontal Visual Rail */
+.closed-loop-rail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+}
+
+.rail-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot {
+  font-size: 10px;
+}
+
+.dot--detect {
+  color: var(--color-violet, #714cb6);
+}
+
+.dot--diagnose {
+  color: var(--color-charcoal, #292827);
+}
+
+.dot--act {
+  color: var(--color-wine, #421d24);
+}
+
+.step-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-charcoal, #292827);
+}
+
+.rail-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-mist, #e3e3e2);
+  margin: 0 10px;
+}
+
+/* Content rows for the 3 stages */
+.closed-loop-content {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.stage-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.stage-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.stage-label--detect {
+  color: var(--color-violet, #714cb6);
+}
+
+.stage-label--diagnose {
+  color: var(--color-charcoal, #292827);
+}
+
+.stage-label--act {
+  color: var(--color-wine, #421d24);
+}
+
+.stage-text {
+  color: var(--color-charcoal, #292827);
+}
+
+/* =========================================================================
+   4. Card Footer: Transition pill + Actions
+   ========================================================================= */
+.scenario-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-mist, #e3e3e2);
+}
+
+.transition-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.status-recovery {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.status-material {
+  background: rgba(212, 199, 255, 0.35);
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-lilac, #d4c7ff);
+}
+
+.status-config {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+}
+
+.status-operational {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.status-compound {
+  background: rgba(113, 76, 182, 0.08);
+  color: var(--color-violet, #714cb6);
+  border: 1px solid rgba(113, 76, 182, 0.2);
+}
+
+.status-neutral {
+  background: #f7f6f2;
+  color: var(--color-stone, #666666);
+  border: 1px solid var(--color-mist, #e3e3e2);
+}
+
+.status-abstain {
+  background: rgba(66, 29, 36, 0.06);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.15);
+}
+
+.status-hold {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-card-scorecard {
+  background: var(--color-white, #ffffff);
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  box-shadow: none;
+}
+
+.btn-card-scorecard:hover {
+  background: #f7f6f2;
+  border-color: var(--color-stone, #666666);
+}
+
+.btn-card-run {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+}
+
+.btn-card-run:hover {
+  background: #32141a;
+}
+
+.btn-card-run:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================================
+   Demo-hardening pass: one toggle instead of six chips, collapsed stage
+   detail, a visible hint on the primary action, and a real error state.
+   ========================================================================= */
+
+.flagship-action__hint {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 11.5px;
+  color: var(--color-stone);
+  text-align: center;
+}
+
+.fp-run-error {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--color-white);
+  border: 1px solid var(--color-wine);
+  border-left-width: 3px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-charcoal);
+}
+
+.scenarios-heading__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: var(--fw-editorial);
+  color: var(--color-charcoal);
+}
+
+.scenarios-heading__sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--color-stone);
+}
+
+.btn-card-run:focus-visible,
+.btn-card-scorecard:focus-visible,
+.btn-run-flagship:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+
+.closed-loop-details {
+  margin-top: var(--sp-2);
+}
+
+.closed-loop-details summary {
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.02em;
+  color: var(--color-violet);
+}
+
+.closed-loop-details summary:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+.closed-loop-details[open] summary {
+  margin-bottom: var(--sp-2);
+}
+
+@media (max-width: 720px) {
+  .scenarios-filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+
+  .fp-hero__title {
+    font-size: 26px;
+  }
+}

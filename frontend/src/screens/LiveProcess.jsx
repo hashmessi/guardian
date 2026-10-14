@@ -4,67 +4,151 @@ import { usePolling } from '../hooks/useApi';
 import { SignalGauge } from '../components/SignalGauge';
 import { ProcessStateTimeline } from '../components/ProcessStateTimeline';
 
-export function LiveProcess() {
+export function LiveProcess({ onProceed }) {
   const { data: processData } = usePolling('/api/process/current', 2000);
   const { data: driftData } = usePolling('/api/process/drift', 2000);
   const { data: contractData } = usePolling('/api/quality/contract', 5000);
   const { data: riskData } = usePolling('/api/quality/risk', 2000);
+  const { data: fpData } = usePolling('/api/process/fingerprint', 5000);
 
-  const signals = processData?.signals || {};
-  const currentState = processData?.state || 'HEALTHY';
+  // Until the engine answers there is nothing to show. Rendering placeholder
+  // readings under a "PRODUCTION SAFE" banner is the worst possible failure mode
+  // for this screen: it looks exactly like a healthy line.
+  if (!processData) {
+    return (
+      <div id="panel-detect" role="tabpanel" aria-labelledby="tab-detect" className="live-process">
+        <div className="process-state-banner">
+          <div className="process-state-banner__left">
+            <div className="process-state-banner__title-row">
+              <span className="process-state-banner__title">Waiting for the line…</span>
+            </div>
+            <div className="process-state-banner__subtext">
+              No processed cycle yet. Pick a scenario on the front page to start the run.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  // Signal extraction with fallback to scenario baselines
-  const barrelTemp = signals.barrel_temp_z3 ?? signals.barrel_temperature ?? 238.4;
-  const injPressure = signals.injection_pressure ?? 84.2;
-  const moisture = signals.material_moisture_pct ?? signals.material_moisture ?? 0.12;
-  const cycleTime = signals.cycle_time ?? 27.6;
-  const partWeight = signals.part_weight_g ?? 244.8;
+  const signals = processData.signals || {};
+  const currentState = processData.state;
+
+  const barrelTemp = signals.barrel_temp_z3 ?? signals.barrel_temperature;
+  const injPressure = signals.injection_pressure;
+  const moisture = signals.material_moisture_pct ?? signals.material_moisture;
+  const cycleTime = signals.cycle_time;
+  const partWeight = signals.part_weight_g;
+
+  // Envelopes from baseline fingerprint
+  const envZ3 = fpData?.signal_envelopes?.barrel_temp_z3 || { lower: 228, upper: 236 };
+  const envInj = fpData?.signal_envelopes?.injection_pressure || { lower: 98, upper: 122 };
+  const envMoist = fpData?.signal_envelopes?.material_moisture || { lower: 0.01, upper: 0.15 };
+  const envCycle = fpData?.signal_envelopes?.cycle_time || { lower: 25, upper: 31 };
 
   // Contributing signals from multi-detector sentinel
   const contributing = driftData?.contributing_signals || [];
-  const isTempDrifting = contributing.some((s) => s.includes('barrel') || s.includes('temp')) || barrelTemp > 245;
-  const isPressureDrifting = contributing.some((s) => s.includes('pressure')) || injPressure > 92;
-  const isMoistureDrifting = contributing.some((s) => s.includes('moisture')) || moisture > 0.20;
-  const isCycleTimeDrifting = contributing.some((s) => s.includes('cycle_time')) || cycleTime > 30.0;
+  const isDriftActive = (driftData?.drift === true) || (currentState !== 'HEALTHY');
+
+  const isTempDrifting = contributing.some((s) => s.includes('barrel') || s.includes('temp')) || barrelTemp > envZ3.upper || barrelTemp < envZ3.lower;
+  const isPressureDrifting = contributing.some((s) => s.includes('pressure')) || injPressure > envInj.upper || injPressure < envInj.lower;
+  const isMoistureDrifting = contributing.some((s) => s.includes('moisture')) || moisture > envMoist.upper;
+  const isCycleTimeDrifting = contributing.some((s) => s.includes('cycle_time')) || cycleTime > envCycle.upper;
+
+  // Dynamic banner message based on actual active drift signals
+  let driftMessage = 'Process drift detected by multivariate Sentinel. Quality contract at risk if uncorrected.';
+  if (contributing.length > 0) {
+    const primaryName = contributing[0].replace(/_/g, ' ').toUpperCase();
+    const lead = driftData?.lead_cycles;
+    driftMessage = lead != null
+      ? `Statistical process drift detected on ${primaryName}. Projected quality contract violation in ~${lead} cycles if uncorrected.`
+      : `Statistical process drift detected on ${primaryName}.`;
+  }
 
   // Quality Contract spec targets
-  const targetWeight = contractData?.target_weight_g ?? 245.0;
-  const weightTol = contractData?.weight_tolerance_g ?? 3.0;
+  const targetWeight = contractData?.target_weight_g ?? null;
+  const weightTol = contractData?.weight_tolerance_g ?? null;
   const weightMin = contractData?.weight_min_g ?? (targetWeight - weightTol);
   const weightMax = contractData?.weight_max_g ?? (targetWeight + weightTol);
-  const isWeightOk = partWeight >= weightMin && partWeight <= weightMax;
+  const isWeightOk = partWeight != null && weightMin != null && weightMax != null
+    && partWeight >= weightMin && partWeight <= weightMax;
 
-  const stabilityPct = processData?.process_stability_pct ?? 96.0;
-  const qualityRiskPct = processData?.quality_risk_pct ?? (riskData?.risk_percentage ?? 72.0);
+  const qualityRiskPct =
+    processData.quality_risk_pct ??
+    riskData?.risk_percentage ??
+    (riskData?.risk_probability != null ? riskData.risk_probability * 100 : null);
 
   return (
-    <div id="panel-live" role="tabpanel" aria-labelledby="tab-live" className="live-process">
-      {/* Left Column (8fr): Process Signals & State Pipeline */}
-      <div className="live-process__left">
-        <div>
-          <span className="label-section">PROCESS SIGNALS &amp; OPERATING ENVELOPES</span>
-          
+    <div id="panel-detect" role="tabpanel" aria-labelledby="tab-detect" className="live-process">
+      {/* P0-01: Full-Width Process State Banner */}
+      <div className={`process-state-banner ${isDriftActive ? 'process-state-banner--alarm' : 'process-state-banner--healthy'}`}>
+        <div className="process-state-banner__left">
+          <div className="process-state-banner__title-row">
+            <span className="process-state-banner__title">
+              {isDriftActive ? '⚠ PROCESS DRIFT DETECTED — QUALITY CONTRACT AT RISK' : '✓ PROCESS STABLE — PRODUCTION SAFE'}
+            </span>
+            <span className={`pill ${isDriftActive ? 'pill--wine' : 'pill--lagoon'}`}>
+              {isDriftActive ? `QUALITY RISK: ${qualityRiskPct != null ? qualityRiskPct.toFixed(1) + '%' : '—'}` : 'NORMAL TOLERANCE'}
+            </span>
+          </div>
+          <div className="process-state-banner__subtext">
+            {isDriftActive
+              ? driftMessage
+              : `All process signals operating within calibrated safe boundaries. Machine state: ${currentState}.`}
+          </div>
+        </div>
+        {isDriftActive && onProceed && (
+          <button
+            type="button"
+            className="process-state-banner__btn"
+            onClick={onProceed}
+            title="Advance to Stage 2: Diagnose Root Cause & Suspect Production"
+          >
+            INSPECT CAUSE &amp; RISK →
+          </button>
+        )}
+      </div>
+
+      {/* Primary Pipeline Progress */}
+      <div className="card" style={{ padding: '16px 20px', backgroundColor: 'var(--color-white)', border: 'var(--border-card)', borderRadius: 'var(--r-card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <span className="label-section" style={{ margin: 0 }}>DECISION PIPELINE PROGRESS</span>
+          <span style={{ fontSize: '12px', color: 'var(--color-stone)' }}>
+            State: <strong style={{ color: 'var(--color-charcoal)' }}>{currentState}</strong> · Risk: <strong style={{ color: isDriftActive ? 'var(--color-wine)' : 'var(--color-lagoon)' }}>{qualityRiskPct != null ? `${qualityRiskPct.toFixed(1)}%` : '—'}</strong>
+          </span>
+        </div>
+        <ProcessStateTimeline currentState={currentState} />
+      </div>
+
+      {/* Core Process Signals (PS02 Parameters) */}
+      <div className="card" style={{ padding: '20px 24px', backgroundColor: 'var(--color-white)', border: 'var(--border-card)', borderRadius: 'var(--r-card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <span className="label-section" style={{ margin: 0 }}>Primary process telemetry</span>
+          <span style={{ fontSize: '11px', color: 'var(--color-stone)' }}>Simulated telemetry · 2 s refresh</span>
+        </div>
+
+        <div className="signals-grid">
           {/* Signal 1: Barrel Temperature */}
           <SignalGauge
             label="Barrel Temperature (Zone 3)"
             value={barrelTemp}
             unit="°C"
-            min={220}
+            min={210}
             max={260}
-            envelopeMin={228}
-            envelopeMax={245}
+            envelopeMin={envZ3.lower}
+            envelopeMax={envZ3.upper}
             isDrifting={isTempDrifting}
           />
 
           {/* Signal 2: Injection Pressure */}
           <SignalGauge
-            label="Peak Injection Pressure"
+            label="Injection Pressure"
             value={injPressure}
-            unit="MPa"
-            min={60}
-            max={110}
-            envelopeMin={78}
-            envelopeMax={92}
+            unit="bar"
+            min={70}
+            max={140}
+            envelopeMin={envInj.lower}
+            envelopeMax={envInj.upper}
             isDrifting={isPressureDrifting}
           />
 
@@ -74,137 +158,80 @@ export function LiveProcess() {
             value={moisture}
             unit="%"
             min={0.0}
-            max={0.5}
-            envelopeMin={0.05}
-            envelopeMax={0.20}
+            max={0.4}
+            envelopeMin={envMoist.lower}
+            envelopeMax={envMoist.upper}
             isDrifting={isMoistureDrifting}
           />
 
-          {/* Signal 4: Cycle Time */}
+          {/* Signal 4: Mold Cycle Duration (Secondary) */}
           <SignalGauge
-            label="Mold Cycle Duration"
+            label="Mold Cycle Duration (Secondary)"
             value={cycleTime}
             unit="s"
             min={20}
             max={35}
-            envelopeMin={24}
-            envelopeMax={30}
+            envelopeMin={envCycle.lower}
+            envelopeMax={envCycle.upper}
             isDrifting={isCycleTimeDrifting}
           />
         </div>
-
-        <div>
-          <span className="label-section">DECISION PIPELINE TIMELINE</span>
-          <ProcessStateTimeline currentState={currentState} />
-        </div>
       </div>
 
-      {/* Right Column (4fr): Quality Contract & System State */}
-      <div className="live-process__right">
-        {/* Quality Contract Card */}
-        <div className="contract-card">
+      {/* Secondary Quality Contract View (UIredesign §3) */}
+      <details className="contract-expander">
+        <summary className="contract-expander__summary">
+          Quality Contract Specifications &amp; Offline Inspection Boundaries →
+        </summary>
+        <div className="contract-card" style={{ marginTop: '12px' }}>
           <div className="contract-header">
-            <span className="label-section" style={{ margin: 0 }}>QUALITY CONTRACT SPEC</span>
-            <span className="pill pill--mist num">{contractData?.contract_code ?? 'QC-AUTO-01'}</span>
+            <span className="label-section" style={{ margin: 0 }}>PART QUALITY CONTRACT SPECIFICATIONS</span>
+            <span className="pill pill--mist num">Target Specification</span>
           </div>
 
           <table className="quality-contract-table">
             <thead>
               <tr>
-                <th>Parameter</th>
-                <th>Target Spec</th>
-                <th>Current</th>
-                <th>Status</th>
+                <th>Quality Characteristic</th>
+                <th>Target Specification</th>
+                <th>Validation Method</th>
+                <th>Contract Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Part Weight</td>
-                <td className="num">{targetWeight.toFixed(1)} ± {weightTol.toFixed(1)}g</td>
-                <td className="num">{partWeight.toFixed(1)}g</td>
+                <td className="num">
+                  {targetWeight != null && weightTol != null ? `${targetWeight.toFixed(1)} ± ${weightTol.toFixed(1)}g` : '—'}
+                </td>
+                <td>Offline CTQ Scale (Mandatory Release Gate)</td>
                 <td>
                   <span className={`pill ${isWeightOk ? 'pill--lagoon' : 'pill--wine'}`}>
-                    {isWeightOk ? 'PASS' : 'OUT'}
+                    {isWeightOk ? 'IN SPEC' : 'SUSPECT'}
                   </span>
                 </td>
               </tr>
               <tr>
-                <td>Max Sink Mark</td>
-                <td className="num">&lt; 0.15 mm</td>
-                <td className="num">0.08 mm</td>
-                <td><span className="pill pill--lagoon">PASS</span></td>
-              </tr>
-              <tr>
-                <td>Flash Allowance</td>
-                <td>None</td>
-                <td>0.00</td>
-                <td><span className="pill pill--lagoon">PASS</span></td>
-              </tr>
-              <tr>
-                <td>Cycle Time</td>
+                <td>Cycle Duration</td>
                 <td className="num">26.5 ± 2.5s</td>
-                <td className="num">{cycleTime.toFixed(1)}s</td>
+                <td>In-Line Press PLC Timestamp</td>
                 <td>
                   <span className={`pill ${!isCycleTimeDrifting ? 'pill--lagoon' : 'pill--violet'}`}>
-                    {!isCycleTimeDrifting ? 'PASS' : 'WARN'}
+                    {!isCycleTimeDrifting ? 'IN SPEC' : 'ELEVATED'}
                   </span>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
 
-        {/* System State Card */}
-        <div className="system-card">
-          <span className="label-section">SYSTEM GOVERNANCE STATE</span>
-          <div className="system-status-badge">
-            <span className="system-status-state">{currentState}</span>
-            <span className={`pill ${currentState === 'HEALTHY' ? 'pill--lagoon' : 'pill--wine'}`}>
-              {currentState === 'HEALTHY' ? 'STABLE' : 'ACTION REQUIRED'}
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
-            <div className="card" style={{ padding: '12px', backgroundColor: 'var(--color-parchment)' }}>
-              <span style={{ fontSize: '11px', color: 'var(--color-stone)', textTransform: 'uppercase', display: 'block' }}>Stability</span>
-              <span className="num" style={{ fontSize: '20px', fontWeight: 'var(--fw-data)', color: 'var(--color-lagoon)' }}>
-                {stabilityPct.toFixed(1)}%
-              </span>
-            </div>
-            <div className="card" style={{ padding: '12px', backgroundColor: 'var(--color-parchment)' }}>
-              <span style={{ fontSize: '11px', color: 'var(--color-stone)', textTransform: 'uppercase', display: 'block' }}>Drift Risk</span>
-              <span className="num" style={{ fontSize: '20px', fontWeight: 'var(--fw-data)', color: qualityRiskPct >= 50 ? 'var(--color-wine)' : 'var(--color-charcoal)' }}>
-                {qualityRiskPct.toFixed(1)}%
-              </span>
-            </div>
+          <div style={{ marginTop: '12px', padding: '10px 12px', backgroundColor: 'var(--color-parchment)', borderRadius: '6px', fontSize: '11px', color: 'var(--color-stone)', lineHeight: 1.4 }}>
+            * Calibrated automotive quality contract for plastic bracket. Part weight verification is performed during post-recovery physical QC before lot release.
           </div>
         </div>
-
-        {/* Operational Context Card */}
-        <div className="context-card">
-          <span className="label-section">OPERATIONAL CONTEXT</span>
-          <div className="context-grid">
-            <div className="context-item">
-              <span className="context-item__label">Machine</span>
-              <span className="context-item__value">{processData?.machine_id ?? 'HTF-200'}</span>
-            </div>
-            <div className="context-item">
-              <span className="context-item__label">Mold Tooling</span>
-              <span className="context-item__value">{processData?.mold_id ?? 'GMB-48A'}</span>
-            </div>
-            <div className="context-item">
-              <span className="context-item__label">Component</span>
-              <span className="context-item__value">{processData?.part_id ?? 'Automotive Bracket'}</span>
-            </div>
-            <div className="context-item">
-              <span className="context-item__label">Active Recipe</span>
-              <span className="context-item__value">{processData?.recipe_id ?? 'R-12'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      </details>
     </div>
   );
 }
 
 export default LiveProcess;
+

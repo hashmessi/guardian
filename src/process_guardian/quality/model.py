@@ -21,11 +21,19 @@ class QualityRiskModel:
     maps them into operational risk states and operator guidance modes (QRSK-04).
     """
 
+    # Fitting four GradientBoostingClassifiers takes ~0.9s and ran on every
+    # scenario select, even re-selecting the same one. The fitted estimators
+    # depend only on the fixed-seed training data and the fingerprint used to
+    # normalize it, so we memoize them keyed on the fingerprint signature: the
+    # same fingerprint yields a bit-identical model, a different one trains
+    # fresh. Zero behaviour change, no repeat training.
+    _MODEL_CACHE: Dict[Tuple, Tuple] = {}
+
     def __init__(self, fingerprint: ProcessFingerprint):
         self.fingerprint = fingerprint
         self.feature_extractor = TemporalFeatureExtractor(fingerprint)
         self.feature_names = self.feature_extractor.get_feature_names()
-        
+
         self.base_model = GradientBoostingClassifier(
             n_estimators=60,
             learning_rate=0.08,
@@ -36,12 +44,30 @@ class QualityRiskModel:
         self.is_trained: bool = False
         self._train_default_baseline()
 
+    @staticmethod
+    def _fingerprint_signature(fingerprint: ProcessFingerprint) -> Tuple:
+        """Stable key for a fingerprint: training output is fully determined by it."""
+        return tuple(
+            sorted(
+                (sig, round(stat.mean, 6), round(stat.std, 6))
+                for sig, stat in fingerprint.signal_stats.items()
+            )
+        )
+
     def _train_default_baseline(self) -> None:
         """
         Train and calibrate on synthetic multi-regime factory baseline data.
-        
+
         Ensures the model is immediately usable and fully deterministic out-of-the-box.
+        Reuses a previously fitted model when the fingerprint signature matches.
         """
+        cache_key = self._fingerprint_signature(self.fingerprint)
+        cached = QualityRiskModel._MODEL_CACHE.get(cache_key)
+        if cached is not None:
+            self.base_model, self.calibrated_model = cached
+            self.is_trained = True
+            return
+
         from process_guardian.simulator.engine import InjectionMoldingSimulator
         from process_guardian.simulator.regimes import RegimeType
         from process_guardian.adapter.pipeline import TelemetryPipeline
@@ -79,6 +105,7 @@ class QualityRiskModel:
         self.calibrated_model.fit(X, y)
         self.base_model.fit(X, y)
         self.is_trained = True
+        QualityRiskModel._MODEL_CACHE[cache_key] = (self.base_model, self.calibrated_model)
 
     def predict(
         self,

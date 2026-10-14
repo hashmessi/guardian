@@ -1,21 +1,8 @@
 .intervention-recovery {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   padding-bottom: 24px;
-}
-
-.intervention-top-grid {
-  display: grid;
-  grid-template-columns: 7fr 5fr;
-  gap: 24px;
-  align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .intervention-top-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .intervention-section {
@@ -23,3 +10,73 @@
   flex-direction: column;
   gap: 8px;
 }
+
+/* Embedded Counterfactual Proof Card */
+.counterfactual-embedded-card {
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: none;
+}
+
+.cf-embedded-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  padding-bottom: 12px;
+}
+
+.cf-embedded-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 800px) {
+  .cf-embedded-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cf-embedded-box {
+  background-color: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cf-embedded-box__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-stone, #666666);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cf-embedded-box__val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-charcoal, #292827);
+  font-variant-numeric: tabular-nums;
+}
+
+.cf-embedded-box__val--green {
+  color: var(--color-lagoon, #0c4243);
+}
+
+.cf-embedded-box__val--savings {
+  color: var(--color-wine, #421d24);
+}
+
+.cf-embedded-box__subtext {
+  font-size: 11px;
+  color: var(--color-stone, #666666);
+  line-height: 1.35;
+}
+

@@ -1,0 +1,266 @@
+/* =========================================================================
+   ContainmentBoundaryCard.css — Physical Scrap Containment Boundary
+   Strictly adheres to DESIGN (4).md Superhuman Warm Parchment theme.
+   ========================================================================= */
+
+.containment-boundary-card {
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: none;
+}
+
+.containment-boundary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  padding-bottom: 12px;
+}
+
+.containment-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.epistemic-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.epistemic-tag--l3 {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.qc-checkpoint-btn {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+}
+
+.qc-checkpoint-btn:hover {
+  background: #32141a;
+}
+
+/* 7 Milestone Progress Track */
+.milestones-track {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  position: relative;
+  padding: 4px 0;
+}
+
+@media (max-width: 900px) {
+  .milestones-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.milestone-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 10px 8px;
+  background: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 10px;
+}
+
+.milestone-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background: var(--color-parchment, #f2f0eb);
+  color: var(--color-stone, #666666);
+}
+
+.milestone-cycle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  margin-bottom: 2px;
+}
+
+.milestone-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  margin-bottom: 2px;
+}
+
+.milestone-desc {
+  font-size: 10px;
+  color: var(--color-stone, #666666);
+  line-height: 1.3;
+}
+
+/* Node Variants */
+.milestone-node--verified {
+  border-color: rgba(12, 66, 67, 0.3);
+  background: rgba(12, 66, 67, 0.03);
+}
+
+.milestone-node--verified .milestone-badge {
+  background: rgba(12, 66, 67, 0.1);
+  color: var(--color-lagoon, #0c4243);
+}
+
+.milestone-node--warning {
+  border-color: rgba(66, 29, 36, 0.3);
+  background: rgba(66, 29, 36, 0.03);
+}
+
+.milestone-node--warning .milestone-badge {
+  background: rgba(66, 29, 36, 0.1);
+  color: var(--color-wine, #421d24);
+}
+
+.milestone-node--quarantine {
+  border-color: rgba(66, 29, 36, 0.35);
+  background: rgba(66, 29, 36, 0.04);
+}
+
+.milestone-node--quarantine .milestone-badge {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+}
+
+.milestone-node--action .milestone-badge {
+  background: var(--color-lilac, #d4c7ff);
+  color: var(--color-charcoal, #292827);
+}
+
+.milestone-node--stabilized {
+  border-color: rgba(12, 66, 67, 0.3);
+  background: rgba(12, 66, 67, 0.03);
+}
+
+.milestone-node--stabilized .milestone-badge {
+  background: rgba(12, 66, 67, 0.1);
+  color: var(--color-lagoon, #0c4243);
+}
+
+.milestone-node--passed {
+  border-color: rgba(12, 66, 67, 0.4);
+  background: rgba(12, 66, 67, 0.05);
+}
+
+.milestone-node--passed .milestone-badge {
+  background: var(--color-lagoon, #0c4243);
+  color: #ffffff;
+}
+
+.milestone-node--released {
+  border-color: rgba(12, 66, 67, 0.4);
+  background: rgba(12, 66, 67, 0.05);
+}
+
+.milestone-node--released .milestone-badge {
+  background: var(--color-lagoon, #0c4243);
+  color: #ffffff;
+}
+
+.milestone-node--blocked .milestone-badge {
+  background: rgba(66, 29, 36, 0.1);
+  color: var(--color-wine, #421d24);
+}
+
+/* Containment Metrics Strip */
+.containment-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  background: #faf9f6;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  .containment-metrics-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+.containment-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.containment-stat__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-stone, #666666);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.containment-stat__val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  font-variant-numeric: tabular-nums;
+}
+
+.highlight-warn {
+  color: var(--color-wine, #421d24);
+}
+
+.highlight-scrap {
+  color: var(--color-stone, #666666);
+}
+
+.highlight-safe {
+  color: var(--color-lagoon, #0c4243);
+}
+
+.highlight-locked {
+  color: var(--color-wine, #421d24);
+}
+
+/* Empty state: a containment card with no contained lot is a real state. */
+.containment-empty {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--border-hairline);
+  border-radius: var(--r-md);
+  background: var(--color-parchment);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-stone);
+}
+
+.qc-checkpoint-btn--tag {
+  background: var(--color-white);
+}
+
+.qc-checkpoint-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

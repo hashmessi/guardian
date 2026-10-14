@@ -82,6 +82,8 @@ class InterventionEngine:
             record=record,
             fingerprint=fingerprint,
             contract=contract,
+            drift_output=drift_output,
+            root_cause_report=root_cause_report,
         )
 
         # 2. Format 7-field recommendation enforcing operator modes and ABSTAIN safety gate

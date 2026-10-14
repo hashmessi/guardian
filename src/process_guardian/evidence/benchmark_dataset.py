@@ -1,15 +1,25 @@
-"""External Measured Injection-Molding Benchmark Dataset Adapter.
+"""Injection-Molding Benchmark Dataset Adapter.
 
-Grounds Process Guardian in empirical molding data based on the public
-SKZ / Fraunhofer production dataset:
-- 564 molded parts (282 Polypropylene [PP], 282 Acrylonitrile Butadiene Styrene [ABS])
-- 334 recorded and derived sensor features
-- Machine settings (melt temp, mold temp, holding pressure, injection velocity)
-- Time-resolved and summary sensors (switchover pressure, cavity pressure, cushion)
-- Ground-truth quality outcomes (part weight, surface blemishes, OK/NOK classifications)
+PROVENANCE -- read this before quoting any number out of this module.
 
-Proves empirically why single-variable machine tolerance limits fail to catch
-defects that multivariate temporal drift sentinels identify.
+The published reference experiment is real and citable:
+  "Injection-Molding Production Data with Quality Labels" (ProBayes project,
+  SKZ + Fraunhofer IPA, 2022). 564 parts over 47 experimental points
+  (factorial DoE + Taguchi plan), 2 materials (PP, and ABS with 70% recyclate),
+  334 features, manual OK/NOK inspection labels.
+  DOI: 10.23728/b2share.03133fb279294389a15baefd55e4257a
+
+Process Guardian does NOT ship that dataset (its parquet is ~89 MB). This
+adapter builds a deterministic *replica* reproducing the published experiment's
+design: same part count, same material split, the same four varied set
+parameters (cylinder temperature, mold temperature, injection speed, holding
+pressure), and the same OK/NOK label structure. Every metric derived here is
+therefore a property of the replica, not a measurement of the original parts,
+and is labelled REPLICA_OF_PUBLISHED_DOE on every surface that exposes it.
+
+What the replica is legitimately used for: showing why single-variable machine
+tolerance limits accept defective parts that a multivariate drift sentinel
+catches. That failure mode is structural, not dataset-specific.
 """
 
 from __future__ import annotations
@@ -18,10 +28,25 @@ import math
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
+# Single source of truth for how this data may be described, so that no API
+# surface, report or UI label can overclaim it as measured plant data.
+BENCHMARK_CITATION = (
+    "Injection-Molding Production Data with Quality Labels - ProBayes project, "
+    "SKZ & Fraunhofer IPA (2022): 564 parts, 47 DoE points, PP & ABS"
+)
+BENCHMARK_DOI = "10.23728/b2share.03133fb279294389a15baefd55e4257a"
+BENCHMARK_DOI_URL = "https://doi.org/10.23728/b2share.03133fb279294389a15baefd55e4257a"
+BENCHMARK_PROVENANCE = "REPLICA_OF_PUBLISHED_DOE"
+BENCHMARK_PROVENANCE_NOTE = (
+    "Deterministic replica reproducing the published experiment's design (part count, "
+    "material split, varied set parameters, OK/NOK label structure). Not the original "
+    "measured parts. Metrics are computed on the replica."
+)
+
 
 @dataclass(frozen=True)
 class BenchmarkSample:
-    """Individual molded part record from external industrial benchmark."""
+    """Individual molded part record from the replica benchmark."""
 
     sample_id: int
     material: str  # "PP" or "ABS"
@@ -55,7 +80,7 @@ class FeatureCorrelation:
 
 @dataclass
 class BenchmarkDatasetSummary:
-    """Statistical summary of the external measured dataset."""
+    """Statistical summary of the replica dataset."""
 
     dataset_name: str
     source_attribution: str
@@ -71,7 +96,7 @@ class BenchmarkDatasetSummary:
 
 
 class ExternalBenchmarkAdapter:
-    """Adapter and repository for the 564-part SKZ/Fraunhofer injection-molding production dataset."""
+    """Adapter over the replica of the published SKZ/Fraunhofer ProBayes molding DoE (see module docstring)."""
 
     _cached_samples: Optional[List[BenchmarkSample]] = None
     _cached_summary: Optional[BenchmarkDatasetSummary] = None
@@ -84,7 +109,7 @@ class ExternalBenchmarkAdapter:
 
     @classmethod
     def get_samples(cls) -> List[BenchmarkSample]:
-        """Return all 564 benchmark part samples."""
+        """Return all 564 replica part samples."""
         if cls._cached_samples is None:
             adapter = cls()
             return adapter._cached_samples or []
@@ -98,12 +123,64 @@ class ExternalBenchmarkAdapter:
             return adapter._cached_summary  # type: ignore[return-value]
         return cls._cached_summary
 
+    # Features the multivariate detector sees. Deliberately the same machine
+    # signals a univariate SPC chart would watch one at a time.
+    _T2_FEATURES = (
+        "melt_temperature_c",
+        "mold_temperature_c",
+        "injection_speed_mms",
+        "holding_pressure_bar",
+        "switchover_pressure_bar",
+        "cushion_mm",
+        "cavity_pressure_peak_bar",
+    )
+
+    @classmethod
+    def _hotelling_t2_flags(cls, samples: List[BenchmarkSample]) -> Tuple[List[bool], float, float]:
+        """Flag parts by Hotelling T^2 distance from the good-part population.
+
+        The threshold is calibrated to the same false-alarm rate the univariate
+        machine limits produce on this data, so the two detectors are compared
+        at equal operator cost -- a detector allowed more false line stops would
+        otherwise win by crying wolf.
+
+        Returns (flags aligned to `samples`, threshold, calibrated false-alarm %).
+        """
+        import numpy as np
+
+        matrix = np.array(
+            [[getattr(s, f) for f in cls._T2_FEATURES] for s in samples],
+            dtype=float,
+        )
+        ok_mask = np.array([s.is_ok for s in samples], dtype=bool)
+        reference = matrix[ok_mask]
+
+        mean = reference.mean(axis=0)
+        # Ridge term keeps the covariance invertible when a DoE column is near-constant.
+        cov = np.cov(reference, rowvar=False) + np.eye(len(cls._T2_FEATURES)) * 1e-9
+        inv_cov = np.linalg.pinv(cov)
+
+        centered = matrix - mean
+        t2 = np.einsum("ij,jk,ik->i", centered, inv_cov, centered)
+
+        # Match the univariate detector's false-alarm rate on good parts.
+        univariate_false_alarm_pct = (
+            float((~np.array([s.machine_limits_accepted for s in samples], dtype=bool))[ok_mask].mean()) * 100.0
+            if ok_mask.any()
+            else 0.0
+        )
+        keep_pct = max(0.0, min(100.0, 100.0 - univariate_false_alarm_pct))
+        threshold = float(np.percentile(t2[ok_mask], keep_pct)) if ok_mask.any() else float("inf")
+
+        return [bool(v > threshold) for v in t2], threshold, round(univariate_false_alarm_pct, 2)
+
     @classmethod
     def evaluate_machine_limits_flaw(cls) -> Dict[str, Any]:
-        """Analyze the limitation of conventional single-variable SPC limits.
+        """Compare univariate machine limits against multivariate detection.
 
-        Proves that single-variable +-3 sigma control limits accept defective parts
-        because coupled cross-variable drift is invisible to univariate boundaries.
+        Both detectors are evaluated on the same parts at the same false-alarm
+        rate on good parts. Univariate limits miss defects whose individual
+        signals all sit inside tolerance while their *combination* has moved.
         """
         samples = cls.get_samples()
         total_parts = len(samples)
@@ -117,23 +194,81 @@ class ExternalBenchmarkAdapter:
         # False alarms on OK parts
         false_alarms = [s for s in ok_samples if not s.machine_limits_accepted]
 
+        t2_flags, t2_threshold, matched_false_alarm_pct = cls._hotelling_t2_flags(samples)
+        flag_by_id = {s.sample_id: f for s, f in zip(samples, t2_flags)}
+        t2_caught_nok = [s for s in nok_samples if flag_by_id[s.sample_id]]
+        t2_catch_rate = (len(t2_caught_nok) / len(nok_samples) * 100.0) if nok_samples else 0.0
+
+        # Defects univariate limits accepted but the multivariate distance flagged.
+        rescued = [s for s in escaped_nok if flag_by_id[s.sample_id]]
+
+        uplift = (t2_catch_rate / (100.0 - escape_rate)) if escape_rate < 100.0 else None
+
         return {
+            "detection_tradeoff_curve": cls.detection_tradeoff_curve(),
+            "catch_rate_uplift_at_equal_cost": round(uplift, 1) if uplift else None,
             "total_evaluated_parts": total_parts,
             "total_defective_parts": len(nok_samples),
             "escaped_defects_count": len(escaped_nok),
             "escaped_defects_percentage": round(escape_rate, 2),
             "conventional_spc_catch_rate": round(100.0 - escape_rate, 2),
-            "guardian_multivariate_catch_rate": 96.05,  # 73 of 76 defects detected via Hotelling T^2 / CUSUM
-            "lead_time_cycles_average": 9.4,
+            "univariate_false_alarms_on_good_parts": len(false_alarms),
+            "guardian_multivariate_catch_rate": round(t2_catch_rate, 2),
+            "guardian_rescued_defects_count": len(rescued),
+            "matched_false_alarm_rate_pct": matched_false_alarm_pct,
+            "hotelling_t2_threshold": round(t2_threshold, 3),
+            "data_provenance": BENCHMARK_PROVENANCE,
             "conclusion": (
-                "42.1% of defective parts occurred while every individual machine parameter "
-                "was strictly within nominal tolerance limits. Univariate SPC fails to capture "
-                "coupled thermal-viscosity shifts; multivariate sentinel detection is mandatory."
+                f"{round(escape_rate, 1)}% of defective parts ({len(escaped_nok)} of {len(nok_samples)}) "
+                "passed every individual machine parameter limit. Stopping the same number of good parts "
+                f"({matched_false_alarm_pct}% false-alarm rate), multivariate Hotelling T^2 catches "
+                f"{round(t2_catch_rate, 1)}% of defects against {round(100.0 - escape_rate, 1)}% for univariate "
+                f"limits -- {round(uplift, 1) if uplift else 'n/a'}x more defects at identical operator cost, "
+                f"including {len(rescued)} the machine limits accepted. Computed on the replica dataset; "
+                "not a measured plant result."
             ),
         }
 
+    @classmethod
+    def detection_tradeoff_curve(cls) -> List[Dict[str, float]]:
+        """Catch rate against false-alarm budget, for the operating-point trade-off.
+
+        Honest framing: a detector only looks good next to another if both are
+        allowed the same number of false line stops. This shows what the plant
+        buys at each level of operator tolerance.
+        """
+        import numpy as np
+
+        samples = cls.get_samples()
+        matrix = np.array(
+            [[getattr(s, f) for f in cls._T2_FEATURES] for s in samples],
+            dtype=float,
+        )
+        ok_mask = np.array([s.is_ok for s in samples], dtype=bool)
+        if not ok_mask.any() or ok_mask.all():
+            return []
+
+        reference = matrix[ok_mask]
+        mean = reference.mean(axis=0)
+        cov = np.cov(reference, rowvar=False) + np.eye(len(cls._T2_FEATURES)) * 1e-9
+        centered = matrix - mean
+        t2 = np.einsum("ij,jk,ik->i", centered, np.linalg.pinv(cov), centered)
+
+        curve: List[Dict[str, float]] = []
+        for budget in (1.0, 3.0, 5.0, 10.0):
+            threshold = float(np.percentile(t2[ok_mask], 100.0 - budget))
+            flagged = t2 > threshold
+            curve.append(
+                {
+                    "false_alarm_budget_pct": budget,
+                    "defects_caught_pct": round(float(flagged[~ok_mask].mean()) * 100.0, 1),
+                    "good_parts_stopped_pct": round(float(flagged[ok_mask].mean()) * 100.0, 1),
+                }
+            )
+        return curve
+
     def _generate_benchmark_dataset(self, seed: int) -> List[BenchmarkSample]:
-        """Generate deterministic 564-sample dataset matching published SKZ/Fraunhofer distributions."""
+        """Build the deterministic 564-sample replica of the published DoE design."""
         samples: List[BenchmarkSample] = []
         # Deterministic linear congruential generator for reproducible results
         state = seed
@@ -307,9 +442,13 @@ class ExternalBenchmarkAdapter:
             for rank, c in enumerate(correlations, start=1)
         ]
 
+        t2_flags, _, _ = ExternalBenchmarkAdapter._hotelling_t2_flags(samples)
+        nok_flags = [f for s, f in zip(samples, t2_flags) if not s.is_ok]
+        sentinel_catch_rate = (sum(nok_flags) / len(nok_flags) * 100.0) if nok_flags else 0.0
+
         return BenchmarkDatasetSummary(
-            dataset_name="SKZ/Fraunhofer Public Injection Molding Production Benchmark",
-            source_attribution="Open Research Industrial Dataset (PP & ABS, 564 Parts)",
+            dataset_name="Replica of SKZ/Fraunhofer ProBayes Injection-Molding DoE (564 parts)",
+            source_attribution=f"{BENCHMARK_CITATION} | DOI {BENCHMARK_DOI} | {BENCHMARK_PROVENANCE}",
             total_parts=total,
             material_distribution={"PP": pp_count, "ABS": abs_count},
             ok_count=ok_count,
@@ -317,6 +456,6 @@ class ExternalBenchmarkAdapter:
             scrap_rate_pct=round(scrap_rate, 2),
             defect_breakdown={"sink_marks": sink_count, "flash": flash_count, "short_shots": short_count},
             machine_limits_escape_rate_pct=round(escape_rate, 2),
-            guardian_sentinel_catch_rate_pct=96.05,
+            guardian_sentinel_catch_rate_pct=round(sentinel_catch_rate, 2),
             top_correlations=ranked_correlations,
         )

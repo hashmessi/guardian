@@ -85,39 +85,72 @@ class CandidateGenerator:
             )
         )
 
-        # 2. Pressure: Check hold_pressure
-        press_sig = "hold_pressure"
-        curr_press = getattr(record, press_sig, 65.0)
-        press_stats = fingerprint.signal_stats.get(press_sig)
-        press_mean = press_stats.mean if press_stats else 65.0
-        press_diff = curr_press - press_mean
+        # 2. Pressure: Check hold_pressure or injection_pressure
+        inj_sig = "injection_pressure"
+        curr_inj = getattr(record, inj_sig, 110.0)
+        inj_stats = fingerprint.signal_stats.get(inj_sig)
+        inj_mean = inj_stats.mean if inj_stats else 110.0
+        inj_diff = curr_inj - inj_mean
 
-        max_press_step = self.step_limits.limits.get(press_sig, 6.0)
         peak_diff = getattr(record, "peak_pressure", 135.0) - (
             fingerprint.signal_stats.get("peak_pressure").mean if "peak_pressure" in fingerprint.signal_stats else 135.0
         )
 
-        if abs(press_diff) > 0.5:
-            press_delta = -round(max(-max_press_step, min(max_press_step, press_diff * 0.8)), 1)
-        elif peak_diff < -2.0:
-            # Cavity peak pressure is low (e.g. pressure drift regime); boost hold pressure to compensate
-            press_delta = 2.0
+        # Match the signal exactly. A substring test for "pressure" also matches
+        # hold_pressure, which sent a hold-pressure root cause to an injection-
+        # pressure correction -- the wrong actuator, and on a low-hold-pressure
+        # drift it pushes packing further down instead of restoring it.
+        is_inj_drift = False
+        if root_cause_report and any(
+            getattr(c, "signal_name", "") == inj_sig for c in getattr(root_cause_report, "contributors", [])[:2]
+        ):
+            is_inj_drift = True
+        elif root_cause_report and getattr(root_cause_report, "primary_contributor", "") == inj_sig:
+            is_inj_drift = True
+        elif drift_output and inj_sig in getattr(drift_output, "signals", []):
+            is_inj_drift = True
+        elif abs(inj_diff) > 4.0:
+            is_inj_drift = True
+
+        if is_inj_drift:
+            press_sig = "injection_pressure"
+            press_name = "Injection Pressure Adjustment"
+            max_press_step = self.step_limits.limits.get(press_sig, 15.0)
+            press_delta = -round(max(-max_press_step, min(max_press_step, inj_diff * 0.85)), 1)
+            # Ensure proposed injection pressure restores towards nominal baseline
+            if inj_diff < -4.0 and press_delta < 4.0:
+                press_delta = min(max_press_step, round(abs(inj_diff), 1))
         else:
-            press_delta = -2.0 if temp_diff > 2.0 else 1.5
+            press_sig = "hold_pressure"
+            press_name = "Holding Pressure Adjustment"
+            curr_press = getattr(record, press_sig, 65.0)
+            press_stats = fingerprint.signal_stats.get(press_sig)
+            press_mean = press_stats.mean if press_stats else 65.0
+            press_diff = curr_press - press_mean
+            max_press_step = self.step_limits.limits.get(press_sig, 6.0)
+
+            if abs(press_diff) > 0.5:
+                press_delta = -round(max(-max_press_step, min(max_press_step, press_diff * 0.8)), 1)
+            elif peak_diff < -2.0:
+                # Cavity peak pressure is low (e.g. pressure drift regime); boost hold pressure to compensate
+                press_delta = 2.0
+            else:
+                press_delta = -2.0 if temp_diff > 2.0 else 1.5
 
         # Clamp so proposed value stays within operating envelope
         if press_sig in fingerprint.operating_envelopes:
             env = fingerprint.operating_envelopes[press_sig]
-            if curr_press < env.upper_limit and press_delta > 0:
-                press_delta = min(press_delta, round(env.upper_limit - curr_press - 0.05, 1))
-            elif curr_press > env.lower_limit and press_delta < 0:
-                press_delta = max(press_delta, round(env.lower_limit - curr_press + 0.05, 1))
+            curr_val = getattr(record, press_sig, 65.0)
+            if curr_val < env.upper_limit and press_delta > 0:
+                press_delta = min(press_delta, round(env.upper_limit - curr_val - 0.05, 1))
+            elif curr_val > env.lower_limit and press_delta < 0:
+                press_delta = max(press_delta, round(env.lower_limit - curr_val + 0.05, 1))
 
         candidates.append(
             CandidateAction(
                 action_id="A2",
                 action_type=ActionType.PRESSURE_ADJUST,
-                name="Holding Pressure Adjustment",
+                name=press_name,
                 target_signal=press_sig,
                 delta_value=press_delta,
                 unit="bar",

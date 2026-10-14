@@ -1,0 +1,294 @@
+/* =========================================================================
+   ScenarioScorecardModal.css — Superhuman Warm Parchment Editorial Theme
+   Clean Paper White modal on warm blurred canvas with Soft Mist hairlines.
+   Strictly adheres to DESIGN (4).md: NO dark navy backgrounds, NO neon glows.
+   ========================================================================= */
+
+.scenario-scorecard-modal {
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  width: 92vw;
+  max-width: 860px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 48px rgba(41, 40, 39, 0.12);
+  color: var(--color-charcoal, #292827);
+  font-family: var(--font-family);
+  overflow: hidden;
+  animation: scorecardSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scorecardSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header */
+.scorecard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  background: var(--color-parchment, #f2f0eb);
+}
+
+.scorecard-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.scorecard-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-wine, #421d24);
+  text-transform: uppercase;
+}
+
+.scorecard-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: var(--fw-editorial, 460);
+  color: var(--color-charcoal, #292827);
+  letter-spacing: -0.015em;
+}
+
+.scorecard-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.status-pill--pass {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.22);
+}
+
+.status-pill--fail {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.22);
+}
+
+.scorecard-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-stone, #666666);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scorecard-close-btn:hover {
+  background: rgba(41, 40, 39, 0.06);
+  color: var(--color-charcoal, #292827);
+}
+
+/* Context Subtitle Bar */
+.scorecard-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background: #faf9f6;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  font-size: 12px;
+  color: var(--color-stone, #666666);
+}
+
+.scorecard-category-badge {
+  background: var(--color-parchment, #f2f0eb);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  letter-spacing: 0.04em;
+}
+
+/* 7 Pillars Grid */
+.scorecard-pillars-grid {
+  padding: 18px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-white, #ffffff);
+}
+
+.pillar-card {
+  background: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+
+.pillar-card:hover {
+  border-color: rgba(41, 40, 39, 0.25);
+}
+
+.pillar-card--pass {
+  border-left: 3px solid var(--color-lagoon, #0c4243);
+}
+
+.pillar-card--fail {
+  border-left: 3px solid var(--color-wine, #421d24);
+}
+
+.pillar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pillar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+}
+
+.pillar-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+.pillar-badge--pass {
+  background: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon, #0c4243);
+  border: 1px solid rgba(12, 66, 67, 0.2);
+}
+
+.pillar-badge--fail {
+  background: rgba(66, 29, 36, 0.08);
+  color: var(--color-wine, #421d24);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+}
+
+.pillar-status-code {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-violet, #714cb6);
+  letter-spacing: 0.02em;
+}
+
+.pillar-detail {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-stone, #666666);
+  line-height: 1.45;
+}
+
+.pillar-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.metric-chip {
+  background: var(--color-parchment, #f2f0eb);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--color-charcoal, #292827);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-chip strong {
+  color: var(--color-stone, #666666);
+  font-weight: 500;
+}
+
+/* Epistemic Disclaimer */
+.scorecard-disclaimer {
+  padding: 10px 24px;
+  background: #f7f6f2;
+  border-top: 1px solid var(--color-mist, #e3e3e2);
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.disclaimer-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-stone, #666666);
+}
+
+.scorecard-disclaimer p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-stone, #666666);
+  line-height: 1.35;
+}
+
+/* Footer */
+.scorecard-footer {
+  padding: 14px 24px;
+  background: var(--color-parchment, #f2f0eb);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-mist, #e3e3e2);
+}
+
+.scorecard-summary-text {
+  font-size: 12px;
+  color: var(--color-stone, #666666);
+  max-width: 68%;
+  line-height: 1.4;
+}
+
+.scorecard-action-btn {
+  background: var(--color-wine, #421d24);
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+}
+
+.scorecard-action-btn:hover {
+  background: #32141a;
+}

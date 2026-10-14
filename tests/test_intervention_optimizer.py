@@ -70,10 +70,58 @@ def test_surrogate_model_risk_prediction(optimizer_fixture):
     # Cavity peak pressure should increase as melt viscosity normalizes
     assert proj_record.peak_pressure >= drift_record.peak_pressure
 
-    # 2. Check post-intervention risk drop
+    # 2. Check post-intervention risk drop (the calibrated model's own prediction on the
+    # projected state, not a hand-tuned formula -- see test_post_intervention_risk_uses_model_not_formula)
     post_risk, _ = surrogate.estimate_post_intervention_risk(drift_record, cand_temp, fp)
     assert post_risk < base_out.risk_probability
-    assert post_risk <= 0.35  # Normalized into safe/low tier
+    assert post_risk <= 0.35  # The model's own calibrated low-risk prediction for the corrected state
+
+
+def test_post_intervention_risk_uses_model_not_formula(optimizer_fixture):
+    """Regression (hostile-review HIGH finding #2): a compliant, non-defect candidate's
+    post-intervention risk must come from quality_risk_model.predict() on the projected
+    surrogate record, not a hand-tuned formula clamped to [0.08, 0.35]. Proven by spying on
+    predict(): it must be called exactly once, with the surrogate (projected) record, and the
+    returned risk must equal the model's own prediction for that exact record -- not a value
+    only derivable from a closed-form formula over z-scores."""
+    surrogate = optimizer_fixture["surrogate"]
+    fp = optimizer_fixture["fingerprint"]
+    drift_record = optimizer_fixture["drift_record"]
+    risk_model = optimizer_fixture["risk_model"]
+
+    cand_temp = CandidateAction(
+        action_id="A1",
+        action_type=ActionType.TEMP_ADJUST,
+        name="Reduce Zone 3 Temp",
+        target_signal="barrel_temp_z3",
+        delta_value=-2.5,
+        unit="°C",
+    )
+
+    expected_surrogate_record = surrogate.project_state(drift_record, cand_temp, fp)
+
+    calls = []
+    original_predict = risk_model.predict
+
+    def spy_predict(*args, **kwargs):
+        calls.append(kwargs.get("record", args[0] if args else None))
+        return original_predict(*args, **kwargs)
+
+    risk_model.predict = spy_predict
+    try:
+        post_risk, surrogate_record = surrogate.estimate_post_intervention_risk(drift_record, cand_temp, fp)
+    finally:
+        risk_model.predict = original_predict
+
+    assert len(calls) == 1, "estimate_post_intervention_risk must call predict() exactly once"
+    assert calls[0] == expected_surrogate_record, (
+        "predict() must be called with the projected surrogate record, not a formula substitute"
+    )
+
+    # The returned risk must equal a fresh model prediction on the same projected record
+    # (snapshot/restore means a second call on the identical record reproduces it exactly).
+    confirmation = risk_model.predict(record=surrogate_record)
+    assert post_risk == pytest.approx(confirmation.risk_probability)
 
 
 def test_cost_risk_disruption_optimization(optimizer_fixture):
@@ -144,4 +192,32 @@ def test_healthy_baseline_selects_a0_monitoring(optimizer_fixture):
     assert table.recommended_action_id == "A0"
     a0_eval = next(e for e in table.evaluations if e.candidate.action_id == "A0")
     assert a0_eval.is_selected is True
+
+
+def test_evaluate_candidates_does_not_pollute_live_feature_history(optimizer_fixture):
+    """Regression (hostile-review HIGH finding #1): comparing candidates for a cycle must not
+    leak into the live quality-risk model's rolling feature history. Both
+    InterventionOptimizer.evaluate_candidates and InterventionSurrogateModel's internal
+    baseline predict() call the shared model's predict(); each unguarded call pushes the
+    record into extractor.signal_history and bumps extractor.cycle_count, so repeated
+    candidate comparisons would corrupt later live risk predictions with duplicate history."""
+    optimizer = optimizer_fixture["optimizer"]
+    fp = optimizer_fixture["fingerprint"]
+    drift_record = optimizer_fixture["drift_record"]
+    risk_model = optimizer_fixture["risk_model"]
+    extractor = risk_model.feature_extractor
+
+    cycle_count_before = extractor.cycle_count
+    history_before = {sig: list(extractor.signal_history[sig]) for sig in extractor.CORE_SIGNALS}
+
+    # One comparison evaluates A0 + 4 candidates against the shared live model.
+    optimizer.evaluate_candidates(record=drift_record, fingerprint=fp)
+
+    assert extractor.cycle_count == cycle_count_before, (
+        "evaluate_candidates must not advance the live model's cycle_count"
+    )
+    history_after = {sig: list(extractor.signal_history[sig]) for sig in extractor.CORE_SIGNALS}
+    assert history_after == history_before, (
+        "evaluate_candidates must not mutate the live model's rolling signal history"
+    )
 

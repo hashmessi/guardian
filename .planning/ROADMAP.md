@@ -45,6 +45,7 @@
 1. Configurable CoPQ model replaces flat ₹450 with granular breakdown (resin weight, hourly rate, energy, sorting).
 2. Real-time decision evaluator calculates Expected Loss vs Action Cost and outputs signed Decision Value.
 3. Engine only advises intervention when Decision Value > 0, preventing premature line interruptions.
+**Status:** Complete (122/122 tests green, ECON-01..02)
 
 ---
 
@@ -58,6 +59,7 @@
 1. State machine refuses release until physical QC CTQ measurement (part weight / visual blemish) passes.
 2. PS02 operational checkpoints evaluate recipe lock, moisture sign-off, and mold-release interval.
 3. Physical scrap containment boundary card tracks exact cycle boundaries (Last Good → Drift Start → Suspect Lot → Action Applied → Stabilized → QC Passed → Release).
+**Status:** Complete (138/138 tests green, QCHK-01..02, CNTN-05)
 
 ---
 
@@ -71,16 +73,19 @@
 1. Dual-stream deterministic replay executes identical drift event with Guardian OFF vs Guardian ON.
 2. Side-by-side comparative view shows divergence: Guardian OFF accumulates 80+ scrap cycles; Guardian ON recovers and releases in ~10 cycles.
 3. Net economic benefit and avoided suspect lot containment explicitly rendered with honest simulation disclosures.
+**Status:** Complete (144/144 tests green, CRPL-01..02)
 
 ---
 
-### Phase 13: Automotive Judge Hardening & Final Rehearsal
-**Goal:** Harden against automotive quality director attacks, run automated regression tests (100% green), update demo freeze manifesto for v1.1, and verify complete judge walkthrough script.
+### Phase 13: Scenario Engine & Operational Validation Suite
+**Goal:** Upgrade Process Guardian into a deterministic, scenario-driven industrial validation engine running 10 distinct automotive operating scenarios through the unified decision pipeline with counterfactual proof and the 7-pillar objective evidence scorecard.
 
 **Success Criteria:**
-1. Zero regressions across existing 97 tests + new v1.1 test suite.
-2. Demo script directly answers judge questions ("Why intervene?", "Where is real proof?", "How is recovery verified?").
-3. Final freeze certification documented and ready for Oct 2 competition day.
+1. Zero regressions across test suite: 156/156 tests green.
+2. 10 data-driven scenarios covering thermal, pressure, moisture, recipe, mold spray, compound, normal variation, abstention, failed intervention, and release.
+3. 7-pillar objective evidence scorecard and interactive validation suite modal in the UI.
+4. Demo playbook directly answers judge questions ("Why intervene?", "Where is real proof?", "How is recovery verified?").
+**Status:** Complete (156/156 tests green)
 
 ---
 
@@ -89,12 +94,12 @@
 | Phase | Requirements | Count | Status |
 |---|---|---|---|
 | Phases 1–8 | SIM-01..05, DADP-01..03, FPRN-01..03, DRFT-01..04, QRSK-01..04, ROOT-01..03, INTV-01..05, RCMD-01..03, RECV-01..05, CNTN-01..04, STMC-01..02, API-01..05, STOR-01..02, UI-01..03, TRST-01..03, DEMO-01..03, SAFE-01..04 | 61 | Complete ✓ |
-| Phase 9 | EVID-01, EVID-02, EVID-03 | 3 | Scoped |
-| Phase 10 | ECON-01, ECON-02 | 2 | Scoped |
-| Phase 11 | QCHK-01, QCHK-02, CNTN-05 | 3 | Scoped |
-| Phase 12 | CRPL-01, CRPL-02 | 2 | Scoped |
-| Phase 13 | Final Hardening & Freeze | — | Scoped |
-| **Total** | | **71** | **100% Mapped** ✓ |
+| Phase 9 | EVID-01, EVID-02, EVID-03 | 3 | Complete ✓ |
+| Phase 10 | ECON-01, ECON-02 | 2 | Complete ✓ |
+| Phase 11 | QCHK-01, QCHK-02, CNTN-05 | 3 | Complete ✓ |
+| Phase 12 | CRPL-01, CRPL-02 | 2 | Complete ✓ |
+| Phase 13 | Final Hardening & 10-Scenario Validation Suite | — | Complete ✓ |
+| **Total** | | **71** | **100% Validated** ✓ |
 
 ---
-*Roadmap updated: 2026-10-01 after initializing Milestone v1.1*
+*Roadmap updated: 2026-10-02 after Phase 13 completion*

@@ -1,5 +1,6 @@
 """Intervention REST endpoints for candidate simulation, recommendations, and demo application (API-04)."""
 
+import logging
 from typing import Dict, List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -21,11 +22,14 @@ from process_guardian.api.dependencies import (
 from process_guardian.storage.schemas import (
     StoredInterventionApplicationRecord,
     StoredAuditLogRecord,
+    StoredCycleRecord,
+    StoredContainmentWindowRecord,
 )
 from process_guardian.state_machine.schemas import ProcessState
 from process_guardian.intervention.schemas import CandidateAction, ActionType
 
 router = APIRouter(prefix="/interventions", tags=["Interventions"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/simulate", response_model=InterventionSimulateResponse)
@@ -115,6 +119,25 @@ def get_recommendation(
             for ev in table.evaluations
         ]
 
+        # Only compute a decision-value breakdown from the real current cycle and its
+        # actual recorded risk -- never an invented cycle/risk substitute (hostile-review
+        # MEDIUM #8). No cycles or no risk_history entry means no real data to compute from.
+        econ_eval = None
+        if hasattr(container, "decision_evaluator") and container.decision_evaluator and orchestrator.cycle_records:
+            curr_cycle = orchestrator.cycle_records[-1].cycle_index
+            curr_risk = orchestrator.risk_history.get(curr_cycle)
+            if curr_risk is not None:
+                try:
+                    econ_eval = container.decision_evaluator.evaluate(
+                        current_cycle=curr_cycle,
+                        current_risk_probability=curr_risk,
+                        confidence=rec_model.confidence,
+                        is_drift_confirmed=not rec_model.is_abstain,
+                    ).model_dump()
+                except Exception:
+                    logger.warning("decision_value evaluation failed for cycle %s", curr_cycle, exc_info=True)
+                    econ_eval = None
+
         return RecommendationResponse(
             recommendation_id=f"rec_{orchestrator.cycle_records[-1].cycle_index if orchestrator.cycle_records else 0}",
             machine_id=machine_id,
@@ -130,6 +153,7 @@ def get_recommendation(
             abstain_reason=rec_model.abstain_reason,
             operator_mode=rec_model.operator_mode,
             candidate_comparison=comparison,
+            decision_value_breakdown=econ_eval,
         )
 
     if stored_rec:
@@ -150,6 +174,12 @@ def get_recommendation(
             for c in candidates_db
         ]
 
+        # StoredRecommendationRecord does not persist the risk value that produced it, so
+        # there is no real risk to compute a decision-value breakdown from here -- this
+        # used to hardcode current_risk_probability=0.48 regardless of the actual risk
+        # (hostile-review MEDIUM #8). Report no breakdown rather than a fabricated one.
+        econ_eval = None
+
         return RecommendationResponse(
             recommendation_id=stored_rec.recommendation_id,
             machine_id=stored_rec.machine_id,
@@ -165,9 +195,23 @@ def get_recommendation(
             abstain_reason=stored_rec.abstain_reason,
             operator_mode=stored_rec.operator_mode,
             candidate_comparison=comparison,
+            decision_value_breakdown=econ_eval,
         )
 
     # Baseline default if no recommendation generated yet
+    fallback_econ = None
+    if hasattr(container, "decision_evaluator") and container.decision_evaluator:
+        try:
+            fallback_econ = container.decision_evaluator.evaluate(
+                current_cycle=len(orchestrator.cycle_records) if orchestrator else 100,
+                current_risk_probability=0.03,
+                confidence=0.98,
+                is_drift_confirmed=False,
+            ).model_dump()
+        except Exception:
+            logger.warning("decision_value evaluation failed for no-recommendation baseline", exc_info=True)
+            fallback_econ = None
+
     return RecommendationResponse(
         recommendation_id="rec_none",
         machine_id=machine_id,
@@ -183,6 +227,7 @@ def get_recommendation(
         abstain_reason=None,
         operator_mode="DIRECT_RECOMMENDATION",
         candidate_comparison=[],
+        decision_value_breakdown=fallback_econ,
     )
 
 
@@ -265,13 +310,107 @@ def apply_demo_intervention(
         )
     )
 
+    # If an active simulator exists (demo scenario run), step the recovery cycles through
+    recovery_cycles_stepped = hasattr(container, "active_sim") and bool(container.active_sim)
+    if recovery_cycles_stepped:
+        sim = container.active_sim
+        sim.event_queue.remove_event("thermal_drift")
+        sim.event_queue.remove_event("pressure_drift")
+        sim.event_queue.remove_event("signal_drift")
+        sim.event_queue.remove_event("moisture_drift")
+        curr_c = latest_record.cycle_index
+        sim.inject_event(
+            event_type="recovery",
+            cycle=curr_c + 1,
+            severity=1.0,
+            duration=None,
+        )
+
+        recovery_cycles = []
+        for _ in range(3):
+            raw = sim.step()
+            res = orchestrator.step(raw)
+            rec = res.record
+            c_db = StoredCycleRecord(
+                cycle_index=rec.cycle_index,
+                machine_id=rec.context.machine_id,
+                mold_id=rec.context.mold_id,
+                part_id=rec.context.part_id,
+                recipe_id=rec.context.recipe_id,
+                timestamp=rec.timestamp,
+                barrel_temp_z1=rec.barrel_temp_z1,
+                barrel_temp_z2=rec.barrel_temp_z2,
+                barrel_temp_z3=rec.barrel_temp_z3,
+                barrel_temp_z4=rec.barrel_temp_z4,
+                nozzle_temp=rec.nozzle_temp,
+                mold_temp=getattr(rec, "mold_temp", 80.0),
+                injection_pressure=rec.injection_pressure,
+                holding_pressure=getattr(rec, "hold_pressure", rec.injection_pressure * 0.7),
+                back_pressure=getattr(rec, "back_pressure", 10.0),
+                injection_speed=getattr(rec, "injection_speed", 45.0),
+                screw_rpm=getattr(rec, "screw_rpm", 60.0),
+                cushion_position=getattr(rec, "cushion_position", 5.0),
+                dosing_time=getattr(rec, "dosing_time", 3.5),
+                injection_time=rec.injection_time,
+                cooling_time=rec.cooling_time,
+                cycle_time=rec.cycle_time,
+                ambient_temp=rec.ambient_temp,
+                ambient_humidity=rec.ambient_humidity,
+                material_moisture_pct=rec.material_moisture,
+                part_weight_g=rec.part_weight,
+                defect_flag=rec.defect_flag,
+                defect_type=None,
+                raw_json=rec.model_dump(),
+            )
+            recovery_cycles.append(c_db)
+
+        container.repository.insert_cycles_batch(recovery_cycles)
+
+        # Update containment window
+        win = orchestrator.get_containment_window()
+        if win and win.suspect_start_cycle is not None:
+            q_list = list(range(win.suspect_start_cycle, (win.suspect_end_cycle or win.suspect_start_cycle) + 1))
+            win_db = StoredContainmentWindowRecord(
+                machine_id=req.machine_id,
+                last_known_good_cycle=win.last_known_good_cycle,
+                suspect_start_cycle=win.suspect_start_cycle,
+                suspect_end_cycle=win.suspect_end_cycle,
+                suspect_cycle_count=win.suspect_cycle_count,
+                intervention_cycle=win.intervention_cycle,
+                recovery_cycle=orchestrator.cycle_records[-1].cycle_index,
+                release_cycle=None,
+                quarantine_cycles_json=q_list,
+            )
+            container.repository.upsert_containment_window(win_db)
+
+    # The message must reflect what actually happened: whether recovery cycles ran at all,
+    # and the orchestrator's real post-cycle state, not an unconditional success claim
+    # (hostile-review MEDIUM #4 -- previously this text was emitted even when active_sim
+    # was unset and zero recovery cycles were stepped).
+    if not recovery_cycles_stepped:
+        message = (
+            f"Intervention {candidate.action_id} applied. No active scenario simulator -- "
+            f"recovery cycles were not stepped. Mandatory physical QC checkpoint required."
+        )
+    elif orchestrator.current_state == ProcessState.HEALTHY:
+        message = (
+            f"Intervention {candidate.action_id} applied and 3 recovery cycles replayed; "
+            f"process returned to HEALTHY. Mandatory physical QC checkpoint required."
+        )
+    else:
+        message = (
+            f"Intervention {candidate.action_id} applied and 3 recovery cycles replayed; "
+            f"process is in {orchestrator.current_state.value}, recovery not yet confirmed. "
+            f"Mandatory physical QC checkpoint required."
+        )
+
     return InterventionApplyResponse(
         machine_id=req.machine_id,
-        cycle_index=latest_record.cycle_index,
+        cycle_index=orchestrator.cycle_records[-1].cycle_index if orchestrator.cycle_records else latest_record.cycle_index,
         action_id=candidate.action_id,
         status="APPLIED",
         new_state=orchestrator.current_state.value,
-        message=f"Intervention {candidate.action_id} successfully applied. System entered RECOVERY_CHECK stability window.",
+        message=message,
     )
 
 

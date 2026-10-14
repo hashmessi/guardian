@@ -18,13 +18,18 @@ def test_get_epistemic_levels(client):
     assert response.status_code == 200
     data = response.json()
 
-    assert "Process Guardian 4-Level Epistemic Evidence Framework" in data["framework_name"]
+    assert "4-Level Evidence Framework" in data["framework_name"]
     assert "honesty_contract" in data
     assert len(data["levels"]) == 4
 
     level_tags = [lvl["tag"] for lvl in data["levels"]]
     assert "LEVEL_1_CHALLENGE" in level_tags
-    assert "LEVEL_2_EXTERNAL_MEASURED" in level_tags
+    assert "LEVEL_2_PUBLISHED_REFERENCE" in level_tags
+
+    # The replica must never be published as measured plant data.
+    level_2 = next(l for l in data["levels"] if l["tag"] == "LEVEL_2_PUBLISHED_REFERENCE")
+    assert level_2["data_provenance"] == "REPLICA_OF_PUBLISHED_DOE"
+    assert "10.23728/b2share" in level_2["citation_doi"]
     assert "LEVEL_3_SOFTWARE_INVARIANT" in level_tags
     assert "LEVEL_4_CONTROLLED_COUNTERFACTUAL" in level_tags
 
@@ -43,7 +48,8 @@ def test_get_external_benchmark_api(client):
 
     flaw = data["machine_limits_flaw_analysis"]
     assert flaw["escaped_defects_percentage"] > 20.0
-    assert flaw["guardian_multivariate_catch_rate"] > 90.0
+    assert flaw["guardian_multivariate_catch_rate"] > flaw["conventional_spc_catch_rate"]
+    assert flaw["data_provenance"] == "REPLICA_OF_PUBLISHED_DOE"
 
 
 def test_get_grounding_report_api(client):
@@ -52,7 +58,7 @@ def test_get_grounding_report_api(client):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["overall_status"] == "GROUNDED_EMPIRICALLY"
+    assert data["overall_status"] == "PARTIALLY_GROUNDED"
     assert len(data["test_cases"]) == 3
     assert "non_linear_moisture_curve" in data
     assert data["conclusion_for_evaluators"] != ""

@@ -246,7 +246,7 @@ class GuardianRepository:
             if not row:
                 return None
             d = dict(row)
-            d["raw_json"] = json.loads(d["raw_json"])
+            d["raw_json"] = json.loads(d["raw_json"]) if d.get("raw_json") else {}
             d["defect_flag"] = bool(d["defect_flag"])
             return StoredCycleRecord(**d)
 
@@ -260,7 +260,7 @@ class GuardianRepository:
             results = []
             for row in cur.fetchall():
                 d = dict(row)
-                d["raw_json"] = json.loads(d["raw_json"])
+                d["raw_json"] = json.loads(d["raw_json"]) if d.get("raw_json") else {}
                 d["defect_flag"] = bool(d["defect_flag"])
                 results.append(StoredCycleRecord(**d))
             return results
@@ -273,7 +273,7 @@ class GuardianRepository:
             if not row:
                 return None
             d = dict(row)
-            d["raw_json"] = json.loads(d["raw_json"])
+            d["raw_json"] = json.loads(d["raw_json"]) if d.get("raw_json") else {}
             d["defect_flag"] = bool(d["defect_flag"])
             return StoredCycleRecord(**d)
 
@@ -407,13 +407,13 @@ class GuardianRepository:
             cur = conn.cursor()
             cur.execute(
                 "SELECT * FROM drift_events WHERE machine_id = ? ORDER BY cycle_index DESC LIMIT ?",
-                (machine_id, limit),
+                (machine_id, int(limit)),
             )
             records = []
             for r in cur.fetchall():
                 d = dict(r)
-                d["signals_json"] = json.loads(d["signals_json"])
-                d["details_json"] = json.loads(d["details_json"])
+                d["signals_json"] = json.loads(d["signals_json"]) if d.get("signals_json") else []
+                d["details_json"] = json.loads(d["details_json"]) if d.get("details_json") else {}
                 d["drift"] = bool(d["drift"])
                 records.append(StoredDriftEventRecord(**d))
             return records
@@ -910,3 +910,85 @@ class GuardianRepository:
                 },
             )
         )
+
+    # ---------------------------------------------------------
+    # Deterministic Demo Reset & Session Isolation (DEMO-02)
+    # ---------------------------------------------------------
+
+    def reset_demo_session(
+        self,
+        machine_id: str = "IMM-01",
+        run_id: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> Tuple[str, int]:
+        """
+        Create a new isolated demo run while strictly preserving historical audit records.
+        
+        Returns:
+            Tuple of (new_run_id, count_of_preserved_audit_records)
+        """
+        import uuid
+        from datetime import datetime, timezone
+        from process_guardian.storage.schemas import StoredAuditLogRecord
+
+        new_run_id = run_id or f"run_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        now_ts = datetime.now(timezone.utc).isoformat()
+
+        with self.db.transaction() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT(*) FROM audit_log WHERE machine_id = ?", (machine_id,))
+            audit_count_prior = cur.fetchone()[0]
+
+            reset_event = StoredAuditLogRecord(
+                event_id=f"audit_reset_{uuid.uuid4().hex[:8]}",
+                cycle_index=0,
+                machine_id=machine_id,
+                timestamp=now_ts,
+                event_type="DEMO_SESSION_RESET",
+                severity="INFO",
+                description=f"Demo session reset. New isolated run initiated: {new_run_id}. Prior audit log entries strictly preserved.",
+                details_json={
+                    "run_id": new_run_id,
+                    "notes": notes or "Deterministic demo replay reset",
+                    "prior_audit_count": audit_count_prior,
+                },
+            )
+            cur.execute(
+                """
+                INSERT INTO audit_log (event_id, cycle_index, machine_id, timestamp, event_type, severity, description, details_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    reset_event.event_id,
+                    reset_event.cycle_index,
+                    reset_event.machine_id,
+                    reset_event.timestamp,
+                    reset_event.event_type,
+                    reset_event.severity,
+                    reset_event.description,
+                    json.dumps(reset_event.details_json),
+                    reset_event.created_at or now_ts,
+                ),
+            )
+
+            # Clear active runtime execution tables for this machine (leaving audit_log intact!)
+            cur.execute("DELETE FROM intervention_candidates")
+            tables_to_clear = [
+                "cycles",
+                "drift_events",
+                "quality_predictions",
+                "intervention_recommendations",
+                "intervention_applications",
+                "recovery_events",
+                "containment_windows",
+            ]
+            for tbl in tables_to_clear:
+                cur.execute(f"DELETE FROM {tbl} WHERE machine_id = ?", (machine_id,))
+
+            cur.execute("SELECT COUNT(*) FROM audit_log WHERE machine_id = ?", (machine_id,))
+            total_audit_preserved = cur.fetchone()[0]
+
+        # Re-seed default plant data
+        self.seed_default_plant_data()
+
+        return new_run_id, total_audit_preserved

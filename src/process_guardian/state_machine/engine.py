@@ -62,7 +62,7 @@ class ProcessStateMachine:
             ProcessState.RECOVERY_CHECK,
         },
         ProcessState.RECOVERY_CHECK: {
-            ProcessState.RELEASE,  # Verified recovery
+            ProcessState.RELEASE,  # Sustained stability verified across the required window
             ProcessState.DIAGNOSING,  # Failed recovery -> re-assess root cause
         },
         ProcessState.RELEASE: {

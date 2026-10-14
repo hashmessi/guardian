@@ -1,8 +1,11 @@
 """Constrained multi-objective cost-disruption optimizer and comparison table generator (INTV-04, INTV-05)."""
 
+from copy import deepcopy
 from typing import List, Optional, Tuple
 from process_guardian.adapter.schemas import NormalizedCycleRecord
 from process_guardian.fingerprint.models import ProcessFingerprint
+from process_guardian.sentinel.schemas import DriftOutput
+from process_guardian.root_cause.schemas import RootCauseReport
 from process_guardian.quality.contract import QualityContract
 from process_guardian.quality.model import QualityRiskModel
 from process_guardian.intervention.schemas import (
@@ -41,16 +44,30 @@ class InterventionOptimizer:
         fingerprint: ProcessFingerprint,
         candidates: Optional[List[CandidateAction]] = None,
         contract: Optional[QualityContract] = None,
+        drift_output: Optional[DriftOutput] = None,
+        root_cause_report: Optional[RootCauseReport] = None,
     ) -> InterventionComparisonTable:
         """
         Evaluate all candidate operational actions, compute objective scores, and compile comparison table (INTV-04, INTV-05).
         """
-        # Baseline pre-intervention risk
-        base_risk_out = self.surrogate_model.quality_risk_model.predict(record=record, contract=contract)
-        baseline_risk = base_risk_out.risk_probability
+        # Baseline pre-intervention risk (snapshot extractor state to avoid contaminating live model history)
+        extractor = self.surrogate_model.quality_risk_model.feature_extractor
+        saved_signal_history = deepcopy(extractor.signal_history)
+        saved_cycle_count = extractor.cycle_count
+        try:
+            base_risk_out = self.surrogate_model.quality_risk_model.predict(record=record, contract=contract)
+            baseline_risk = base_risk_out.risk_probability
+        finally:
+            extractor.signal_history = saved_signal_history
+            extractor.cycle_count = saved_cycle_count
 
         if candidates is None:
-            candidates = self.candidate_generator.generate_candidates(record=record, fingerprint=fingerprint)
+            candidates = self.candidate_generator.generate_candidates(
+                record=record,
+                fingerprint=fingerprint,
+                drift_output=drift_output,
+                root_cause_report=root_cause_report,
+            )
 
         evaluations: List[ActionEvaluation] = []
 

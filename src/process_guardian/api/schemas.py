@@ -222,6 +222,7 @@ class RecommendationResponse(BaseModel):
     abstain_reason: Optional[str] = None
     operator_mode: str
     candidate_comparison: List[CandidateSimulationItem] = Field(default_factory=list)
+    decision_value_breakdown: Optional[Dict[str, Any]] = Field(None, description="Real-time Cost of Waiting vs Cost of Acting economics")
 
 
 class InterventionApplyRequest(BaseModel):
@@ -304,3 +305,44 @@ class ContainmentReleaseResponse(BaseModel):
     status: str
     released_at: str
     message: str
+
+
+# ==========================================
+# 6. Demo & Hardening Schemas (DEMO-01, DEMO-02)
+# ==========================================
+
+class DemoResetRequest(BaseModel):
+    """Request payload to reset demo session to pristine baseline."""
+    machine_id: str = Field("IMM-01", description="Target machine identifier")
+    seed_baseline: bool = Field(True, description="Whether to reseed pristine baseline cycles")
+    baseline_cycles: int = Field(60, ge=1, le=500, description="Number of baseline cycles to reseed (1-500, default 60)")
+    notes: Optional[str] = Field("Deterministic replay reset", description="Optional audit notes")
+
+
+class DemoResetResponse(BaseModel):
+    """Response returned upon successful demo session reset."""
+    status: str = Field(..., description="Reset status indicator, e.g. 'RESET_COMPLETE'")
+    run_id: str = Field(..., description="Unique isolated demo run identifier")
+    machine_id: str = Field(..., description="Machine identifier")
+    state: str = Field(..., description="Current state machine status (e.g. 'HEALTHY')")
+    seeded_cycles: int = Field(..., description="Number of pristine baseline cycles seeded")
+    audit_records_preserved: int = Field(..., description="Total historical audit records preserved")
+    timestamp: str = Field(..., description="UTC ISO-8601 timestamp of reset execution")
+    message: str = Field(..., description="Human-readable summary message")
+
+
+class EconomicImpactResponse(BaseModel):
+    """Response payload detailing modeled avoided scrap value and defect prevention metrics."""
+    machine_id: str = Field("IMM-01", description="Target machine identifier")
+    modeled_avoided_scrap_value: float = Field(..., description="Total avoided scrap cost in local currency")
+    avoided_defective_cycles: int = Field(..., description="Estimated defective parts prevented from scrap")
+    total_lot_cycles: int = Field(..., description="Total monitored production lot volume")
+    quarantined_suspect_cycles: int = Field(..., description="Bounded suspect cycles isolated in quarantine")
+    part_cost: float = Field(450.0, description="Modeled scrap cost per part")
+    currency: str = Field("INR", description="Currency ISO code")
+    currency_symbol: str = Field("₹", description="Currency display symbol")
+    assumptions_label: str = Field("Modeled Avoided Scrap Value", description="Formal display label")
+    assumptions_detail: str = Field(..., description="Transparent statement of calculation assumptions")
+    disclaimer: str = Field("SIMULATION · PROTOTYPE RESULTS ONLY", description="Honest simulation disclosure")
+    is_prototype: bool = Field(True, description="Strict prototype flag")
+    copq_breakdown: Optional[Dict[str, Any]] = Field(None, description="Granular parametric Cost of Poor Quality breakdown")

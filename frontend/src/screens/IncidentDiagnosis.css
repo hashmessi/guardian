@@ -1,11 +1,81 @@
+/* =========================================================================
+   IncidentDiagnosis.css — Superhuman Editorial Diagnosis Screen
+   Paper White surfaces, Warm Parchment canvas, Soft Mist hairline borders.
+   Strictly adheres to DESIGN (4).md: Minimal, quiet, high cognitive clarity.
+   ========================================================================= */
+
 .incident-diagnosis {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* 1. Diagnosis Summary Banner */
+.diagnosis-summary-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 22px;
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-left: 4px solid var(--color-wine, #421d24);
+  border-radius: 12px;
+  gap: 20px;
+  box-shadow: none;
+}
+
+.diagnosis-summary-banner__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diagnosis-summary-banner__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  letter-spacing: -0.01em;
+}
+
+.diagnosis-summary-banner__desc {
+  font-size: 13px;
+  color: var(--color-stone, #666666);
+  line-height: 1.45;
+}
+
+.diagnosis-summary-banner__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background-color: var(--color-wine, #421d24);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+}
+
+.diagnosis-summary-banner__btn:hover {
+  background-color: #32141a;
+}
+
+/* 2. Two-Column Grid */
+.incident-diagnosis__grid {
   display: grid;
-  grid-template-columns: 7fr 5fr;
-  gap: 24px;
+  grid-template-columns: 6fr 6fr;
+  gap: 20px;
 }
 
 @media (max-width: 1024px) {
-  .incident-diagnosis {
+  .incident-diagnosis__grid {
     grid-template-columns: 1fr;
   }
 }
@@ -13,29 +83,29 @@
 .incident-diagnosis__left {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .incident-diagnosis__right {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
-/* Risk Escalation Card */
+/* 3. Left Column: Risk Escalation Card */
 .escalation-card {
-  background-color: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--r-card);
-  padding: 24px;
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 22px;
   box-shadow: none;
 }
 
 .escalation-row {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin: 16px 0 20px 0;
+  gap: 24px;
+  margin: 14px 0 16px 0;
 }
 
 .escalation-point {
@@ -45,66 +115,160 @@
 }
 
 .escalation-point__label {
-  font-size: 11px;
-  font-weight: var(--fw-label);
-  color: var(--color-stone);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-stone, #666666);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .escalation-point__value {
-  font-size: 32px;
-  font-weight: var(--fw-data);
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
 }
 
 .escalation-point__value--baseline {
-  color: var(--color-stone);
+  color: var(--color-stone, #666666);
 }
 
 .escalation-point__value--current {
-  color: var(--color-wine);
+  color: var(--color-wine, #421d24);
 }
 
 .escalation-arrow {
-  font-size: 24px;
-  color: var(--color-stone);
-  margin-top: 14px;
+  font-size: 22px;
+  color: var(--color-mist, #e3e3e2);
+  margin-top: 8px;
 }
 
 .escalation-meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  border-top: var(--border-hairline);
-  padding-top: 16px;
+  border-top: 1px solid var(--color-mist, #e3e3e2);
+  padding-top: 14px;
 }
 
 .escalation-meta-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .escalation-meta-label {
-  font-size: 11px;
-  font-weight: var(--fw-label);
-  color: var(--color-stone);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-stone, #666666);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .escalation-meta-value {
-  font-size: 16px;
-  font-weight: var(--fw-data);
-  color: var(--color-charcoal);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Drift Evidence Table */
-.evidence-card {
-  background-color: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--r-card);
-  padding: 20px;
+/* 4. Left Column: Quarantine Window Card */
+.window-card {
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 22px;
   box-shadow: none;
+}
+
+.window-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.window-summary-text {
+  font-size: 13px;
+  color: var(--color-charcoal, #292827);
+}
+
+.window-hold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(66, 29, 36, 0.08);
+  border: 1px solid rgba(66, 29, 36, 0.2);
+  color: var(--color-wine, #421d24);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.window-milestones-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.window-milestone {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.window-milestone__lbl {
+  font-size: 10px;
+  color: var(--color-stone, #666666);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.window-milestone__val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  font-variant-numeric: tabular-nums;
+}
+
+.window-milestone--drift .window-milestone__val {
+  color: var(--color-wine, #421d24);
+}
+
+.window-milestone-divider {
+  color: var(--color-mist, #e3e3e2);
+  font-size: 16px;
+}
+
+/* 5. Left Column: Collapsible Technical Sentinel Evidence */
+.detector-evidence-details {
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: none;
+}
+
+.detector-evidence-details summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .drift-evidence-table {
@@ -114,99 +278,129 @@
 }
 
 .drift-evidence-table th {
-  font-size: 11px;
-  font-weight: var(--fw-label);
-  color: var(--color-stone);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-stone, #666666);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-align: left;
-  padding: 8px 6px;
-  border-bottom: var(--border-hairline);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
 }
 
 .drift-evidence-table td {
-  font-size: 13px;
-  color: var(--color-charcoal);
-  padding: 10px 6px;
-  border-bottom: var(--border-hairline);
+  font-size: 12px;
+  color: var(--color-charcoal, #292827);
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--color-mist, #e3e3e2);
 }
 
 .drift-evidence-table tr:last-child td {
   border-bottom: none;
 }
 
-/* Affected Cycle Window Card */
-.window-card {
-  background-color: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--r-card);
-  padding: 20px;
+/* 6. Right Column: Root Cause Attribution Card */
+.diagnosis-contributors-card {
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-radius: 16px;
+  padding: 20px 22px;
   box-shadow: none;
-}
-
-.cycle-window-bar-container {
-  margin: 20px 0 16px 0;
-  position: relative;
-}
-
-.cycle-window-bar {
-  position: relative;
-  height: 6px;
-  background-color: var(--color-mist);
-  border-radius: 3px;
-  width: 100%;
-}
-
-.cycle-window-suspect-range {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  background-color: var(--color-wine);
-  border-radius: 3px;
-}
-
-.cycle-window-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  font-size: 11px;
-  color: var(--color-stone);
-}
-
-/* Confidence Arc Gauge */
-.confidence-card {
-  background-color: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--r-card);
-  padding: 20px;
-  box-shadow: none;
-  text-align: center;
-}
-
-.arc-gauge-container {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.diagnosis-contributors-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  margin: 10px 0;
-  position: relative;
+  padding-bottom: 4px;
 }
 
-.arc-gauge-svg {
-  display: block;
-}
-
-.arc-gauge-text {
-  font-size: 26px;
-  font-weight: var(--fw-data);
-  color: var(--color-charcoal);
-  line-height: 1;
-}
-
-.arc-gauge-label {
+.diagnosis-contributors-subtitle {
   font-size: 11px;
-  font-weight: var(--fw-label);
-  color: var(--color-stone);
+  color: var(--color-stone, #666666);
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+
+.primary-driver-spotlight {
+  background: #fbfbf9;
+  border: 1px solid var(--color-mist, #e3e3e2);
+  border-left: 3px solid var(--color-wine, #421d24);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.primary-driver-spotlight__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.primary-driver-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-wine, #421d24);
   text-transform: uppercase;
+}
+
+.primary-driver-pct {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-wine, #421d24);
+  font-variant-numeric: tabular-nums;
+}
+
+.primary-driver-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-charcoal, #292827);
+}
+
+.primary-driver-evidence {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-stone, #666666);
+}
+
+.contributors-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin-top: 4px;
+}
+
+.nominal-toggle-btn {
+  background: transparent;
+  border: 1px dashed var(--color-mist, #e3e3e2);
+  color: var(--color-stone, #666666);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 6px;
+  transition: all 0.15s ease;
+}
+
+.nominal-toggle-btn:hover {
+  background: #faf9f6;
+  color: var(--color-charcoal, #292827);
+  border-color: var(--color-stone, #666666);
+}
+
+.diagnosis-contributors-footer {
+  font-size: 11px;
+  color: var(--color-stone, #666666);
+  line-height: 1.4;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-mist, #e3e3e2);
+  padding-top: 10px;
 }

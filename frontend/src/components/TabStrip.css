@@ -1,69 +1,186 @@
 .tab-strip {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   background-color: var(--color-white);
   border-bottom: var(--border-hairline);
-  padding: 0 24px;
-  gap: 8px;
+  padding: 8px 24px;
 }
 
-.tab-strip__tab {
-  display: inline-flex;
+.tab-strip__nav-row {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  font-family: var(--font-family);
-  font-size: 13px;
-  font-weight: var(--fw-editorial);
-  color: var(--color-charcoal);
-  border: none;
-  background: transparent;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  position: relative;
-  border-radius: 6px 6px 0 0;
+  gap: 16px;
+  width: 100%;
 }
 
-.tab-strip__tab:hover {
+
+.decision-journey-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.journey-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
   background-color: var(--color-parchment);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm, 6px);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  text-align: left;
+  flex: 1;
 }
 
-.tab-strip__tab--active {
-  background-color: var(--color-lilac);
-  border-bottom: 2px solid var(--color-violet);
+.journey-step:hover {
+  background-color: #f7f6f2;
+  border-color: var(--color-stone);
+}
+
+.journey-step--active {
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-charcoal);
+  box-shadow: none;
+}
+
+.journey-step__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-charcoal);
+  color: #ffffff;
+  font-size: 13px;
   font-weight: var(--fw-label);
+  flex-shrink: 0;
+}
+
+.journey-step--active .journey-step__indicator {
+  background-color: var(--color-wine);
+}
+
+.journey-step__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.journey-step__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journey-step__title {
+  font-size: 14px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.5px;
   color: var(--color-charcoal);
 }
 
-.tab-badge--wine {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--color-wine);
+.journey-step__question {
+  font-size: 12px;
+  color: var(--color-stone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.tab-badge--warning {
+.journey-step--active .journey-step__question {
+  color: var(--color-charcoal);
+  font-weight: 500;
+}
+
+.journey-step__arrow {
+  color: var(--color-stone);
+  font-size: 18px;
+  font-weight: bold;
+  user-select: none;
+  padding: 0 4px;
+}
+
+.stage-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: var(--r-pill);
   font-size: 10px;
   font-weight: var(--fw-data);
+}
+
+.stage-badge--alarm {
   background-color: var(--color-wine);
   color: #ffffff;
 }
 
-.tab-badge--info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1px 6px;
-  border-radius: var(--r-pill);
-  font-size: 10px;
-  font-weight: var(--fw-data);
-  background-color: var(--color-violet);
+.stage-badge--ok {
+  background-color: var(--color-lagoon);
   color: #ffffff;
 }
+
+.stage-badge--action {
+  background-color: #2b3a4a;
+  color: #e0ecff;
+}
+
+/* =========================================================================
+   DARK TAB STRIP (ChainBreak Theme)
+   ========================================================================= */
+.app-shell--dark .tab-strip {
+  background-color: #0b0f19;
+  border-bottom: 1px solid #1a2333;
+}
+
+.app-shell--dark .tab-strip-divider {
+  background-color: #1a2333;
+}
+
+.app-shell--dark .journey-step {
+  background-color: #111726;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+}
+
+.app-shell--dark .journey-step:hover {
+  background-color: #162032;
+  border-color: #334155;
+}
+
+.app-shell--dark .journey-step--active {
+  background-color: #172236;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+}
+
+.app-shell--dark .journey-step__num {
+  background-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.app-shell--dark .journey-step--active .journey-step__num {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.app-shell--dark .journey-step__title {
+  color: #f1f5f9;
+}
+
+.app-shell--dark .journey-step__question {
+  color: #64748b;
+}
+
+.app-shell--dark .journey-step--active .journey-step__question {
+  color: #94a3b8;
+}
+
+.app-shell--dark .journey-step__arrow {
+  color: #334155;
+}
+

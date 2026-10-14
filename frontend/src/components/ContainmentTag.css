@@ -1,0 +1,286 @@
+/* =========================================================================
+   ContainmentTag.css — the printable suspect-lot tag.
+   On screen: a modal preview. On paper: A5, black on white, nothing else.
+   ========================================================================= */
+
+.ctag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--sp-8) var(--sp-4);
+  overflow-y: auto;
+  background: rgba(41, 40, 39, 0.45);
+}
+
+.ctag-shell {
+  width: 100%;
+  max-width: 560px;
+  background: var(--color-parchment);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+
+.ctag-shell__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: var(--border-hairline);
+  background: var(--color-white);
+  font-size: 12px;
+  font-weight: var(--fw-label);
+  color: var(--color-stone);
+}
+
+.ctag-shell__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.ctag-btn {
+  padding: 6px 14px;
+  border: var(--border-card);
+  border-radius: var(--r-pill);
+  background: var(--color-white);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: var(--fw-label);
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
+.ctag-btn--primary {
+  background: var(--color-wine);
+  border-color: var(--color-wine);
+  color: var(--color-white);
+}
+
+.ctag-btn:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+
+/* ---- The tag itself ---- */
+.ctag {
+  margin: var(--sp-4);
+  padding: var(--sp-5);
+  background: #fff;
+  border: 2px solid #000;
+  color: #000;
+  font-family: var(--font-family);
+}
+
+.ctag__head {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 2px solid #000;
+}
+
+.ctag__status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: var(--sp-2) var(--sp-3);
+  background: #000;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ctag__issuer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ctag__issuer strong {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.ctag__identity {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid #000;
+}
+
+.ctag__field,
+.ctag__sign,
+.ctag__disposition {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ctag__field-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ctag__field-value {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctag__lot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid #000;
+}
+
+.ctag__lot-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ctag__lot-range,
+.ctag__lot-qty {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.ctag__lot-count {
+  text-align: right;
+}
+
+.ctag__reason {
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid #000;
+}
+
+.ctag__reason p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ctag__trail {
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid #000;
+}
+
+.ctag__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: 3px 0;
+  font-size: 11.5px;
+}
+
+.ctag__row-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctag__signoff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-5) 0 var(--sp-3);
+}
+
+.ctag__sign-rule {
+  display: block;
+  height: 26px;
+  border-bottom: 1px solid #000;
+}
+
+.ctag__disposition {
+  grid-column: 1 / -1;
+}
+
+.ctag__boxes {
+  display: flex;
+  gap: var(--sp-5);
+  margin-top: 4px;
+  font-size: 11.5px;
+}
+
+.ctag__boxes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ctag__box {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #000;
+}
+
+.ctag__foot {
+  padding-top: var(--sp-3);
+  border-top: 1px solid #000;
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+/* ---- Print: the tag, nothing else ----
+   Scoped to pages that actually have the tag open. This stylesheet is bundled
+   globally, so an unscoped `body *` rule here would print every other screen
+   blank. */
+@media print {
+  body:has(#containment-tag-sheet) * {
+    visibility: hidden !important;
+  }
+
+  body:has(#containment-tag-sheet) .ctag-overlay {
+    position: static;
+    inset: auto;
+    padding: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  .ctag-shell {
+    max-width: none;
+    border: none;
+    background: none;
+  }
+
+  .ctag-shell__bar {
+    display: none !important;
+  }
+
+  body:has(#containment-tag-sheet) .ctag,
+  body:has(#containment-tag-sheet) .ctag * {
+    visibility: visible !important;
+  }
+
+  .ctag {
+    margin: 0;
+    width: 148mm; /* A5 width; a tag, not a page of a report */
+    border-width: 2px;
+  }
+
+  @page {
+    size: A5;
+    margin: 10mm;
+  }
+}

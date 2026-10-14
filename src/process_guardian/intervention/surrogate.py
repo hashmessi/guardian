@@ -1,6 +1,7 @@
 """Coupled-physics surrogate response surface model for post-intervention quality risk prediction (INTV-03)."""
 
 import math
+from copy import deepcopy
 from typing import Tuple, Optional, Dict, Any
 from process_guardian.adapter.schemas import NormalizedCycleRecord
 from process_guardian.fingerprint.models import ProcessFingerprint
@@ -67,12 +68,17 @@ class InterventionSurrogateModel:
             data["cooling_time"] = max(5.0, float(data["cooling_time"]) + (14.0 * 0.005 * delta_t_eff))
 
         elif candidate.action_type == ActionType.PRESSURE_ADJUST:
-            # Direct hold pressure adjustment
+            # Direct pressure adjustment
             data[target_sig] = float(data[target_sig]) + delta
-            # Part weight responds directly to packing pressure (approx 0.0012 per bar)
-            data["part_weight"] = float(data["part_weight"]) + (nom_weight * 0.0012 * delta)
-            # Slight cavity pressure coupling
-            data["peak_pressure"] = float(data["peak_pressure"]) + (0.35 * delta)
+            if target_sig == "injection_pressure":
+                data["peak_pressure"] = float(data["peak_pressure"]) + (0.90 * delta)
+                data["part_weight"] = float(data["part_weight"]) + (nom_weight * 0.0018 * delta)
+                data["injection_time"] = 2.40
+            else:
+                # Part weight responds directly to packing pressure (approx 0.0012 per bar)
+                data["part_weight"] = float(data["part_weight"]) + (nom_weight * 0.0012 * delta)
+                # Slight cavity pressure coupling
+                data["peak_pressure"] = float(data["peak_pressure"]) + (0.35 * delta)
 
         elif candidate.action_type == ActionType.CYCLE_TIME_ADJUST:
             # Direct cooling time adjustment
@@ -126,20 +132,15 @@ class InterventionSurrogateModel:
         """
         surrogate_record = self.project_state(record, candidate, fingerprint)
 
-        # Snapshot feature extractor state
+        # Predict post-intervention risk with the calibrated model on the projected state
+        # (project_state returns `record` unchanged for DO_NOTHING, so this also serves as
+        # the baseline for A0). Snapshot/restore avoids contaminating live model history.
         extractor = self.quality_risk_model.feature_extractor
-        saved_history = {
-            sig: list(extractor.signal_history[sig])
-            for sig in extractor.CORE_SIGNALS
-        }
+        saved_signal_history = deepcopy(extractor.signal_history)
         saved_cycle_count = extractor.cycle_count
-
         try:
             risk_output = self.quality_risk_model.predict(record=surrogate_record, contract=contract)
             return risk_output.risk_probability, surrogate_record
         finally:
-            # Restore feature extractor state
+            extractor.signal_history = saved_signal_history
             extractor.cycle_count = saved_cycle_count
-            for sig in extractor.CORE_SIGNALS:
-                extractor.signal_history[sig].clear()
-                extractor.signal_history[sig].extend(saved_history[sig])

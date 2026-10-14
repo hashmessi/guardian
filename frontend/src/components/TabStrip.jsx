@@ -9,52 +9,84 @@ export function TabStrip({ activeTab, onTabChange }) {
   const isDrifting = driftData?.drift === true || (driftData?.contributing_signals && driftData.contributing_signals.length > 0);
   const isHighRisk = riskData?.risk_state === 'HIGH' || (riskData?.risk_probability && riskData.risk_probability > 0.5);
 
-  const tabs = [
+  const stages = [
     {
-      id: 'live',
-      label: 'Live Process',
+      id: 'detect',
+      alias: 'live',
+      stepNum: '1',
+      title: 'DETECT',
+      question: 'Is production safe right now?',
       hasBadge: isDrifting,
-      badgeType: 'wine',
+      badgeText: isDrifting ? 'DRIFT ACTIVE' : 'STABLE',
+      badgeClass: isDrifting ? 'stage-badge--alarm' : 'stage-badge--ok',
     },
     {
-      id: 'diagnosis',
-      label: 'Incident Diagnosis',
+      id: 'diagnose',
+      alias: 'diagnosis',
+      stepNum: '2',
+      title: 'DIAGNOSE',
+      question: 'Why is it drifting & which parts are at risk?',
       hasBadge: isHighRisk,
-      badgeType: 'warning',
-      badgeText: isHighRisk ? 'RISK' : null,
+      badgeText: isHighRisk ? 'RISK HIGH' : 'NORMAL',
+      badgeClass: isHighRisk ? 'stage-badge--alarm' : 'stage-badge--ok',
     },
     {
-      id: 'intervention',
-      label: 'Intervention + Recovery',
-      hasBadge: false,
+      id: 'act',
+      alias: 'intervention',
+      stepNum: '3',
+      title: 'ACT & VERIFY',
+      question: 'What to do, what will it cost & did it recover?',
+      hasBadge: true,
+      badgeText: 'DECISION & RECOVERY',
+      badgeClass: 'stage-badge--action',
     },
   ];
 
   return (
-    <nav className="tab-strip" role="tablist" aria-label="Process Guardian Screen Navigation">
-      {tabs.map((tab) => {
-        const isActive = activeTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            id={`tab-${tab.id}`}
-            role="tab"
-            aria-selected={isActive}
-            aria-controls={`panel-${tab.id}`}
-            tabIndex={isActive ? 0 : -1}
-            className={`tab-strip__tab ${isActive ? 'tab-strip__tab--active' : ''}`}
-            onClick={() => onTabChange(tab.id)}
-          >
-            <span>{tab.label}</span>
-            {tab.hasBadge && tab.badgeType === 'wine' && (
-              <span className="tab-badge--wine" title="Drift detected on active signals" />
-            )}
-            {tab.hasBadge && tab.badgeType === 'warning' && (
-              <span className="tab-badge--warning">{tab.badgeText}</span>
-            )}
-          </button>
-        );
-      })}
+    <nav className="tab-strip" role="tablist" aria-label="Process Guardian Linear Decision Journey">
+      <div className="tab-strip__nav-row">
+        <div className="decision-journey-stepper">
+          {stages.map((stage, idx) => {
+            const isActive = activeTab === stage.id || activeTab === stage.alias;
+            return (
+              <React.Fragment key={stage.id}>
+                <button
+                  type="button"
+                  id={`tab-${stage.id}`}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`panel-${stage.id}`}
+                  tabIndex={0}
+                  className={`journey-step ${isActive ? 'journey-step--active' : ''}`}
+                  onClick={() => onTabChange(stage.id)}
+                >
+                  <div className="journey-step__indicator">
+                    <span className="journey-step__num">{stage.stepNum}</span>
+                  </div>
+                  <div className="journey-step__content">
+                    <div className="journey-step__top">
+                      <span className="journey-step__title">{stage.title}</span>
+                      {stage.hasBadge && (
+                        <span className={`stage-badge ${stage.badgeClass}`}>
+                          {stage.badgeText}
+                        </span>
+                      )}
+                    </div>
+                    <div className="journey-step__question">{stage.question}</div>
+                  </div>
+                </button>
+                {idx < stages.length - 1 && (
+                  <div className="journey-step__arrow" aria-hidden="true">
+                    →
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
     </nav>
   );
 }
+
+export default TabStrip;

@@ -37,22 +37,22 @@ All 61 requirements across Phases 1 through 8 are validated and frozen in `DEMO_
 
 ### Category 2: Decision Economics (ECON)
 
-- [ ] **ECON-01**: System implements a parametric Cost of Poor Quality (CoPQ) model calculating resin weight, machine hourly burden rate, energy kWh tariff, and secondary sorting costs.
-- [ ] **ECON-02**: System calculates real-time Cost of Waiting vs Cost of Acting ($ExpectedLoss_{wait} - Cost_{act} = DecisionValue$) with an explicit economic intervention threshold.
+- [x] **ECON-01**: System implements a parametric Cost of Poor Quality (CoPQ) model calculating resin weight, machine hourly burden rate, energy kWh tariff, and secondary sorting costs.
+- [x] **ECON-02**: System calculates real-time Cost of Waiting vs Cost of Acting ($ExpectedLoss_{wait} - Cost_{act} = DecisionValue$) with an explicit economic intervention threshold.
 
 ### Category 3: Quality Checkpoint & Operational Poka-Yoke (QCHK)
 
-- [ ] **QCHK-01**: State machine incorporates `MANDATORY_QC_CHECKPOINT` requiring recorded physical CTQ measurement (part weight / visual blemish pass-fail) post-parameter stabilization before `RELEASE`.
-- [ ] **QCHK-02**: System evaluates PS02 shop-floor operational checkpoints: recipe verification lock, resin moisture batch sign-off, and mold-release spray interval tracking.
+- [x] **QCHK-01**: State machine incorporates `MANDATORY_QC_CHECKPOINT` requiring recorded physical CTQ measurement (part weight / visual blemish pass-fail) post-parameter stabilization before `RELEASE`.
+- [x] **QCHK-02**: System evaluates PS02 shop-floor operational checkpoints: recipe verification lock, resin moisture batch sign-off, and mold-release spray interval tracking.
 
 ### Category 4: Controlled Counterfactual Replay (CRPL)
 
-- [ ] **CRPL-01**: System provides a controlled counterfactual replay engine that runs identical drift event streams in dual mode: Guardian OFF (Status Quo) vs Guardian ON (Dynamic Quality Reaction).
-- [ ] **CRPL-02**: System renders a side-by-side counterfactual comparative evidence view displaying timeline divergence, suspect lot containment reduction (>75%), and avoided financial loss.
+- [x] **CRPL-01**: System provides a controlled counterfactual replay engine that runs identical drift event streams in dual mode: Guardian OFF (Status Quo) vs Guardian ON (Dynamic Quality Reaction).
+- [x] **CRPL-02**: System renders a side-by-side counterfactual comparative evidence view displaying timeline divergence, suspect lot containment reduction (>75%), and avoided financial loss.
 
 ### Category 5: Physical Scrap Containment Boundary (CNTN)
 
-- [ ] **CNTN-05**: System renders a physical scrap containment boundary card explicitly displaying cycle milestones: Last Verified Good, Drift Start, Suspect Lot, Action Applied, Stabilized, QC Passed, and Lot Release.
+- [x] **CNTN-05**: System renders a physical scrap containment boundary card explicitly displaying cycle milestones: Last Verified Good, Drift Start, Suspect Lot, Action Applied, Stabilized, QC Passed, and Lot Release.
 
 ---
 
@@ -75,12 +75,12 @@ All 61 requirements across Phases 1 through 8 are validated and frozen in `DEMO_
 | EVID-01 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
 | EVID-02 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
 | EVID-03 | Phase 9: Real-World Molding Evidence & Grounding | Complete |
-| ECON-01 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
-| ECON-02 | Phase 10: Cost-of-Waiting Decision Economics | Scoped |
-| QCHK-01 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
-| QCHK-02 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
-| CNTN-05 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Scoped |
-| CRPL-01 | Phase 12: Controlled Counterfactual Replay Canvas | Scoped |
-| CRPL-02 | Phase 12: Controlled Counterfactual Replay Canvas | Scoped |
+| ECON-01 | Phase 10: Cost-of-Waiting Decision Economics | Complete |
+| ECON-02 | Phase 10: Cost-of-Waiting Decision Economics | Complete |
+| QCHK-01 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Complete |
+| QCHK-02 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Complete |
+| CNTN-05 | Phase 11: Physical QC Verification & Operational Poka-Yoke | Complete |
+| CRPL-01 | Phase 12: Controlled Counterfactual Replay Canvas | Complete |
+| CRPL-02 | Phase 12: Controlled Counterfactual Replay Canvas | Complete |
 
 **Coverage:** 10 new scoped requirements mapped across 4 focused implementation phases (Phases 9–12) followed by Phase 13 (Automotive Judge Hardening & Final Rehearsal).

@@ -8,6 +8,7 @@ from process_guardian.api.app import create_app
 from process_guardian.api.dependencies import ServiceContainer, set_service_container
 from process_guardian.simulator.scenarios import build_regime_scenario, build_demo_scenario
 from process_guardian.core.types import RegimeType
+from process_guardian.storage.schemas import StoredRecommendationRecord
 
 
 @pytest.fixture
@@ -77,6 +78,11 @@ def test_interventions_and_recommendation_flow(client):
     assert apply_data["status"] == "APPLIED"
     assert apply_data["new_state"] == "RECOVERY_CHECK"
     assert apply_data["action_id"] == "A1"
+    # Regression (hostile-review MEDIUM #4): no scenario simulator is active in this test,
+    # so zero recovery cycles were stepped -- the message must say so, not claim "3
+    # consecutive stabilization cycles verified" regardless of what actually happened.
+    assert "3 recovery cycles" not in apply_data["message"]
+    assert "not stepped" in apply_data["message"]
 
     # 4. Intervention History Endpoint
     res_hist = client.get("/api/interventions/history?machine_id=IMM-01")
@@ -120,3 +126,45 @@ def test_recovery_and_containment_endpoints(client):
     rel_data = res_rel.json()
     assert rel_data["status"] == "RELEASE_AUTHORIZED"
     assert "QC_MGR" in rel_data["message"]
+
+
+def test_stored_recommendation_has_no_fabricated_economics(client):
+    """Regression (hostile-review MEDIUM #8): StoredRecommendationRecord does not persist
+    the risk value that produced it, so GET /recommendation for a *replayed* (non-live)
+    recommendation must not fabricate a decision_value_breakdown from a hardcoded
+    current_risk_probability=0.48 -- it must report no breakdown instead."""
+    client_obj = client
+    # No live pending_recommendation on the orchestrator -- forces the stored_rec branch.
+    container = ServiceContainer(db_path=":memory:", auto_apply_intervention=False)
+    set_service_container(container)
+    from fastapi.testclient import TestClient
+    from process_guardian.api.app import create_app
+    app = create_app()
+    with TestClient(app) as c:
+        rec = StoredRecommendationRecord(
+            recommendation_id="rec_stored_001",
+            event_id="evt_stored_001",
+            cycle_index=431,
+            machine_id="IMM-01",
+            action_id="A1",
+            action_text="Decrease barrel temperature zone 3 by -4.0 deg C",
+            why_text="Barrel temperature zone 3 elevated above fingerprint baseline.",
+            evidence_json={"primary_signal": "barrel_temp_z3"},
+            expected_effect="Reduces melt temperature, lowers flash risk.",
+            confidence=0.93,
+            operating_limit="Within safe limits [260.0, 300.0] deg C.",
+            recovery_check="Confirm zone 3 temp within 3 cycles.",
+            is_abstain=False,
+            operator_mode="DIRECT_RECOMMENDATION",
+        )
+        container.repository.insert_recommendation(rec, [])
+        assert container.orchestrator.pending_recommendation is None
+
+        res = c.get("/api/interventions/recommendation?machine_id=IMM-01")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["recommendation_id"] == "rec_stored_001"
+        assert data["decision_value_breakdown"] is None, (
+            "a stored recommendation has no real risk value on record -- the breakdown "
+            "must be None, not computed from a fabricated current_risk_probability"
+        )

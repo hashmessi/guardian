@@ -8,12 +8,27 @@ dependencies = [
     "numpy>=1.26.0",
     "pydantic>=2.10.0",
     "scikit-learn>=1.4.0",
-    "xgboost>=2.0.0",
+    # xgboost was declared but never imported anywhere in src/ (the classifier is
+    # sklearn's GradientBoostingClassifier). Dropped: it is a large install that
+    # only slowed demo setup. Re-add it the day something actually imports it.
+    # The API was never declared here, so a fresh machine installed nothing and
+    # the engine would not start. The floor matters: FastAPI below 0.143 passes
+    # on_startup= to Starlette, which removed it, and every API test errors out.
+    "fastapi>=0.143.0",
+    "uvicorn>=0.30.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
+    "httpx",  # required by fastapi.testclient
+]
+# Optional, not a hard dependency: the deterministic human-channel parser
+# (src/process_guardian/llm/human_channel.py) works without it, and the demo
+# laptop should not pay torch's install size unless Laya is explicitly wanted.
+# Enable at runtime with PROCESS_GUARDIAN_LAYA_ENABLED=1.
+laya = [
+    "laya>=0.4.2",
 ]
 
 [tool.pytest.ini_options]

@@ -3,6 +3,7 @@
 import sqlite3
 import json
 import logging
+import threading
 from contextlib import contextmanager
 from typing import Generator, Optional, Union
 from pathlib import Path
@@ -317,6 +318,7 @@ class DatabaseManager:
         self.db_path = str(db_path)
         self._is_memory = (self.db_path == ":memory:")
         self._persistent_conn: Optional[sqlite3.Connection] = None
+        self._lock = threading.RLock()
         
         # If in-memory, retain a persistent connection so tables aren't lost between closes
         if self._is_memory:
@@ -344,7 +346,8 @@ class DatabaseManager:
     def get_connection(self) -> Generator[sqlite3.Connection, None, None]:
         """Provide a contextual database connection."""
         if self._is_memory and self._persistent_conn:
-            yield self._persistent_conn
+            with self._lock:
+                yield self._persistent_conn
         else:
             conn = sqlite3.connect(
                 self.db_path,

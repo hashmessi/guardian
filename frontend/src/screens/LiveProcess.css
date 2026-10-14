@@ -1,25 +1,112 @@
 .live-process {
-  display: grid;
-  grid-template-columns: 8fr 4fr;
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-@media (max-width: 1024px) {
-  .live-process {
+/* Process State Banner (P0-01) */
+.process-state-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  gap: 16px;
+}
+
+.process-state-banner--alarm {
+  background-color: #fcf1f2;
+  border-color: #f5c2c7;
+}
+
+.process-state-banner--healthy {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.process-state-banner__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.process-state-banner__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.process-state-banner__title {
+  font-size: 16px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.5px;
+}
+
+.process-state-banner--alarm .process-state-banner__title {
+  color: var(--color-wine);
+}
+
+.process-state-banner--healthy .process-state-banner__title {
+  color: #166534;
+}
+
+.process-state-banner__subtext {
+  font-size: 13px;
+  color: var(--color-charcoal);
+  line-height: 1.4;
+}
+
+.process-state-banner__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background-color: var(--color-wine);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: var(--fw-label);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.process-state-banner__btn:hover {
+  opacity: 0.9;
+}
+
+.signals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .signals-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.live-process__left {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.contract-expander {
+  background-color: var(--color-white);
+  border: var(--border-card);
+  border-radius: var(--r-card);
+  padding: 14px 20px;
 }
 
-.live-process__right {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.contract-expander__summary {
+  font-size: 13px;
+  font-weight: var(--fw-label);
+  letter-spacing: 0.04em;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  user-select: none;
+}
+
+.contract-expander[open] .contract-expander__summary {
+  margin-bottom: 12px;
 }
 
 /* Quality Contract Card */
