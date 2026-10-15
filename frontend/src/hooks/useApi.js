@@ -261,15 +261,4 @@ export async function selectScenario(scenarioId) {
   return await response.json();
 }
 
-/**
- * Fetches the 11-scenario Operational Validation Suite scorecard report.
- */
-export async function fetchValidationSuite(runFresh = false) {
-  const response = await fetch(`${BASE_URL}/api/scenarios/validation-suite?run_fresh=${runFresh}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch validation suite: ${response.statusText}`);
-  }
-  return await response.json();
-}
-
 

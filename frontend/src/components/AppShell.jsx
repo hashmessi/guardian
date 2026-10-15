@@ -3,7 +3,6 @@ import './AppShell.css';
 import { usePolling, resetDemoSession, selectScenario } from '../hooks/useApi';
 import { CoPQModal } from './CoPQModal';
 import { ScenarioScorecardModal } from './ScenarioScorecardModal';
-import { ValidationSuiteModal } from './ValidationSuiteModal';
 import { OperationalCheckpointsModal } from './OperationalCheckpointsModal';
 
 export function AppShell({
@@ -13,8 +12,6 @@ export function AppShell({
   setShowCoPQModal: propSetShowCoPQ,
   showScorecardModal: propShowScorecard,
   setShowScorecardModal: propSetShowScorecard,
-  showValidationSuiteModal: propShowValidationSuite,
-  setShowValidationSuiteModal: propSetShowValidationSuite,
   showCheckpointsModal: propShowCheckpoints,
   setShowCheckpointsModal: propSetShowCheckpoints,
   children,
@@ -27,7 +24,6 @@ export function AppShell({
   
   // Scenario State
   const [localShowScorecardModal, setLocalShowScorecardModal] = useState(false);
-  const [localShowValidationSuiteModal, setLocalShowValidationSuiteModal] = useState(false);
   const [localShowCheckpointsModal, setLocalShowCheckpointsModal] = useState(false);
   const [isSwitchingScenario, setIsSwitchingScenario] = useState(false);
 
@@ -36,9 +32,6 @@ export function AppShell({
 
   const isScorecardOpen = propShowScorecard !== undefined ? propShowScorecard : localShowScorecardModal;
   const setScorecardOpen = propSetShowScorecard || setLocalShowScorecardModal;
-
-  const isValidationSuiteOpen = propShowValidationSuite !== undefined ? propShowValidationSuite : localShowValidationSuiteModal;
-  const setValidationSuiteOpen = propSetShowValidationSuite || setLocalShowValidationSuiteModal;
 
   const isCheckpointsOpen = propShowCheckpoints !== undefined ? propShowCheckpoints : localShowCheckpointsModal;
   const setCheckpointsOpen = propSetShowCheckpoints || setLocalShowCheckpointsModal;
@@ -248,13 +241,6 @@ export function AppShell({
         onClose={() => setScorecardOpen(false)}
         scorecard={activeScorecard}
         scenarioTitle={activeScenario?.title}
-      />
-
-      {/* Operational Validation Suite Modal */}
-      <ValidationSuiteModal
-        isOpen={isValidationSuiteOpen}
-        onClose={() => setValidationSuiteOpen(false)}
-        onSelectScenario={handleScenarioChange}
       />
 
       {/* Shop-Floor Operational Checkpoints Modal (QCHK-02, P0 human-channel gates) */}

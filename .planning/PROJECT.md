@@ -66,7 +66,7 @@ Process Guardian is a vendor-neutral injection-molding dynamic quality reaction 
 
 - Hardware or physical sensor rigs (DHT11, ESP32, breadboards) — prototype is software decision layer; hardware is not needed for judge evidence.
 - New generic dashboards or extra sensor charts — UI is strictly an evidence canvas for decisions, not passive graphing.
-- Chatbots, LLMs, or generative AI explanations — deterministic epistemic contracts and math are required for automotive auditability.
+- Open-ended chatbots or generative "ask the data" panels — deterministic epistemic contracts and math remain the decision surface. (Scope v1.2 adds one narrow, bounded exception: a local multilingual model, Laya, converts shop-floor text into a typed signal with a confidence score for the human-channel checkpoints; it is evidence the deterministic engine validates, never a verdict shown as fact, and the deterministic parser runs unconditionally so the loop never depends on the model. See `scope_plan.md` §2 and §6.)
 - Autonomous machine PLC write-back — safety violation; all machine adjustments remain operator-advised.
 - Complex cloud microservices or message queues — local-first SQLite and in-memory replay preserve determinism and demo reliability.
 - Computer vision edge cameras — downstream visual inspection is represented as a verified QC checkpoint input, not a custom camera hardware build.

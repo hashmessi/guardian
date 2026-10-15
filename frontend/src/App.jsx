@@ -11,12 +11,10 @@ export function App() {
   const [activeTab, setActiveTab] = useState('scenarios');
   const [showCoPQModal, setShowCoPQModal] = useState(false);
   const [showScorecardModal, setShowScorecardModal] = useState(false);
-  const [showValidationSuiteModal, setShowValidationSuiteModal] = useState(false);
   const [showCheckpointsModal, setShowCheckpointsModal] = useState(false);
 
   const openCoPQModal = () => setShowCoPQModal(true);
   const openScorecardModal = () => setShowScorecardModal(true);
-  const openValidationSuiteModal = () => setShowValidationSuiteModal(true);
   const openCheckpointsModal = () => setShowCheckpointsModal(true);
 
   const renderActiveScreen = () => {
@@ -28,7 +26,6 @@ export function App() {
           <FrontPage
             onSelectScenario={(scenarioId) => setActiveTab('detect')}
             onOpenScorecard={openScorecardModal}
-            onOpenValidationSuite={openValidationSuiteModal}
             onOpenCoPQModal={openCoPQModal}
             onNavigateToLive={(tab) => setActiveTab(tab || 'detect')}
           />
@@ -58,7 +55,6 @@ export function App() {
           <FrontPage
             onSelectScenario={(scenarioId) => setActiveTab('detect')}
             onOpenScorecard={openScorecardModal}
-            onOpenValidationSuite={openValidationSuiteModal}
             onOpenCoPQModal={openCoPQModal}
             onNavigateToLive={(tab) => setActiveTab(tab || 'detect')}
           />
@@ -74,8 +70,6 @@ export function App() {
       setShowCoPQModal={setShowCoPQModal}
       showScorecardModal={showScorecardModal}
       setShowScorecardModal={setShowScorecardModal}
-      showValidationSuiteModal={showValidationSuiteModal}
-      setShowValidationSuiteModal={setShowValidationSuiteModal}
       showCheckpointsModal={showCheckpointsModal}
       setShowCheckpointsModal={setShowCheckpointsModal}
     >
