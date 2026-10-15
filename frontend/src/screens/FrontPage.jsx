@@ -6,7 +6,6 @@ import { DetectionComparison } from '../components/DetectionComparison';
 export function FrontPage({
   onSelectScenario,
   onOpenScorecard,
-  onOpenValidationSuite,
   onOpenCoPQModal,
   onNavigateToLive,
 }) {
