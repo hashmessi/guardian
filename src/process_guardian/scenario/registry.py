@@ -314,7 +314,7 @@ def _build_scenario_catalog() -> Dict[str, ScenarioDefinition]:
                 phase="INTERVENTION",
                 label="Joint Root-Cause Optimization",
                 cycle_range="341–350",
-                description="Guardian ranks contributors (Zone 3: 58%, Pressure: 42%) and executes optimal action.",
+                description="Guardian ranks contributors (Zone 3: 58%, Pressure: 42%) and selects the minimum-cost feasible candidate against a no-action baseline.",
             ),
             NarrativeMilestone(
                 phase="RECOVERY",

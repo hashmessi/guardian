@@ -29,11 +29,18 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
 
   const isAbstain = recommendationData?.is_abstain === true || recommendationData?.operator_mode === 'ABSTAIN';
 
+  // RecommendationResponse has no top-level action_id -- the engine's selected
+  // candidate is only marked via candidate_comparison[].is_selected. Reading a
+  // field that doesn't exist on this response always came back undefined, so
+  // this silently applied 'A1' regardless of what the engine actually picked.
+  const recommendedActionId =
+    recommendationData?.candidate_comparison?.find((c) => c.is_selected)?.action_id || 'A1';
+
   const handleApply = async () => {
     setIsApplying(true);
     setApplyError(null);
     try {
-      await applyIntervention(recommendationData?.action_id || 'A1');
+      await applyIntervention(recommendedActionId);
       setApplied(true);
     } catch (err) {
       setApplyError(err.message || 'Failed to apply intervention');
@@ -80,7 +87,7 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
           <div className="intervention-section">
             <CandidateTable
               candidates={recommendationData?.candidate_comparison || []}
-              recommendedId={recommendationData?.action_id || 'A1'}
+              recommendedId={recommendedActionId}
               isAbstain={isAbstain}
               abstainReason={recommendationData?.abstain_reason}
             />

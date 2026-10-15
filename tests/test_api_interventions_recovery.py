@@ -93,6 +93,41 @@ def test_interventions_and_recommendation_flow(client):
     assert hist_data["applications"][0]["applied_by"] == "LEAD_OP_01"
 
 
+def test_apply_demo_rejects_unknown_action_id(client):
+    """Regression (hostile-review HIGH/MEDIUM): posting an action_id that isn't one
+    of the evaluated candidates used to be silently accepted -- either substituting
+    the engine's own pick (if a recommendation was pending) or fabricating a candidate
+    with the unknown id (if not) -- and reporting 200 APPLIED either way, with an
+    audit record for an action nobody actually offered."""
+    sim = build_regime_scenario(RegimeType.THERMAL_DRIFT, cycles=40, seed=123)
+    batch = [asdict(sim.step()) for _ in range(40)]
+    client.post("/api/cycles", json={"cycles": batch})
+
+    res_rec = client.get("/api/interventions/recommendation?machine_id=IMM-01")
+    assert res_rec.status_code == 200
+    valid_ids = {c["action_id"] for c in res_rec.json()["candidate_comparison"]}
+    assert valid_ids, "fixture must reach a real pending recommendation with candidates"
+    assert "NOT_REAL" not in valid_ids
+
+    res_bad = client.post(
+        "/api/interventions/apply-demo",
+        json={"machine_id": "IMM-01", "action_id": "NOT_REAL", "applied_by": "QA"},
+    )
+    assert res_bad.status_code == 404
+    assert "NOT_REAL" in res_bad.json()["detail"]
+
+    # No audit trail of an action that was never actually offered or applied.
+    res_hist = client.get("/api/interventions/history?machine_id=IMM-01")
+    assert res_hist.json()["applications"] == []
+
+    # A valid id from the same table still applies cleanly.
+    res_ok = client.post(
+        "/api/interventions/apply-demo",
+        json={"machine_id": "IMM-01", "action_id": next(iter(valid_ids)), "applied_by": "QA"},
+    )
+    assert res_ok.status_code == 200
+
+
 def test_recovery_and_containment_endpoints(client):
     """Verify recovery verification tracking, containment window inspection, and batch release."""
     # Ingest 10 healthy cycles

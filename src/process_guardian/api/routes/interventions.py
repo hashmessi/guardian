@@ -248,9 +248,18 @@ def apply_demo_intervention(
 
     # Check if there is a pending recommendation
     if not orchestrator.pending_recommendation:
-        # If in healthy state, simulate application of candidate A1 or specified action
+        # No recommendation to select a candidate from, so the only action this
+        # branch can honestly construct is the fixed demo baseline below -- an
+        # unrecognized action_id here used to be accepted at face value and
+        # written to the audit log as if it had been evaluated.
+        if req.action_id and req.action_id != "A1":
+            raise HTTPException(
+                status_code=404,
+                detail=f"Unknown action_id '{req.action_id}'. No pending recommendation to select it from; only 'A1' is available.",
+            )
+        # If in healthy state, simulate application of candidate A1
         candidate = CandidateAction(
-            action_id=req.action_id or "A1",
+            action_id="A1",
             action_type=ActionType.TEMP_ADJUST,
             name="Decrease barrel temp zone 3",
             target_signal="barrel_temp_z3",
@@ -266,7 +275,13 @@ def apply_demo_intervention(
         selected_eval = None
         if req.action_id:
             selected_eval = next((ev for ev in table.evaluations if ev.candidate.action_id == req.action_id), None)
-        if not selected_eval:
+            if not selected_eval:
+                valid_ids = [ev.candidate.action_id for ev in table.evaluations]
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Unknown action_id '{req.action_id}'. Valid candidates for this recommendation: {valid_ids}.",
+                )
+        else:
             selected_eval = next((ev for ev in table.evaluations if ev.is_selected), table.evaluations[0])
         candidate = selected_eval.candidate
         pre_risk = selected_eval.pre_intervention_risk
