@@ -84,6 +84,18 @@ export function LiveProcess({ onProceed }) {
   const isWeightOk = partWeight != null && weightMin != null && weightMax != null
     && partWeight >= weightMin && partWeight <= weightMax;
 
+  // Cycle Duration row: sourced straight from the live process fingerprint —
+  // center ± tolerance derived from the same envelope the gauges use. If the
+  // fingerprint payload has no cycle-time envelope, render the muted missing
+  // data treatment; a remembered constant was shown here before and that is
+  // not a number the engine proved.
+  const fpCycleEnvelope = fpData?.signal_envelopes?.cycle_time;
+  const cycleSpecText = fpCycleEnvelope
+    && fpCycleEnvelope.lower != null
+    && fpCycleEnvelope.upper != null
+    ? `${((fpCycleEnvelope.lower + fpCycleEnvelope.upper) / 2).toFixed(1)} ± ${((fpCycleEnvelope.upper - fpCycleEnvelope.lower) / 2).toFixed(1)}s`
+    : null;
+
   const qualityRiskPct =
     processData.quality_risk_pct ??
     riskData?.risk_percentage ??
@@ -215,7 +227,13 @@ export function LiveProcess({ onProceed }) {
               </tr>
               <tr>
                 <td>Cycle Duration</td>
-                <td className="num">26.5 ± 2.5s</td>
+                <td className="num">
+                  {cycleSpecText || (
+                    <span style={{ color: 'var(--color-stone, #666666)' }}>
+                      — · awaiting process fingerprint
+                    </span>
+                  )}
+                </td>
                 <td>In-Line Press PLC Timestamp</td>
                 <td>
                   <span className={`pill ${!isCycleTimeDrifting ? 'pill--lagoon' : 'pill--violet'}`}>
