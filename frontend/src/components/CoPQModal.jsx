@@ -27,6 +27,20 @@ export function CoPQModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  // Escape closes the modal (same pattern as ContainmentTag).
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   const loadParams = async () => {
     try {
       const data = await fetchCoPQParameters();

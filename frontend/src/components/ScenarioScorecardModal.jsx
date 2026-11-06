@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './ScenarioScorecardModal.css';
 import { scenarioDisplayLabel } from '../scenarioDisplay';
 
 export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTitle }) {
+  // Escape closes the modal (same pattern as ContainmentTag).
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !scorecard) return null;
 
   const pillars = [

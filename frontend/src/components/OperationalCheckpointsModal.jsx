@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './OperationalCheckpointsModal.css';
 import { usePolling, submitHumanChannelText, recordMoldSpray } from '../hooks/useApi';
 
@@ -65,6 +65,21 @@ function HumanChannelAttestation({ question, cycleIndex, placeholder, onApplied 
 export function OperationalCheckpointsModal({ isOpen, onClose }) {
   const { data: report, refresh } = usePolling('/api/checkpoints/operational', 3000);
   const [spraying, setSpraying] = useState(false);
+  const [sprayError, setSprayError] = useState(false);
+
+  // Escape closes the modal (same pattern as ContainmentTag).
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -96,10 +111,14 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
 
   const handleApplySpray = async () => {
     setSpraying(true);
+    setSprayError(false);
     try {
       await recordMoldSpray(spray.current_cycle);
     } catch (err) {
       console.error('Failed to record mold spray:', err);
+      // A silent failure here left the operator believing the gate was
+      // updated. Show visible feedback (no raw err.message on screen).
+      setSprayError(true);
     } finally {
       setSpraying(false);
     }
@@ -245,6 +264,12 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
             <button type="button" className="ockp-primary-btn" onClick={handleApplySpray} disabled={spraying}>
               {spraying ? 'RECORDING SPRAY…' : 'APPLY MOLD SPRAY NOW'}
             </button>
+
+            {sprayError && (
+              <span role="alert" className="ockp-error-line">
+                Could not record that. Check the engine connection and try again.
+              </span>
+            )}
 
             <HumanChannelAttestation
               question="spray_done"
