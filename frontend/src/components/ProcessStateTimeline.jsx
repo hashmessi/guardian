@@ -2,11 +2,11 @@ import React from 'react';
 import './ProcessStateTimeline.css';
 
 const STEPS = [
-  { id: 0, label: 'HEALTHY' },
+  { id: 0, label: 'BASELINE' },
   { id: 1, label: 'DRIFT' },
-  { id: 2, label: 'RISK' },
-  { id: 3, label: 'INTERVENTION' },
-  { id: 4, label: 'RECOVERY' },
+  { id: 2, label: 'DECISION' },
+  { id: 3, label: 'ACTION' },
+  { id: 4, label: 'VERIFY' },
 ];
 
 export function ProcessStateTimeline({ currentState = 'HEALTHY' }) {
@@ -42,9 +42,9 @@ export function ProcessStateTimeline({ currentState = 'HEALTHY' }) {
   return (
     <div className="state-timeline">
       <div className="state-timeline__header">
-        <span className="state-timeline__title">PROCESS STATE PIPELINE</span>
-        <span className="state-timeline__raw-state pill pill--mist num">
-          STATE: {currentState}
+        <span className="state-timeline__title">CURRENT DECISION STAGE</span>
+        <span className="state-timeline__raw-state pill pill--mist">
+          {STEPS[activeIndex].label}
         </span>
       </div>
 

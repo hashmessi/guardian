@@ -4,6 +4,7 @@ import './RecommendationCard.css';
 export function RecommendationCard({
   recommendation,
   isAbstain = false,
+  isReady = false,
   onApply,
   isApplying = false,
   applied = false,
@@ -29,30 +30,42 @@ export function RecommendationCard({
       .toUpperCase();
   };
 
-  const dominantAction = isAbstain
+  const dominantAction = !isReady
+    ? 'ASSESSING LIVE EVIDENCE'
+    : isAbstain
     ? (recommendation?.abstain_reason ? `ABSTAIN — ${recommendation.abstain_reason.toUpperCase()}` : 'ABSTAIN — OPERATOR VERIFICATION REQUIRED')
     : formatActionTitle(rawAction);
 
-  const why = recommendation?.why || 'Physical parameter deviation requires correction to restore quality contract safety margin.';
-  const operatingLimit = recommendation?.operating_limit || 'Parameter adjustment verified within calibrated safe operating envelope.';
-  const expectedEffect = recommendation?.expected_effect || 'Reduces projected defect risk and returns process parameters toward nominal baseline.';
+  const why = !isReady
+    ? 'No action is available until Process Guardian selects a verified candidate.'
+    : recommendation?.why || 'Physical parameter deviation requires correction to restore quality contract safety margin.';
+  const operatingLimit = !isReady
+    ? 'Waiting for the current process state and operating limits.'
+    : recommendation?.operating_limit || 'Parameter adjustment verified within calibrated safe operating envelope.';
+  const expectedEffect = !isReady
+    ? 'The action remains locked until the evidence is complete.'
+    : recommendation?.expected_effect || 'Reduces projected defect risk and returns process parameters toward nominal baseline.';
 
   // Button state
   let btnClass = 'apply-btn--active';
-  let btnLabel = 'LOG OPERATOR ACTION';
+  let btnLabel = 'CONFIRM OPERATOR ACTION';
   let btnDisabled = false;
 
-  if (isAbstain) {
+  if (!isReady) {
+    btnClass = 'apply-btn--disabled';
+    btnLabel = 'WAITING FOR A VERIFIED RECOMMENDATION';
+    btnDisabled = true;
+  } else if (isAbstain) {
     btnClass = 'apply-btn--disabled';
     btnLabel = 'ABSTAIN — INTERVENTION BLOCKED BY SAFETY POLICY';
     btnDisabled = true;
   } else if (isApplying) {
     btnClass = 'apply-btn--applying';
-    btnLabel = 'LOGGING…';
+    btnLabel = 'RECORDING ACTION…';
     btnDisabled = true;
   } else if (applied) {
     btnClass = 'apply-btn--done';
-    btnLabel = '✓ ACTION LOGGED — MONITORING RECOVERY';
+    btnLabel = '✓ ACTION RECORDED — CHECKING RECOVERY';
     btnDisabled = true;
   }
 
@@ -80,17 +93,17 @@ export function RecommendationCard({
       {/* 3 Physical & Operational Support Attributes + Reconciled Economics */}
       <div className="rec-attributes-grid">
         <div className="rec-attr-card">
-          <span className="rec-attr-label">Physical Justification (Why)</span>
+          <span className="rec-attr-label">Why this action</span>
           <span className="rec-attr-value">{why}</span>
         </div>
 
         <div className="rec-attr-card">
-          <span className="rec-attr-label">Safe Constraint Envelope</span>
+          <span className="rec-attr-label">Safe operating limit</span>
           <span className="rec-attr-value">{operatingLimit}</span>
         </div>
 
         <div className="rec-attr-card">
-          <span className="rec-attr-label">Modeled Risk Reduction</span>
+          <span className="rec-attr-label">Expected modeled effect</span>
           <span className="rec-attr-value">{expectedEffect}</span>
         </div>
 

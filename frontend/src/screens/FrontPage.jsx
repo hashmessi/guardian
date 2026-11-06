@@ -113,10 +113,8 @@ export function FrontPage({
           It catches the drift your machine&rsquo;s own limits pass as normal.
         </h1>
         <p className="fp-hero__subtitle">
-          Process Guardian watches shop-floor telemetry for the multi-signal drift that stays inside every
-          individual tolerance band, names the variable responsible, prices waiting against acting, and
-          recommends the one smallest setting change &mdash; then verifies recovery with a physical sample
-          before the lot is released. It never writes to the machine; the operator decides.
+          Run a controlled incident replay. See what changed, which production to hold, the safest
+          operator action, and the QC evidence required before release.
         </p>
 
         {/* Flagship Demo Box (Scenario 06 - Compound Drift) */}
@@ -128,10 +126,11 @@ export function FrontPage({
               <span className="badge-spec">500 CYCLES · SEED #506</span>
             </div>
             <h2 className="flagship-title">
-              Compound Multi-Signal Drift (Coupled Thermal & Hydraulic Degradation)
+              The complete decision replay
             </h2>
             <p className="flagship-description">
-              Coupled barrel Zone 3 thermal drift (+0.22°C/cycle) + hydraulic valve wear (-0.28 bar/cycle) threatens cavity pack. Single-variable factory alarms miss multivariate covariance until physical scrap occurs. Process Guardian detects early, isolates dominant contributors, applies minimum-cost intervention, and verifies recovery.
+              A compound temperature and pressure drift stays inside individual alarm limits. Process Guardian
+              detects the combined risk, recommends a constrained action, then verifies recovery before QC release.
             </p>
           </div>
           <div className="flagship-action">
@@ -141,9 +140,9 @@ export function FrontPage({
               disabled={loadingScenarioId === 'SCN-06-COMPOUND'}
               aria-busy={loadingScenarioId === 'SCN-06-COMPOUND'}
             >
-              {loadingScenarioId === 'SCN-06-COMPOUND' ? 'Starting the line…' : 'Run the flagship scenario'}
+              {loadingScenarioId === 'SCN-06-COMPOUND' ? 'Opening replay…' : 'Start the decision replay'}
             </button>
-            <span className="flagship-action__hint">Opens the live line at the drift</span>
+            <span className="flagship-action__hint">Opens at the decision point</span>
           </div>
         </div>
 
@@ -162,9 +161,9 @@ export function FrontPage({
       <section className="fp-scenarios-section">
         <div className="scenarios-filter-bar">
           <div className="scenarios-heading">
-            <h2 className="scenarios-heading__title">Production failure trajectories</h2>
+            <h2 className="scenarios-heading__title">Additional proof scenarios</h2>
             <p className="scenarios-heading__sub">
-              Each one replays through the same engine. Pick any; the loop does not change.
+              Optional replays for the material-risk and safety-gate questions judges will ask.
             </p>
           </div>
         </div>

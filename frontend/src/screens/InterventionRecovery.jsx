@@ -33,10 +33,12 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
   // candidate is only marked via candidate_comparison[].is_selected. Reading a
   // field that doesn't exist on this response always came back undefined, so
   // this silently applied 'A1' regardless of what the engine actually picked.
-  const recommendedActionId =
-    recommendationData?.candidate_comparison?.find((c) => c.is_selected)?.action_id || 'A1';
+  const selectedCandidate = recommendationData?.candidate_comparison?.find((c) => c.is_selected);
+  const recommendedActionId = selectedCandidate?.action_id ?? null;
+  const isRecommendationReady = isAbstain || Boolean(selectedCandidate);
 
   const handleApply = async () => {
+    if (!recommendedActionId || isAbstain) return;
     setIsApplying(true);
     setApplyError(null);
     try {
@@ -73,6 +75,7 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
             <RecommendationCard
               recommendation={recommendationData}
               isAbstain={isAbstain}
+              isReady={isRecommendationReady}
               onApply={handleApply}
               isApplying={isApplying}
               applied={applied}
