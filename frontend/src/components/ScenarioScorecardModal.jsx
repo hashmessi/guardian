@@ -1,5 +1,6 @@
 import React from 'react';
 import './ScenarioScorecardModal.css';
+import { scenarioDisplayLabel } from '../scenarioDisplay';
 
 export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTitle }) {
   if (!isOpen || !scorecard) return null;
@@ -13,6 +14,10 @@ export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTit
     { key: 'counterfactual_proof', label: '6. Counterfactual Causality', data: scorecard.counterfactual_proof },
   ];
 
+  // Never render a total that is not the length of this array — the badge and
+  // the six pillar cards below it must never contradict each other again.
+  const passedCount = pillars.filter((p) => p.data?.passed).length;
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="scenario-scorecard-modal" onClick={(e) => e.stopPropagation()}>
@@ -20,11 +25,13 @@ export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTit
         <div className="scorecard-header">
           <div className="scorecard-header-left">
             <span className="scorecard-tag">OPERATIONAL EVIDENCE SCORECARD</span>
-            <h2 className="scorecard-title">{scorecard.scenario_title || scenarioTitle}</h2>
+            <h2 className="scorecard-title">{scenarioDisplayLabel(scorecard.scenario_id, scorecard.scenario_title || scenarioTitle)}</h2>
           </div>
           <div className="scorecard-header-right">
             <span className={`status-pill ${scorecard.overall_passed ? 'status-pill--pass' : 'status-pill--fail'}`}>
-              {scorecard.overall_passed ? '✓ 7/7 PILLARS PASSED' : '⚠ VERIFICATION FAILED'}
+              {scorecard.overall_passed
+                ? `✓ ${passedCount}/${pillars.length} PILLARS PASSED`
+                : `⚠ ${passedCount}/${pillars.length} PILLARS PASSED`}
             </span>
             <button className="scorecard-close-btn" onClick={onClose} aria-label="Close">✕</button>
           </div>
@@ -36,7 +43,7 @@ export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTit
           <span className="scorecard-category-badge">{scorecard.category?.toUpperCase()} REGIME</span>
         </div>
 
-        {/* 7 Pillars Checklist */}
+        {/* Pillars Checklist */}
         <div className="scorecard-pillars-grid">
           {pillars.map((pillar) => (
             <div key={pillar.key} className={`pillar-card ${pillar.data?.passed ? 'pillar-card--pass' : 'pillar-card--fail'}`}>
