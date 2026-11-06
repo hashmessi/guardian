@@ -137,7 +137,7 @@ export function IncidentDiagnosis({ onProceed }) {
               <div className="escalation-point">
                 <span className="escalation-point__label">PROJECTED DEFECT RISK</span>
                 <span className="escalation-point__value escalation-point__value--current num">
-                  {currentRisk.toFixed(1)}%
+                  {currentRisk == null ? '—' : `${currentRisk.toFixed(1)}%`}
                 </span>
               </div>
             </div>
