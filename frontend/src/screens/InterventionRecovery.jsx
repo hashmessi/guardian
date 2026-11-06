@@ -45,7 +45,8 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
       await applyIntervention(recommendedActionId);
       setApplied(true);
     } catch (err) {
-      setApplyError(err.message || 'Failed to apply intervention');
+      console.error('Failed to apply intervention:', err);
+      setApplyError('Could not apply that recommendation. Check the engine connection and try again.');
     } finally {
       setIsApplying(false);
     }

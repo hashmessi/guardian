@@ -97,9 +97,11 @@ export function FrontPage({
         onNavigateToLive('detect');
       }
     } catch (err) {
-      // Silent failure here used to look like a dead button mid-demo.
+      // Silent failure here used to look like a dead button mid-demo. State
+      // what failed and what to do, in operator language — no raw err.message.
+      console.error('Failed to start scenario replay:', err);
       setRunError(
-        `Could not start ${scenarioDisplayLabel(scenarioId)}. The engine is not answering on its API port. (${err.message})`
+        `Could not start ${scenarioDisplayLabel(scenarioId)}. The engine is not answering on its API port — confirm the Process Guardian engine window is running, then try again.`
       );
     } finally {
       setLoadingScenarioId(null);
@@ -167,7 +169,7 @@ export function FrontPage({
           <div className="scenarios-heading">
             <h2 className="scenarios-heading__title">Additional proof scenarios</h2>
             <p className="scenarios-heading__sub">
-              Optional replays for the material-risk and safety-gate questions judges will ask.
+              Optional replays for the material-risk and safety-gate questions an evaluator will ask.
             </p>
           </div>
         </div>
@@ -247,7 +249,10 @@ export function FrontPage({
                       if (onOpenScorecard) {
                         selectScenario(s.id)
                           .then(() => onOpenScorecard())
-                          .catch((err) => setRunError(`Could not load the scorecard. (${err.message})`));
+                          .catch((err) => {
+                            console.error('Failed to load scorecard:', err);
+                            setRunError('Could not load the scorecard. Check the engine connection and try again.');
+                          });
                       }
                     }}
                     title="Per-pillar evidence for this scenario"

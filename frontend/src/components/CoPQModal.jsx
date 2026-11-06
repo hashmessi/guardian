@@ -82,7 +82,8 @@ export function CoPQModal({ isOpen, onClose }) {
         onClose();
       }, 700);
     } catch (err) {
-      setSaveStatus(`Error: ${err.message}`);
+      console.error('Failed to save CoPQ parameters:', err);
+      setSaveStatus('Could not save the parameters. Check the engine connection and try again.');
     } finally {
       setLoading(false);
     }

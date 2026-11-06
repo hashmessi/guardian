@@ -6,6 +6,10 @@ import { ScenarioScorecardModal } from './ScenarioScorecardModal';
 import { OperationalCheckpointsModal } from './OperationalCheckpointsModal';
 import { scenarioDisplayLabel } from '../scenarioDisplay';
 
+// Demo order for the locked hero set (scope_plan.md Sec.4): the dropdown always
+// reads Scenario 1 → 2 → 3, matching the front page. Unknown ids sort after.
+const SCENARIO_DEMO_ORDER = ['SCN-06-COMPOUND', 'SCN-FLIP-HUMAN-CHANNEL', 'SCN-08-LOW-CONF-ABSTAIN'];
+
 export function AppShell({
   activeTab,
   onTabChange,
@@ -149,7 +153,11 @@ export function AppShell({
               title="Select a controlled demo replay"
             >
               {scenariosList && scenariosList.length > 0 ? (
-                scenariosList.map((s) => (
+                [...scenariosList].sort(
+                  (a, b) =>
+                    (SCENARIO_DEMO_ORDER.indexOf(a.scenario_id) + 1 || SCENARIO_DEMO_ORDER.length + 1)
+                    - (SCENARIO_DEMO_ORDER.indexOf(b.scenario_id) + 1 || SCENARIO_DEMO_ORDER.length + 1)
+                ).map((s) => (
                   <option key={s.scenario_id} value={s.scenario_id}>
                     {scenarioDisplayLabel(s.scenario_id, s.title)}
                   </option>

@@ -25,7 +25,8 @@ function HumanChannelAttestation({ question, cycleIndex, placeholder, onApplied 
       setText('');
       if (res.applied && onApplied) onApplied();
     } catch (err) {
-      setError(err.message);
+      console.error('Failed to submit human-channel attestation:', err);
+      setError('Could not record that. Check the engine connection and try again.');
     } finally {
       setSubmitting(false);
     }
