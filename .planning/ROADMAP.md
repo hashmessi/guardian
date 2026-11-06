@@ -89,6 +89,29 @@
 
 ---
 
+### Phase 14: UI Honesty & Visual System Remediation
+**Goal:** Close every finding from the Phase 13 retroactive 6-pillar UI audit (13-UI-REVIEW.md, overall 13/24) to reach a clean 24/24: kill all fabricated-fallback and self-contradiction defects, unify the color/typography/spacing systems onto tokens.css, and remove dead style systems.
+
+**Requirements:** UI-FIX-01..08 (derived from audit findings):
+- UI-FIX-01 Scorecard pillar-count honesty (derive badge from array; 6 pillars everywhere)
+- UI-FIX-02 CandidateTable honest empty state (no fabricated rows, real count, correct highlight)
+- UI-FIX-03 Interaction integrity (ESC/focus handling on modals, visible failure feedback on spray record, null-safe risk rendering)
+- UI-FIX-04 Copy discipline (no internal IDs/judge vocabulary/raw err.message in user-facing text; ordered dropdown)
+- UI-FIX-05 Color token unification (58 off-token hex → tokens.css; one healthy-green regime; no box-shadows per token rule; dead styles removed)
+- UI-FIX-06 Typography scale (type-size scale in tokens; sizes/weights map to tokens)
+- UI-FIX-07 Spacing scale adoption (structural px → --sp steps)
+- UI-FIX-08 Planning-record correction (13-SUMMARY.md false components claim noted per DEMO_FREEZE)
+
+**Success Criteria:**
+1. Zero fabricated values reachable on any screen (grep-verified: no hardcoded candidate rows/count, no 7/7 literal, no hardcoded envelope where live value exists).
+2. No off-token hex color values in frontend CSS that duplicate token semantics; no box-shadow declarations remaining except none.
+3. Typography uses only declared token sizes/weights; spacing uses --sp steps for all structural values (>10px).
+4. `npm run build` + lint green; audit re-score shows no pillar below 4.
+
+**Status:** Planned
+
+---
+
 ## Coverage Summary
 
 | Phase | Requirements | Count | Status |
@@ -99,6 +122,7 @@
 | Phase 11 | QCHK-01, QCHK-02, CNTN-05 | 3 | Complete ✓ |
 | Phase 12 | CRPL-01, CRPL-02 | 2 | Complete ✓ |
 | Phase 13 | Final Hardening & 10-Scenario Validation Suite | — | Complete ✓ |
+| Phase 14 | UI Honesty & Visual System Remediation | UI-FIX-01..08 | In Progress |
 | **Total** | | **71** | **100% Validated** ✓ |
 
 ---
