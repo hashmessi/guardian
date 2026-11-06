@@ -55,3 +55,11 @@ Phase 13 successfully transforms Process Guardian from a single-drift demonstrat
 1. **"Why should we trust the recommendation?"**: Every recommendation is bounded by 5 physical constraint layers (machine safety, recipe limits, fingerprint $\pm 3\sigma$, single-step limits, directional drift opposition) and evaluated against real-time decision economics ($DecisionValue > 0$).
 2. **"Does this work beyond a single hardcoded demo?"**: 10 distinct industrial scenarios spanning thermal, pressure, moisture, clerical recipe errors, and compound interactions all run through the exact same decision pipeline with 100% objective verification.
 3. **"How do you prove avoided scrap without real factory trials?"**: Controlled counterfactual replay runs identical seeds and disturbance streams side-by-side (Guardian OFF vs Guardian ON), demonstrating $>75\%$ suspect lot collapse under strict simulation disclosures.
+
+---
+
+## Correction (2026-11-06, Phase 14 audit)
+
+- The component list above named `ScenarioTimelineBar` and `ValidationSuiteModal` as built and wired, but neither component exists in the frontend — that claim was wrong.
+- Their absence is deliberate: DEMO_FREEZE §2 locks the automated validation suite as "cited, not shown" and "it is never a screen in the live demo," so neither was ever rendered.
+- The leftover dead trigger CSS (`.scorecard-trigger-btn` / `.validation-suite-trigger-btn` glow styles) is removed in Phase 14; the table above is a planning artifact, not a record of shipped UI.
