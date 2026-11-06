@@ -4,6 +4,7 @@ import { usePolling, resetDemoSession, selectScenario } from '../hooks/useApi';
 import { CoPQModal } from './CoPQModal';
 import { ScenarioScorecardModal } from './ScenarioScorecardModal';
 import { OperationalCheckpointsModal } from './OperationalCheckpointsModal';
+import { scenarioDisplayLabel } from '../scenarioDisplay';
 
 export function AppShell({
   activeTab,
@@ -50,7 +51,7 @@ export function AppShell({
   const { data: activeScnData } = usePolling('/api/scenarios/active', 2000);
   const { data: scenariosList } = usePolling('/api/scenarios?hero_only=true', 30000);
 
-  // Active scenario details. Default matches the flagship (S06) until a
+  // Active scenario details. Default matches the flagship (Scenario 1) until a
   // scenario is actually selected.
   const activeScenarioId = activeScnData?.active_scenario_id || 'SCN-06-COMPOUND';
   const activeScenario = activeScnData?.scenario;
@@ -86,10 +87,10 @@ export function AppShell({
   const handleScenarioChange = async (newScnId) => {
     if (newScnId === activeScenarioId || isSwitchingScenario) return;
     setIsSwitchingScenario(true);
-    setResetStatus(`Loading ${newScnId}...`);
+    setResetStatus(`Loading ${scenarioDisplayLabel(newScnId)}...`);
     try {
       await selectScenario(newScnId);
-      setResetStatus(`✓ ${newScnId} active`);
+      setResetStatus(`✓ ${scenarioDisplayLabel(newScnId)} active`);
       setTimeout(() => {
         setResetStatus(null);
       }, 2500);
@@ -150,15 +151,16 @@ export function AppShell({
               {scenariosList && scenariosList.length > 0 ? (
                 scenariosList.map((s) => (
                   <option key={s.scenario_id} value={s.scenario_id}>
-                    {s.title}
+                    {scenarioDisplayLabel(s.scenario_id, s.title)}
                   </option>
                 ))
               ) : (
                 // Offline fallback, kept in sync with the locked hero set
                 // (scope_plan.md Sec.4) in case the engine isn't answering yet.
                 <>
-                  <option value="SCN-06-COMPOUND">Scenario 06 — Compound Multi-Signal Drift</option>
-                  <option value="SCN-08-LOW-CONF-ABSTAIN">Scenario 08 — Out-of-Distribution Drift</option>
+                  <option value="SCN-06-COMPOUND">Scenario 1 — Compound Multi-Signal Drift</option>
+                  <option value="SCN-FLIP-HUMAN-CHANNEL">Scenario 2 — Human-Channel Material Risk</option>
+                  <option value="SCN-08-LOW-CONF-ABSTAIN">Scenario 3 — Out-of-Distribution Drift</option>
                 </>
               )}
             </select>
@@ -237,7 +239,9 @@ export function AppShell({
         isOpen={isScorecardOpen}
         onClose={() => setScorecardOpen(false)}
         scorecard={activeScorecard}
-        scenarioTitle={activeScenario?.title}
+        scenarioTitle={activeScenario
+          ? scenarioDisplayLabel(activeScenario.scenario_id || activeScnData?.active_scenario_id, activeScenario.title)
+          : undefined}
       />
 
       {/* Shop-Floor Operational Checkpoints Modal (QCHK-02, P0 human-channel gates) */}

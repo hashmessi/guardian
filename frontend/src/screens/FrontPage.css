@@ -60,7 +60,7 @@
   max-width: 860px;
 }
 
-/* Flagship Card (Scenario S06 Boss Box) */
+/* Flagship Card (Scenario 1 Boss Box) */
 .flagship-demo-card {
   display: flex;
   align-items: center;
@@ -333,6 +333,16 @@
   color: var(--color-charcoal, #292827);
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+/* Bold highlighted scenario number (1-3, ordered) */
+.scenario-num {
+  background: var(--color-lilac, #d4c7ff);
+  color: var(--color-charcoal, #292827);
+  font-weight: var(--fw-bold, 700);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 .scenario-card__desc {

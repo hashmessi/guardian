@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './FrontPage.css';
 import { selectScenario } from '../hooks/useApi';
+import { scenarioDisplayLabel } from '../scenarioDisplay';
 import { DetectionComparison } from '../components/DetectionComparison';
 
 export function FrontPage({
@@ -13,16 +14,17 @@ export function FrontPage({
   const [runError, setRunError] = useState(null);
 
   // Locked demo scope (scope_plan.md Sec.4): three scenarios, each a distinct
-  // proof. S06 proves the closed loop + the SPC-says-fine/Guardian-acts
+  // proof. Scenario 1 proves the closed loop + the SPC-says-fine/Guardian-acts
   // contradiction; SCN-FLIP-HUMAN-CHANNEL proves the sensor-blind gap filled
-  // (scope_plan.md Sec.3: "the one demo that wins"); S08 proves the ABSTAIN
+  // (scope_plan.md Sec.3: "the one demo that wins"); Scenario 3 proves the ABSTAIN
   // trust gate. The other 8 registry scenarios still run in the automated
   // validation suite (cited, not shown).
   const scenarios = [
     {
       id: 'SCN-06-COMPOUND',
-      code: 'S06',
-      title: 'Scenario 06 — Compound Multi-Signal Drift',
+      code: 'S1',
+      num: 1,
+      title: 'Compound Multi-Signal Drift',
       category: 'COMPOUND (BOSS)',
       categoryType: 'compound',
       isHero: true,
@@ -41,8 +43,9 @@ export function FrontPage({
     },
     {
       id: 'SCN-FLIP-HUMAN-CHANNEL',
-      code: 'S-FLIP',
-      title: 'Scenario FLIP — Human-Channel Material Risk',
+      code: 'S2',
+      num: 2,
+      title: 'Human-Channel Material Risk',
       category: 'MATERIAL (SENSOR-BLIND)',
       categoryType: 'material',
       isHero: true,
@@ -61,12 +64,13 @@ export function FrontPage({
     },
     {
       id: 'SCN-08-LOW-CONF-ABSTAIN',
-      code: 'S08',
-      title: 'Scenario 08 — Out-of-Distribution Drift',
+      code: 'S3',
+      num: 3,
+      title: 'Out-of-Distribution Drift',
       category: 'SAFETY GATE',
       categoryType: 'safety',
       isHero: true,
-      cycles: 350,
+      cycles: 400,
       seed: 708,
       description:
         'High-variance uncalibrated drift pattern falls outside surrogate response surface, depressing model epistemic confidence below 0.65.',
@@ -95,7 +99,7 @@ export function FrontPage({
     } catch (err) {
       // Silent failure here used to look like a dead button mid-demo.
       setRunError(
-        `Could not start ${scenarioId}. The engine is not answering on its API port. (${err.message})`
+        `Could not start ${scenarioDisplayLabel(scenarioId)}. The engine is not answering on its API port. (${err.message})`
       );
     } finally {
       setLoadingScenarioId(null);
@@ -122,7 +126,7 @@ export function FrontPage({
           <div className="flagship-demo-content">
             <div className="flagship-badges">
               <span className="badge-flagship">FLAGSHIP DEMO</span>
-              <span className="badge-scenario">SCENARIO S06</span>
+              <span className="badge-scenario">SCENARIO 1</span>
               <span className="badge-spec">500 CYCLES · SEED #506</span>
             </div>
             <h2 className="flagship-title">
@@ -184,7 +188,9 @@ export function FrontPage({
               </div>
 
               {/* Title & Description */}
-              <h3 className="scenario-card__title">{s.title}</h3>
+              <h3 className="scenario-card__title">
+                Scenario&nbsp;<span className="scenario-num">{s.num}</span>&nbsp;&mdash;&nbsp;{s.title}
+              </h3>
               <p className="scenario-card__desc">{s.description}</p>
 
               {/* THE 3-STAGE CLOSED-LOOP CONTRACT */}
