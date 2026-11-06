@@ -25,6 +25,11 @@
   border-color: #bbf7d0;
 }
 
+.process-state-banner--unavailable {
+  border-color: var(--color-stone);
+  background-color: var(--color-white);
+}
+
 .process-state-banner__left {
   display: flex;
   flex-direction: column;

@@ -44,7 +44,7 @@ export function AppShell({
   }, []);
 
   // Poll core telemetry and scenario streams
-  const { data: processData, failures: processFailures } = usePolling('/api/process/current', 2000);
+  const { data: processData, failures: processFailures, refresh: refreshProcess } = usePolling('/api/process/current', 2000);
   const { data: riskData } = usePolling('/api/quality/risk', 2000);
   const { data: driftData } = usePolling('/api/process/drift', 2000);
   const { data: activeScnData } = usePolling('/api/scenarios/active', 2000);
@@ -77,8 +77,8 @@ export function AppShell({
       setTimeout(() => {
         window.location.reload();
       }, 400);
-    } catch (err) {
-      setResetStatus(`Error: ${err.message}`);
+    } catch {
+      setResetStatus('Could not reset the replay. Check the engine connection and try again.');
       setIsResetting(false);
     }
   };
@@ -93,8 +93,8 @@ export function AppShell({
       setTimeout(() => {
         setResetStatus(null);
       }, 2500);
-    } catch (err) {
-      setResetStatus(`Error: ${err.message}`);
+    } catch {
+      setResetStatus('Could not load that replay. Check the engine connection and try again.');
     } finally {
       setIsSwitchingScenario(false);
     }
@@ -104,11 +104,12 @@ export function AppShell({
     <div className="app-shell">
       {/* Zone 1: Brand Bar */}
       <header className="app-shell__brand">
-        <div
+        <button
+          type="button"
           className="brand-left"
           onClick={() => onTabChange && onTabChange('scenarios')}
-          style={{ cursor: 'pointer' }}
-          title="Process Guardian — Return to Scenario Showcase"
+          title="Return to scenario briefing"
+          aria-label="Process Guardian — return to scenario briefing"
         >
           <span className="brand-wordmark">
             <span className="brand-icon-hex" aria-hidden="true">⬡</span> PROCESS GUARDIAN
@@ -116,7 +117,7 @@ export function AppShell({
           <span className="brand-subtitle">
             Ragam Polymolds · Plant IMM-01
           </span>
-        </div>
+        </button>
         <div className="brand-right">
           <div className="plant-target-badge" title="Ragam Polymolds Automotive Quality Target">
             <span>SCRAP TARGET: ≤2.0% (BASELINE: 6.8%)</span>
@@ -144,7 +145,7 @@ export function AppShell({
               value={activeScenarioId}
               onChange={(e) => handleScenarioChange(e.target.value)}
               disabled={isSwitchingScenario}
-              title="Select one of the 2 locked demo scenarios"
+              title="Select a controlled demo replay"
             >
               {scenariosList && scenariosList.length > 0 ? (
                 scenariosList.map((s) => (
@@ -177,14 +178,14 @@ export function AppShell({
             <button
               className="demo-reset-btn"
               onClick={() => onTabChange('scenarios')}
-              title="Return to 10 Industrial Scenarios Showcase"
+              title="Return to scenario briefing"
               style={{ fontWeight: 500 }}
             >
-              ← ALL SCENARIOS
+              ← DEMO BRIEFING
             </button>
           )}
 
-          {resetStatus && <span className="reset-status-msg">{resetStatus}</span>}
+          {resetStatus && <span className="reset-status-msg" role="status">{resetStatus}</span>}
         </div>
 
         <div className="machine-context">
@@ -198,10 +199,11 @@ export function AppShell({
         <div className="engine-offline-banner" role="alert">
           <strong>ENGINE OFFLINE</strong>
           <span>
-            No response from the Process Guardian engine. Readings are not live -- do not act on anything
-            shown. Start it with <code>python -m uvicorn process_guardian.api.app:app --port 8000</code>
-            {' '}(or run <code>demo.cmd</code>).
+            The decision engine is not responding. Readings may be stale, so do not act on this screen.
           </span>
+          <button type="button" className="engine-offline-retry" onClick={refreshProcess}>
+            Retry connection
+          </button>
         </div>
       )}
 
@@ -209,19 +211,14 @@ export function AppShell({
       <main className="app-shell__content">
         {isOffline ? (
           <div className="engine-offline-panel">
-            <h2>No live data</h2>
+            <h2>No live decision data</h2>
             <p>
-              The Process Guardian engine has not answered for several seconds, so these screens are not
-              being shown. They would otherwise display placeholder numbers, and a placeholder that looks
-              like a reading is worse than a blank screen.
+              Process Guardian cannot verify the current process state. Reconnect the engine before using
+              this screen to make a production decision.
             </p>
-            <p className="engine-offline-panel__cmd">
-              <code>python -m uvicorn process_guardian.api.app:app --port 8000</code>
-            </p>
-            <p className="engine-offline-panel__hint">
-              Or run <code>demo.cmd</code> from the project root, which starts the engine and the UI
-              together. This panel clears itself as soon as the engine responds.
-            </p>
+            <button type="button" className="engine-offline-retry" onClick={refreshProcess}>
+              Retry connection
+            </button>
           </div>
         ) : (
           children

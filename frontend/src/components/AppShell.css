@@ -19,6 +19,8 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
+  color: inherit;
+  text-align: left;
 }
 
 .brand-wordmark {
@@ -303,6 +305,20 @@
   background: var(--color-parchment);
   border: var(--border-hairline);
   border-radius: var(--r-sm);
+}
+
+.engine-offline-retry {
+  padding: 7px 12px;
+  border: 1px solid var(--color-wine);
+  border-radius: var(--r-sm);
+  background: var(--color-wine);
+  color: var(--color-white);
+  font-size: 12px;
+  font-weight: var(--fw-label);
+}
+
+.engine-offline-retry:hover {
+  background: #32141a;
 }
 
 .pulse-dot--offline {

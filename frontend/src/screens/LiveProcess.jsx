@@ -5,7 +5,7 @@ import { SignalGauge } from '../components/SignalGauge';
 import { ProcessStateTimeline } from '../components/ProcessStateTimeline';
 
 export function LiveProcess({ onProceed }) {
-  const { data: processData } = usePolling('/api/process/current', 2000);
+  const { data: processData, loading: isLoading, error: processError, refresh: refreshProcess } = usePolling('/api/process/current', 2000);
   const { data: driftData } = usePolling('/api/process/drift', 2000);
   const { data: contractData } = usePolling('/api/quality/contract', 5000);
   const { data: riskData } = usePolling('/api/quality/risk', 2000);
@@ -17,15 +17,26 @@ export function LiveProcess({ onProceed }) {
   if (!processData) {
     return (
       <div id="panel-detect" role="tabpanel" aria-labelledby="tab-detect" className="live-process">
-        <div className="process-state-banner">
+        <div className="process-state-banner process-state-banner--unavailable" role={processError ? 'alert' : 'status'}>
           <div className="process-state-banner__left">
             <div className="process-state-banner__title-row">
-              <span className="process-state-banner__title">Waiting for the line…</span>
+              <span className="process-state-banner__title">
+                {processError ? 'Live process data unavailable' : 'Connecting to the decision engine…'}
+              </span>
             </div>
             <div className="process-state-banner__subtext">
-              No processed cycle yet. Pick a scenario on the front page to start the run.
+              {processError
+                ? 'The current process state cannot be verified. Check the engine connection and retry.'
+                : isLoading
+                  ? 'Loading the current process state. No decision is available yet.'
+                  : 'No processed cycle yet. Pick a scenario from the demo briefing to start a replay.'}
             </div>
           </div>
+          {processError && (
+            <button type="button" className="process-state-banner__btn" onClick={refreshProcess}>
+              RETRY CONNECTION
+            </button>
+          )}
         </div>
       </div>
     );
@@ -85,7 +96,7 @@ export function LiveProcess({ onProceed }) {
         <div className="process-state-banner__left">
           <div className="process-state-banner__title-row">
             <span className="process-state-banner__title">
-              {isDriftActive ? '⚠ PROCESS DRIFT DETECTED — QUALITY CONTRACT AT RISK' : '✓ PROCESS STABLE — PRODUCTION SAFE'}
+              {isDriftActive ? '⚠ PROCESS DRIFT DETECTED — QUALITY CONTRACT AT RISK' : '✓ NO ACTIVE DRIFT DETECTED'}
             </span>
             <span className={`pill ${isDriftActive ? 'pill--wine' : 'pill--lagoon'}`}>
               {isDriftActive ? `QUALITY RISK: ${qualityRiskPct != null ? qualityRiskPct.toFixed(1) + '%' : '—'}` : 'NORMAL TOLERANCE'}
@@ -109,16 +120,7 @@ export function LiveProcess({ onProceed }) {
         )}
       </div>
 
-      {/* Primary Pipeline Progress */}
-      <div className="card" style={{ padding: '16px 20px', backgroundColor: 'var(--color-white)', border: 'var(--border-card)', borderRadius: 'var(--r-card)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <span className="label-section" style={{ margin: 0 }}>DECISION PIPELINE PROGRESS</span>
-          <span style={{ fontSize: '12px', color: 'var(--color-stone)' }}>
-            State: <strong style={{ color: 'var(--color-charcoal)' }}>{currentState}</strong> · Risk: <strong style={{ color: isDriftActive ? 'var(--color-wine)' : 'var(--color-lagoon)' }}>{qualityRiskPct != null ? `${qualityRiskPct.toFixed(1)}%` : '—'}</strong>
-          </span>
-        </div>
-        <ProcessStateTimeline currentState={currentState} />
-      </div>
+      <ProcessStateTimeline currentState={currentState} />
 
       {/* Core Process Signals (PS02 Parameters) */}
       <div className="card" style={{ padding: '20px 24px', backgroundColor: 'var(--color-white)', border: 'var(--border-card)', borderRadius: 'var(--r-card)' }}>
