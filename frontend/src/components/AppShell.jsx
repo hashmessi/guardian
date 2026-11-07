@@ -53,6 +53,8 @@ export function AppShell({
   // Poll core telemetry and scenario streams
   const { data: processData, failures: processFailures, refresh: refreshProcess } = usePolling('/api/process/current', 2000);
   const { data: riskData } = usePolling('/api/quality/risk', 2000);
+  const { data: copqData } = usePolling('/api/economics/copq', 4000);
+  const directCoPQVal = copqData?.direct_scrap_copq_per_defect ?? 68.96;
   const { data: driftData } = usePolling('/api/process/drift', 2000);
   const { data: activeScnData } = usePolling('/api/scenarios/active', 2000);
   const { data: scenariosList } = usePolling('/api/scenarios?hero_only=true', 30000);
@@ -133,6 +135,15 @@ export function AppShell({
           </span>
         </button>
         <div className="brand-right">
+          <button
+            type="button"
+            className="copq-top-trigger-btn"
+            onClick={() => setCoPQOpen(true)}
+            title="Inspect & calibrate plant Cost of Poor Quality (CoPQ) model"
+          >
+            <span className="copq-top-dot" />
+            <span>CoPQ: ₹{directCoPQVal.toFixed(2)}/PART</span>
+          </button>
           <div className="plant-target-badge" title="Ragam Polymolds Automotive Quality Target">
             <span>SCRAP TARGET: ≤2.0% (BASELINE: 6.8%)</span>
           </div>

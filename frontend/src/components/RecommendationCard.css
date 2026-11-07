@@ -110,6 +110,26 @@
   margin-top: 2px;
 }
 
+.rec-econ-formula-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 6px;
+  font-size: var(--fs-sm, 11px);
+  font-weight: var(--fw-bold, 700);
+  color: var(--color-lagoon);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-align: left;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.rec-econ-formula-link:hover {
+  opacity: 1;
+}
+
 /* Primary Action Button: The only wine-filled CTA */
 .apply-btn {
   width: 100%;

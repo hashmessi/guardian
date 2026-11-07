@@ -132,4 +132,209 @@
   transform: translateY(-1px);
 }
 
+/* =========================================================================
+   Transparent Cost of Poor Quality (CoPQ) Formula & Accounting Canvas
+   ========================================================================= */
+.cf-copq-accounting {
+  margin-top: var(--sp-4);
+  padding: var(--sp-4);
+  background-color: var(--color-parchment);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.cf-copq-accounting__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: var(--sp-2);
+}
+
+.cf-copq-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cf-copq-title {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.05em;
+  color: var(--color-charcoal);
+  text-transform: uppercase;
+}
+
+.btn-calibrate-copq {
+  background-color: rgba(12, 66, 67, 0.08);
+  border: 1px solid rgba(12, 66, 67, 0.3);
+  color: var(--color-lagoon);
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm, 11px);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-calibrate-copq:hover {
+  background-color: rgba(12, 66, 67, 0.14);
+  border-color: var(--color-lagoon);
+}
+
+.cf-copq-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+@media (max-width: 800px) {
+  .cf-copq-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cf-copq-col {
+  background-color: #ffffff;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cf-copq-col--off {
+  border-left: 3px solid #8c827a;
+}
+
+.cf-copq-col--on {
+  border-left: 3px solid var(--color-lagoon);
+}
+
+.cf-copq-col__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-sm, 11px);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-stone);
+  border-bottom: 1px dashed var(--color-mist);
+  padding-bottom: 4px;
+}
+
+.cf-copq-col__total {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--color-charcoal);
+}
+
+.cf-copq-math-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.cf-math-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-sm, 11px);
+  color: var(--color-stone);
+}
+
+.cf-math-row .num {
+  font-weight: var(--fw-bold);
+  color: var(--color-charcoal);
+}
+
+.cf-copq-equation-bar {
+  background-color: #ffffff;
+  border: 1px solid rgba(12, 66, 67, 0.25);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.equation-math {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--color-charcoal);
+}
+
+.eq-label {
+  font-size: var(--fs-sm, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-stone);
+}
+
+.eq-term {
+  color: var(--color-stone);
+}
+
+.eq-op {
+  color: var(--color-mist);
+  font-weight: normal;
+}
+
+.eq-result {
+  color: var(--color-lagoon);
+  font-size: var(--fs-xl);
+}
+
+.equation-unit-formula {
+  font-size: var(--fs-sm, 11px);
+  color: var(--color-stone);
+  font-style: italic;
+}
+
+.equation-unit-formula strong {
+  color: var(--color-lagoon);
+  font-style: normal;
+}
+
+.cf-copq-param-ribbon {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--color-stone);
+  padding-top: 4px;
+}
+
+.ribbon-label {
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  color: var(--color-charcoal);
+}
+
+.ribbon-chip {
+  background-color: #ffffff;
+  border: 1px solid var(--color-mist);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+
 

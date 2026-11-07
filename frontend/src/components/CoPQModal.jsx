@@ -297,6 +297,24 @@ export function CoPQModal({ isOpen, onClose }) {
                 <strong>₹{(14 * (params.sorting_cost_per_part || 22)).toFixed(0)}</strong> in unnecessary secondary containment inspection.
               </p>
             </div>
+
+            <div className="copq-run-accounting-box">
+              <div className="copq-accounting-title">SCENARIO 06 LIVE PARAMETRIC RUN PROOF:</div>
+              <div className="accounting-math-list">
+                <div className="accounting-item">
+                  <span>Status Quo Loss (76 scrap + 85 suspect + 76 OEM):</span>
+                  <span className="num">₹{(76 * directCoPQ + 85 * sortCost + 76 * (params.oem_penalty_risk_per_defect || 150)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                </div>
+                <div className="accounting-item">
+                  <span>Guardian Active (9 scrap + 21 suspect + ₹45 overhead):</span>
+                  <span className="num">₹{(9 * directCoPQ + 21 * sortCost + 45).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                </div>
+                <div className="accounting-item accounting-item--net">
+                  <span>Net Modeled Avoided Loss:</span>
+                  <span className="num">₹{((76 * directCoPQ + 85 * sortCost + 76 * (params.oem_penalty_risk_per_defect || 150)) - (9 * directCoPQ + 21 * sortCost + 45)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -12,6 +12,7 @@ export function RecommendationCard({
   netBenefit = null,
   costWait = null,
   costAct = null,
+  onOpenCoPQModal = null,
 }) {
   const inr = (v) =>
     v == null ? '—' : `${v < 0 ? '-' : '+'}₹${Math.abs(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -119,6 +120,16 @@ export function RecommendationCard({
               ? `₹${costWait.toFixed(0)} projected scrap exposure vs ₹${costAct.toFixed(0)} to intervene`
               : 'Waiting for the engine to price this decision'}
           </div>
+          {onOpenCoPQModal && (
+            <button
+              type="button"
+              className="rec-econ-formula-link"
+              onClick={onOpenCoPQModal}
+              title="Inspect parametric Cost of Poor Quality (CoPQ) formula and plant rates"
+            >
+              Formula: CoPQ ₹68.96/part · Edit Rates ↗
+            </button>
+          )}
         </div>
       </div>
 

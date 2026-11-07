@@ -203,6 +203,59 @@
   margin-bottom: 2px;
 }
 
+.copq-run-accounting-box {
+  background: var(--color-white);
+  border: 1px solid rgba(12, 66, 67, 0.25);
+  border-left: 3px solid var(--color-lagoon);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  margin-top: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.copq-accounting-title {
+  font-size: var(--fs-sm, 11px);
+  font-weight: var(--fw-bold);
+  color: var(--color-lagoon);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.accounting-math-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.accounting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-sm, 11px);
+  color: var(--color-stone);
+}
+
+.accounting-item .num {
+  font-weight: var(--fw-bold);
+  color: var(--color-charcoal);
+}
+
+.accounting-item--net {
+  border-top: 1px dashed var(--color-mist);
+  padding-top: 4px;
+  margin-top: 2px;
+  font-weight: var(--fw-bold);
+  color: var(--color-lagoon);
+}
+
+.accounting-item--net .num {
+  color: var(--color-lagoon);
+  font-size: var(--fs-md);
+}
+
 /* Footer */
 .copq-modal__footer {
   display: flex;
