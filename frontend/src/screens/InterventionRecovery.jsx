@@ -8,7 +8,7 @@ import { AuditDrawer } from '../components/AuditDrawer';
 import { ContainmentBoundaryCard } from '../components/ContainmentBoundaryCard';
 import { OperationalCheckpointsCard } from '../components/OperationalCheckpointsCard';
 
-export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }) {
+export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal, onNavigateToBrief }) {
   const { data: recommendationData } = usePolling('/api/interventions/recommendation', 2000);
   const { data: recoveryData } = usePolling('/api/recovery/status', 2000);
   const { data: containmentData } = usePolling('/api/containment/window', 2000);
@@ -157,13 +157,59 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
           <div className="intervention-section">
             <AuditDrawer />
           </div>
+
+          {/* Section 6: Action for Abstain / QC Hold Scenarios to View Leadership Brief */}
+          {isAbstain && onNavigateToBrief && (
+            <div className="intervention-section">
+              <div className="leadership-brief-callout-banner card">
+                <div className="callout-left">
+                  <span className="pill pill--wine">ABSTAIN GATE ENFORCED</span>
+                  <h3 className="callout-title">Risk Contained Without Speculative Automation</h3>
+                  <p className="callout-desc">
+                    Guardian locked out uncalibrated parameter shifts and contained the suspect window.
+                    Open the executive incident report to review the safety outcome.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-view-leadership-brief"
+                  onClick={onNavigateToBrief}
+                >
+                  View Leadership Incident Brief →
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         /* =========================================================================
            STATE B: AFTER ACTION — RECOVERY & SCRAP CONTAINMENT MODE
-           Recovery Verification -> Mandatory Poka-Yoke QC Gate -> Checkpoints -> Audit
+           Recovery Verification -> Mandatory Poka-Yoke QC Gate -> Checkpoints -> Audit -> Brief
            ========================================================================= */
         <>
+          {/* Section: Action Banner at End of Replay */}
+          {onNavigateToBrief && (
+            <div className="intervention-section">
+              <div className="leadership-brief-callout-banner card">
+                <div className="callout-left">
+                  <span className="pill pill--lagoon">INCIDENT CONTAINED</span>
+                  <h3 className="callout-title">Recovery Verified & Decision Traceability Complete</h3>
+                  <p className="callout-desc">
+                    Operational telemetry, constrained setpoint action, and suspect quarantine are locked.
+                    View the one-page leadership incident brief.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-view-leadership-brief"
+                  onClick={onNavigateToBrief}
+                >
+                  View Leadership Incident Brief →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Section 1: Dominant Recovery Verification Panel (5-Cycle Stability) */}
           <div className="intervention-section">
             <RecoveryPanel

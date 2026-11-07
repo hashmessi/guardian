@@ -40,6 +40,16 @@ export function TabStrip({ activeTab, onTabChange }) {
       badgeText: 'DECISION & RECOVERY',
       badgeClass: 'stage-badge--action',
     },
+    {
+      id: 'brief',
+      alias: 'leadership',
+      stepNum: '4',
+      title: 'BRIEF',
+      question: 'What was contained & what is the leadership takeaway?',
+      hasBadge: true,
+      badgeText: 'EXECUTIVE BRIEF',
+      badgeClass: 'stage-badge--ok',
+    },
   ];
 
   return (

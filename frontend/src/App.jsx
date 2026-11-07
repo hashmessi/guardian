@@ -6,6 +6,7 @@ import { FrontPage } from './screens/FrontPage';
 import { LiveProcess } from './screens/LiveProcess';
 import { IncidentDiagnosis } from './screens/IncidentDiagnosis';
 import { InterventionRecovery } from './screens/InterventionRecovery';
+import { LeadershipBrief } from './screens/LeadershipBrief';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('scenarios');
@@ -48,6 +49,15 @@ export function App() {
           <InterventionRecovery
             onOpenCoPQModal={openCoPQModal}
             onOpenCheckpointsModal={openCheckpointsModal}
+            onNavigateToBrief={() => setActiveTab('brief')}
+          />
+        );
+      case 'brief':
+      case 'leadership':
+      case 'report':
+        return (
+          <LeadershipBrief
+            onNavigateBack={() => setActiveTab('act')}
           />
         );
       default:

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from process_guardian.api.dependencies import get_service_container
-from process_guardian.api.routes import ingestion, process, quality, interventions, recovery, demo, evidence, economics, qc, counterfactual, scenarios
+from process_guardian.api.routes import ingestion, process, quality, interventions, recovery, demo, evidence, economics, qc, counterfactual, scenarios, leadership
 
 
 @asynccontextmanager
@@ -60,6 +60,7 @@ def create_app() -> FastAPI:
     app.include_router(qc.router, prefix="/api")
     app.include_router(counterfactual.router, prefix="/api")
     app.include_router(scenarios.router, prefix="/api")
+    app.include_router(leadership.router, prefix="/api")
 
     return app
 

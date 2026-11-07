@@ -261,6 +261,23 @@ export function FrontPage({
                   </button>
 
                   <button
+                    className="btn-card-brief"
+                    onClick={() => {
+                      if (onNavigateToLive) {
+                        selectScenario(s.id)
+                          .then(() => onNavigateToLive('brief'))
+                          .catch((err) => {
+                            console.error('Failed to load brief:', err);
+                            setRunError('Could not load the leadership brief. Check the engine connection and try again.');
+                          });
+                      }
+                    }}
+                    title="View Leadership Incident Brief for this scenario"
+                  >
+                    Brief
+                  </button>
+
+                  <button
                     className="btn-card-run"
                     onClick={() => handleRunScenario(s.id)}
                     disabled={loadingScenarioId === s.id}

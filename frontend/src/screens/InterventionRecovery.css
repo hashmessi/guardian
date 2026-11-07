@@ -15,7 +15,7 @@
 .counterfactual-embedded-card {
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   padding: 20px 24px;
   box-shadow: none;
 }
@@ -42,9 +42,9 @@
 }
 
 .cf-embedded-box {
-  background-color: #fbfbf9;
+  background-color: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -52,8 +52,8 @@
 }
 
 .cf-embedded-box__label {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
   color: var(--color-stone, #666666);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -61,7 +61,7 @@
 
 .cf-embedded-box__val {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-charcoal, #292827);
   font-variant-numeric: tabular-nums;
 }
@@ -75,8 +75,61 @@
 }
 
 .cf-embedded-box__subtext {
-  font-size: 11px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
   line-height: 1.35;
 }
+
+/* Leadership Brief Action Banner */
+.leadership-brief-callout-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-wine);
+  border-radius: var(--r-card, 12px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.callout-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.callout-title {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold, 700);
+  color: var(--color-charcoal);
+  margin-top: 2px;
+}
+
+.callout-desc {
+  font-size: var(--fs-md);
+  color: var(--color-stone);
+  max-width: 650px;
+  line-height: 1.4;
+}
+
+.btn-view-leadership-brief {
+  background-color: var(--color-wine);
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: var(--r-button, 12px);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold, 700);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.btn-view-leadership-brief:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
 

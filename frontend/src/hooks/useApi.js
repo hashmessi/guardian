@@ -261,4 +261,35 @@ export async function selectScenario(scenarioId) {
   return await response.json();
 }
 
+/**
+ * Fetches the Leadership Incident Brief for the active or given scenario.
+ */
+export async function fetchLeadershipBrief(scenarioId = null) {
+  const endpoint = scenarioId
+    ? `${BASE_URL}/api/leadership/brief/${scenarioId}`
+    : `${BASE_URL}/api/leadership/brief`;
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch leadership brief [${response.status}]: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+/**
+ * Triggers generation of an AI-written Leadership Incident Brief for the scenario.
+ */
+export async function generateLeadershipBrief(scenarioId, forceFresh = false) {
+  const response = await fetch(`${BASE_URL}/api/leadership/brief/${scenarioId}/generate?force_fresh=${forceFresh}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to generate leadership brief [${response.status}]: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+
 
