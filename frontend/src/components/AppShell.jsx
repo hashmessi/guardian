@@ -13,6 +13,8 @@ const SCENARIO_DEMO_ORDER = ['SCN-06-COMPOUND', 'SCN-FLIP-HUMAN-CHANNEL', 'SCN-0
 export function AppShell({
   activeTab,
   onTabChange,
+  activeScenarioId: propActiveScenarioId,
+  onScenarioChange,
   showCoPQModal: propShowCoPQ,
   setShowCoPQModal: propSetShowCoPQ,
   showScorecardModal: propShowScorecard,
@@ -57,7 +59,7 @@ export function AppShell({
 
   // Active scenario details. Default matches the flagship (Scenario 1) until a
   // scenario is actually selected.
-  const activeScenarioId = activeScnData?.active_scenario_id || 'SCN-06-COMPOUND';
+  const activeScenarioId = propActiveScenarioId || activeScnData?.active_scenario_id || 'SCN-06-COMPOUND';
   const activeScenario = activeScnData?.scenario;
   const activeScorecard = activeScnData?.scorecard;
 
@@ -78,7 +80,7 @@ export function AppShell({
     setResetStatus('Resetting session...');
     try {
       await resetDemoSession(processData?.machine_id || 'IMM-01');
-      setResetStatus('✓ Baseline reset');
+      setResetStatus('Baseline reset');
       setTimeout(() => {
         window.location.reload();
       }, 400);
@@ -94,10 +96,14 @@ export function AppShell({
     setResetStatus(`Loading ${scenarioDisplayLabel(newScnId)}...`);
     try {
       await selectScenario(newScnId);
-      setResetStatus(`✓ ${scenarioDisplayLabel(newScnId)} active`);
+      if (onScenarioChange) {
+        onScenarioChange(newScnId);
+      }
+      setResetStatus(`${scenarioDisplayLabel(newScnId)} active`);
       setTimeout(() => {
         setResetStatus(null);
       }, 2500);
+      refreshProcess();
     } catch {
       setResetStatus('Could not load that replay. Check the engine connection and try again.');
     } finally {
@@ -117,7 +123,10 @@ export function AppShell({
           aria-label="Process Guardian — return to scenario briefing"
         >
           <span className="brand-wordmark">
-            <span className="brand-icon-hex" aria-hidden="true">⬡</span> PROCESS GUARDIAN
+            <svg className="brand-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2" />
+            </svg>
+            <span>PROCESS GUARDIAN</span>
           </span>
           <span className="brand-subtitle">
             Ragam Polymolds · Plant IMM-01
@@ -181,7 +190,17 @@ export function AppShell({
             disabled={isResetting}
             title="Reset scenario to pristine baseline while preserving immutable audit logs"
           >
-            {isResetting ? 'RESETTING...' : '↺ RESET'}
+            {isResetting ? (
+              'RESETTING...'
+            ) : (
+              <>
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M2.5 8a5.5 5.5 0 1 1 1.6 3.9L2 14" />
+                  <polyline points="2 9 2 14 7 14" />
+                </svg>
+                <span>RESET</span>
+              </>
+            )}
           </button>
 
           {activeTab !== 'scenarios' && onTabChange && (

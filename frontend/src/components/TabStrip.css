@@ -3,7 +3,7 @@
   align-items: center;
   background-color: var(--color-white);
   border-bottom: var(--border-hairline);
-  padding: 8px var(--sp-6);
+  padding: 10px var(--sp-6);
 }
 
 .tab-strip__nav-row {
@@ -13,11 +13,10 @@
   width: 100%;
 }
 
-
 .decision-journey-stepper {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
   width: 100%;
 }
 
@@ -25,14 +24,17 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  padding: 10px var(--sp-4);
+  padding: 8px 14px;
   background-color: var(--color-parchment);
   border: 1px solid var(--color-mist);
-  border-radius: var(--r-sm, 6px);
+  border-radius: var(--r-md);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   text-align: left;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 56px;
+  box-sizing: border-box;
 }
 
 .journey-step:hover {
@@ -43,6 +45,7 @@
 .journey-step--active {
   background-color: var(--color-white);
   border: 1.5px solid var(--color-charcoal);
+  border-left: 3.5px solid var(--color-wine);
   box-shadow: none;
 }
 
@@ -50,13 +53,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: var(--color-charcoal);
   color: #ffffff;
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-label);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
   flex-shrink: 0;
 }
 
@@ -67,21 +70,25 @@
 .journey-step__content {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .journey-step__top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .journey-step__title {
   font-size: var(--fs-lg);
-  font-weight: var(--fw-label);
-  letter-spacing: 0.5px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
   color: var(--color-charcoal);
+  white-space: nowrap;
 }
 
 .journey-step__question {
@@ -90,6 +97,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .journey-step--active .journey-step__question {
@@ -99,19 +107,25 @@
 
 .journey-step__arrow {
   color: var(--color-stone);
-  font-size: var(--fs-xl);
-  font-weight: var(--fw-bold);
-  user-select: none;
-  padding: 0 4px;
+  opacity: 0.45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 2px;
 }
 
 .stage-badge {
   display: inline-flex;
   align-items: center;
-  padding: 1px 7px;
+  padding: 1px 6px;
   border-radius: var(--r-pill);
   font-size: var(--fs-sm);
-  font-weight: var(--fw-data);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .stage-badge--alarm {
@@ -128,4 +142,3 @@
   background-color: var(--color-mist);
   color: var(--color-charcoal);
 }
-

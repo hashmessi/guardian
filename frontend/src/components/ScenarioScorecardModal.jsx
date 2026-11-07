@@ -44,8 +44,8 @@ export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTit
           <div className="scorecard-header-right">
             <span className={`status-pill ${scorecard.overall_passed ? 'status-pill--pass' : 'status-pill--fail'}`}>
               {scorecard.overall_passed
-                ? `✓ ${passedCount}/${pillars.length} PILLARS PASSED`
-                : `⚠ ${passedCount}/${pillars.length} PILLARS PASSED`}
+                ? `${passedCount}/${pillars.length} PILLARS PASSED`
+                : `${passedCount}/${pillars.length} PILLARS PASSED`}
             </span>
             <button className="scorecard-close-btn" onClick={onClose} aria-label="Close">✕</button>
           </div>
@@ -64,7 +64,7 @@ export function ScenarioScorecardModal({ isOpen, onClose, scorecard, scenarioTit
               <div className="pillar-top">
                 <span className="pillar-label">{pillar.label}</span>
                 <span className={`pillar-badge ${pillar.data?.passed ? 'pillar-badge--pass' : 'pillar-badge--fail'}`}>
-                  {pillar.data?.passed ? '✓ PASSED' : '✗ FAILED'}
+                  {pillar.data?.passed ? 'PASSED' : 'FAILED'}
                 </span>
               </div>
               <div className="pillar-status-code">{pillar.data?.status_label}</div>

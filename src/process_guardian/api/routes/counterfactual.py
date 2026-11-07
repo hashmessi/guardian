@@ -36,12 +36,11 @@ def get_counterfactual_comparison(
     """
     Generate deterministic dual counterfactual comparison (CRPL-01, CRPL-02).
     Compares Guardian OFF (Status Quo uncontained scrap) vs Guardian ON (Dynamic Quality Reaction).
-
-    Built fresh from the container's *current* CoPQ parameters on every call --
-    never cached -- so a prior POST /economics/parameters update is reflected
-    immediately instead of silently showing stale figures (replay below already
-    did this correctly; compare did not).
+    Serves the active scenario's counterfactual evidence if a scenario is selected.
     """
+    if container.active_scenario_summary and container.active_scenario_summary.counterfactual:
+        return container.active_scenario_summary.counterfactual
+
     engine = CounterfactualReplayEngine(copq_params=container.copq_params, total_cycles=total_cycles)
     return engine.generate_comparison(total_cycles=total_cycles)
 

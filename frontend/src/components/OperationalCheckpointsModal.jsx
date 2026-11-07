@@ -55,7 +55,9 @@ function HumanChannelAttestation({ question, cycleIndex, placeholder, onApplied 
         <span className={`hc-form__result hc-form__result--${result.signal.choice}`}>
           {result.signal.choice === 'unknown'
             ? 'UNCLEAR — NO CHANGE MADE'
-            : `${result.signal.choice.toUpperCase()} · ${Math.round(result.signal.confidence * 100)}% CONFIDENCE · ${result.signal.source === 'laya' ? 'LAYA' : 'RULE-BASED'}${result.applied ? '' : ' · EVIDENCE ONLY'}`}
+            : result.signal.choice === 'no'
+              ? `RISK FLAGGED (GATE BLOCKED) · ${Math.round(result.signal.confidence * 100)}% CONFIDENCE · ${result.signal.source === 'laya' ? 'LAYA' : 'RULE-BASED'}`
+              : `CONFIRMED (GATE CLEARED) · ${Math.round(result.signal.confidence * 100)}% CONFIDENCE · ${result.signal.source === 'laya' ? 'LAYA' : 'RULE-BASED'}`}
         </span>
       )}
       {error && <span className="hc-form__error">{error}</span>}
@@ -137,7 +139,7 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
         </div>
 
         <div className={`ockp-clearance-banner ${overallClearance ? 'ockp-clearance-banner--cleared' : 'ockp-clearance-banner--gated'}`}>
-          {overallClearance ? '✓ ALL 3 GATES CLEARED — LINE CAN PROCEED' : '🔒 LINE GATED — ACTION REQUIRED BEFORE RELEASE'}
+          {overallClearance ? 'ALL 3 GATES CLEARED — LINE CAN PROCEED' : 'LINE GATED — ACTION REQUIRED BEFORE RELEASE'}
         </div>
 
         <div className="ockp-body">
@@ -167,7 +169,9 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
             {recipe.parameter_deviations?.length > 0 ? (
               <div className="ockp-deviation-list">
                 {recipe.parameter_deviations.map((d, i) => (
-                  <div key={i} className="ockp-deviation">⚠ {d}</div>
+                  <div key={i} className="ockp-deviation">
+                    <span className="ockp-deviation-dot" aria-hidden="true">•</span> {d}
+                  </div>
                 ))}
               </div>
             ) : (
@@ -179,6 +183,7 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
             <HumanChannelAttestation
               question="recipe_matches"
               placeholder="Setpoint matches recipe R-12? (e.g. 'yes matches')"
+              onApplied={refresh}
             />
 
             <footer className="ockp-gate__footer">
@@ -223,6 +228,7 @@ export function OperationalCheckpointsModal({ isOpen, onClose }) {
             <HumanChannelAttestation
               question="moisture_signed"
               placeholder="Resin lot dried & signed? (e.g. 'haan sign ho gaya')"
+              onApplied={refresh}
             />
 
             <footer className="ockp-gate__footer">

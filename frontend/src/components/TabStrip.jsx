@@ -17,8 +17,8 @@ export function TabStrip({ activeTab, onTabChange }) {
       title: 'DETECT',
       question: 'Is production safe right now?',
       hasBadge: isDrifting,
-      badgeText: isDrifting ? 'DRIFT ACTIVE' : 'STABLE',
-      badgeClass: isDrifting ? 'stage-badge--alarm' : 'stage-badge--ok',
+      badgeText: 'DRIFT ACTIVE',
+      badgeClass: 'stage-badge--alarm',
     },
     {
       id: 'diagnose',
@@ -27,8 +27,8 @@ export function TabStrip({ activeTab, onTabChange }) {
       title: 'DIAGNOSE',
       question: 'Why is it drifting & which parts are at risk?',
       hasBadge: isHighRisk,
-      badgeText: isHighRisk ? 'RISK HIGH' : 'NORMAL',
-      badgeClass: isHighRisk ? 'stage-badge--alarm' : 'stage-badge--ok',
+      badgeText: 'RISK HIGH',
+      badgeClass: 'stage-badge--alarm',
     },
     {
       id: 'act',
@@ -36,19 +36,15 @@ export function TabStrip({ activeTab, onTabChange }) {
       stepNum: '3',
       title: 'ACT & VERIFY',
       question: 'What to do, what will it cost & did it recover?',
-      hasBadge: true,
-      badgeText: 'DECISION & RECOVERY',
-      badgeClass: 'stage-badge--action',
+      hasBadge: false,
     },
     {
       id: 'brief',
       alias: 'leadership',
       stepNum: '4',
-      title: 'BRIEF',
+      title: 'LEADERSHIP BRIEF',
       question: 'What was contained & what is the leadership takeaway?',
-      hasBadge: true,
-      badgeText: 'EXECUTIVE BRIEF',
-      badgeClass: 'stage-badge--ok',
+      hasBadge: false,
     },
   ];
 
@@ -87,7 +83,9 @@ export function TabStrip({ activeTab, onTabChange }) {
                 </button>
                 {idx < stages.length - 1 && (
                   <div className="journey-step__arrow" aria-hidden="true">
-                    →
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M3.5 1.5L7 5L3.5 8.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                 )}
               </React.Fragment>

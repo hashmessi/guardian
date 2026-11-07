@@ -97,6 +97,14 @@ _NEGATIVE_PHRASES = sorted(
         "nahi hua", "nahi kiya", "nahin hua",
         "no", "nope", "pending", "fail", "failed", "incomplete", "overdue",
         "nahi", "nahin", "illai", "aagala", "illa", "aagilla",
+        # Industrial operational failures & material exceptions (P0/P1 shop-floor reality)
+        "dryer tripped", "heater tripped", "dryer was down", "dryer down",
+        "tripped", "trip", "heater off", "dryer off", "dryer failure", "heater failed",
+        "unverified", "unverified resin", "unverified batch", "unconfirmed", "unsigned",
+        "wet resin", "resin wet", "moisture high", "high moisture", "moisture not verified",
+        "undried", "not dried yet", "drying issue", "drying problem", "dryer broke",
+        "breakdown", "hopper wet", "lot unverified", "batch unverified", "recipe mismatch",
+        "wrong recipe", "recipe wrong", "wrong setpoint", "setpoint mismatch",
     },
     key=len,
     reverse=True,
@@ -129,6 +137,7 @@ _AFFIRMATIVE_IDIOMS = ("no problem", "no issue", "no issues", "nothing pending",
 _NEGATOR_TOKENS = {
     "not", "never", "no", "dont", "didnt", "havent", "hasnt", "isnt",
     "wasnt", "cant", "cannot", "couldnt", "wont", "nahi", "nahin", "illa", "illai",
+    "unverified", "tripped", "undried", "unconfirmed", "unsigned", "failed", "breakdown",
 }
 # Single-word affirmatives, used to tell a governed negation ("never done") from a
 # genuinely conflicted statement ("cannot confirm, maybe ok").

@@ -187,7 +187,7 @@ export function IncidentDiagnosis({ onProceed }) {
           {/* Collapsible Technical Sentinel Evidence */}
           <details className="detector-evidence-details">
             <summary>
-              <span>⚙ Technical Sentinel Statistical Evidence (EWMA, CUSUM, Mahalanobis Distance)</span>
+              <span>Technical Sentinel Statistical Evidence (EWMA, CUSUM, Mahalanobis Distance)</span>
             </summary>
             <table className="drift-evidence-table">
               <thead>

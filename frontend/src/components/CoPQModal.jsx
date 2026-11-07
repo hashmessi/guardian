@@ -76,7 +76,7 @@ export function CoPQModal({ isOpen, onClose }) {
     setSaveStatus(null);
     try {
       await updateCoPQParameters(params);
-      setSaveStatus('✓ Parameters saved & active across decision engine');
+      setSaveStatus('Parameters saved & active across decision engine');
       setTimeout(() => {
         setSaveStatus(null);
         onClose();
@@ -313,7 +313,7 @@ export function CoPQModal({ isOpen, onClose }) {
               Cancel
             </button>
             <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? 'Saving...' : '✓ Apply Parameters to Decision Loop'}
+              {loading ? 'Saving...' : 'Apply Parameters to Decision Loop'}
             </button>
           </div>
         </div>

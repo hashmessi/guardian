@@ -24,6 +24,7 @@ from process_guardian.economics.engine import CoPQCalculator, CostOfWaitingEvalu
 
 
 from process_guardian.quality.operational_checkpoints import OperationalCheckpointsEvaluator
+from process_guardian.llm.human_channel import HumanChannelClient, CheckpointQuestion
 from process_guardian.scenario.registry import get_scenario_registry, ScenarioRegistry
 from process_guardian.scenario.runner import ScenarioRunner
 from process_guardian.scenario.models import ScenarioRunSummary, ScenarioDefinition
@@ -62,6 +63,7 @@ class ServiceContainer:
             registry=self.scenario_registry,
             runner=self.scenario_runner,
         )
+        self.human_channel_client: HumanChannelClient = HumanChannelClient(enable_laya=False)
         self.active_scenario_id: str = "SCN-01-THERMAL"
         self.active_scenario_summary: Optional[ScenarioRunSummary] = None
 
@@ -82,12 +84,15 @@ class ServiceContainer:
         # (e.g. moisture) must not inherit the other field's value (e.g. spray interval)
         # left behind by the previously selected scenario (hostile-review MEDIUM #7).
         self.operational_checkpoints.active_moisture_pct = 0.08
+        self.operational_checkpoints.clear_moisture_unverified()
         self.operational_checkpoints.last_spray_cycle = 0
         if scn.operational_overrides:
             if scn.operational_overrides.initial_moisture_pct is not None:
                 self.operational_checkpoints.active_moisture_pct = scn.operational_overrides.initial_moisture_pct
             if scn.operational_overrides.initial_spray_overdue_cycles is not None:
                 self.operational_checkpoints.last_spray_cycle = max(0, scn.total_cycles - scn.operational_overrides.initial_spray_overdue_cycles)
+            if scn.operational_overrides.human_channel_event_text and scn.scenario_id == "SCN-FLIP-HUMAN-CHANNEL":
+                self.operational_checkpoints.set_moisture_unverified(notes=scn.operational_overrides.human_channel_event_text)
 
         # Activate live state in repository and orchestrator
         self._activate_scenario_live_state(scn, summary)
@@ -106,8 +111,14 @@ class ServiceContainer:
             target_cycle = actions[0]
         elif summary and summary.scorecard and summary.scorecard.detection and summary.scorecard.detection.metrics.get("first_drift_cycle"):
             target_cycle = int(summary.scorecard.detection.metrics["first_drift_cycle"]) + 5
+        elif scn.operational_overrides and scn.operational_overrides.human_channel_event_cycle:
+            target_cycle = scn.operational_overrides.human_channel_event_cycle + 5
         else:
             target_cycle = min(scn.total_cycles, 60)
+
+        # Set last spray cycle relative to target_cycle so Gate 3 (spray) stays valid during baseline/hero demos unless overridden
+        if not (scn.operational_overrides and scn.operational_overrides.initial_spray_overdue_cycles):
+            self.operational_checkpoints.last_spray_cycle = max(0, target_cycle - 20)
 
         # 2. Reset database demo session and QC verifier
         self.repository.reset_demo_session(self.machine_id)
@@ -154,7 +165,13 @@ class ServiceContainer:
             raw = sim.step()
             c_idx = raw.cycle_index
 
-            res = self.orchestrator.step(raw)
+            human_signal = None
+            if scn.operational_overrides and scn.operational_overrides.human_channel_event_cycle == c_idx:
+                text = scn.operational_overrides.human_channel_event_text
+                if text:
+                    human_signal = self.human_channel_client.parse(text, CheckpointQuestion.MOISTURE_SIGNED)
+
+            res = self.orchestrator.step(raw, human_channel_signal=human_signal)
             rec = res.record
 
             cycle_db = StoredCycleRecord(
