@@ -3,13 +3,13 @@
   align-items: center;
   background-color: var(--color-white);
   border-bottom: var(--border-hairline);
-  padding: 8px 24px;
+  padding: 8px var(--sp-6);
 }
 
 .tab-strip__nav-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--sp-4);
   width: 100%;
 }
 
@@ -17,15 +17,15 @@
 .decision-journey-stepper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   width: 100%;
 }
 
 .journey-step {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
+  gap: var(--sp-3);
+  padding: 10px var(--sp-4);
   background-color: var(--color-parchment);
   border: 1px solid var(--color-mist);
   border-radius: var(--r-sm, 6px);

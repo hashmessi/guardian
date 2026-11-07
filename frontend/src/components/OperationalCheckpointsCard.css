@@ -1,5 +1,5 @@
 /* =========================================================================
-   OperationalCheckpointsCard.css — bold single-row trigger bar.
+   OperationalCheckpointsCard.css â€” bold single-row trigger bar.
    Full gate detail lives in OperationalCheckpointsModal.css.
    ========================================================================= */
 
@@ -8,12 +8,12 @@
   background: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-left: 4px solid var(--color-wine, #421d24);
-  border-radius: 14px;
-  padding: 16px 20px;
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: var(--sp-3);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
@@ -74,7 +74,7 @@
   font-size: var(--fs-md);
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
-  padding: 5px 12px;
+  padding: 5px var(--sp-3);
   border-radius: var(--r-pill);
 }
 

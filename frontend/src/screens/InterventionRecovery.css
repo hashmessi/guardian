@@ -1,8 +1,8 @@
 .intervention-recovery {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding-bottom: 24px;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-6);
 }
 
 .intervention-section {
@@ -16,7 +16,7 @@
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 20px 24px;
+  padding: var(--sp-5) var(--sp-6);
   box-shadow: none;
 }
 
@@ -24,15 +24,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-4);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
-  padding-bottom: 12px;
+  padding-bottom: var(--sp-3);
 }
 
 .cf-embedded-kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: var(--sp-3);
 }
 
 @media (max-width: 800px) {
@@ -45,7 +45,7 @@
   background-color: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-md);
-  padding: 14px 16px;
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -60,7 +60,7 @@
 }
 
 .cf-embedded-box__val {
-  font-size: 24px;
+  font-size: var(--fs-title);
   font-weight: var(--fw-bold);
   color: var(--color-charcoal, #292827);
   font-variant-numeric: tabular-nums;
@@ -85,11 +85,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 22px;
+  padding: var(--sp-4) var(--sp-5);
   background-color: var(--color-white);
   border: 1.5px solid var(--color-wine);
   border-radius: var(--r-card, 12px);
-  gap: 16px;
+  gap: var(--sp-4);
   flex-wrap: wrap;
 }
 
@@ -117,7 +117,7 @@
   background-color: var(--color-wine);
   color: #ffffff;
   border: none;
-  padding: 12px 22px;
+  padding: var(--sp-3) var(--sp-5);
   border-radius: var(--r-button, 12px);
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold, 700);

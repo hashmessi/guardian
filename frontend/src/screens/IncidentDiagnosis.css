@@ -1,5 +1,5 @@
 /* =========================================================================
-   IncidentDiagnosis.css — Superhuman Editorial Diagnosis Screen
+   IncidentDiagnosis.css â€” Superhuman Editorial Diagnosis Screen
    Paper White surfaces, Warm Parchment canvas, Soft Mist hairline borders.
    Strictly adheres to DESIGN (4).md: Minimal, quiet, high cognitive clarity.
    ========================================================================= */
@@ -7,7 +7,7 @@
 .incident-diagnosis {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--sp-5);
   max-width: 1320px;
   margin: 0 auto;
 }
@@ -17,12 +17,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 22px;
+  padding: var(--sp-4) var(--sp-5);
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-left: 4px solid var(--color-wine, #421d24);
   border-radius: var(--r-lg);
-  gap: 20px;
+  gap: var(--sp-5);
   box-shadow: none;
 }
 
@@ -49,7 +49,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 10px var(--sp-4);
   background-color: var(--color-wine, #421d24);
   color: #ffffff;
   border: none;
@@ -71,7 +71,7 @@
 .incident-diagnosis__grid {
   display: grid;
   grid-template-columns: 6fr 6fr;
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 @media (max-width: 1024px) {
@@ -83,13 +83,13 @@
 .incident-diagnosis__left {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 .incident-diagnosis__right {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 /* 3. Left Column: Risk Escalation Card */
@@ -97,15 +97,15 @@
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 20px 22px;
+  padding: var(--sp-5) var(--sp-5);
   box-shadow: none;
 }
 
 .escalation-row {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin: 14px 0 16px 0;
+  gap: var(--sp-6);
+  margin: var(--sp-3) 0 var(--sp-4) 0;
 }
 
 .escalation-point {
@@ -123,7 +123,7 @@
 }
 
 .escalation-point__value {
-  font-size: 30px;
+  font-size: var(--fs-num);
   font-weight: var(--fw-bold);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
@@ -146,9 +146,9 @@
 .escalation-meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--sp-4);
   border-top: 1px solid var(--color-mist, #e3e3e2);
-  padding-top: 14px;
+  padding-top: var(--sp-3);
 }
 
 .escalation-meta-item {
@@ -177,7 +177,7 @@
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 20px 22px;
+  padding: var(--sp-5) var(--sp-5);
   box-shadow: none;
 }
 
@@ -187,7 +187,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: var(--sp-3);
 }
 
 .window-summary-text {
@@ -214,7 +214,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
+  padding: var(--sp-3) var(--sp-3);
   background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
@@ -256,7 +256,7 @@
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 12px 16px;
+  padding: var(--sp-3) var(--sp-4);
   box-shadow: none;
 }
 
@@ -274,7 +274,7 @@
 .drift-evidence-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 12px;
+  margin-top: var(--sp-3);
 }
 
 .drift-evidence-table th {
@@ -304,11 +304,11 @@
   background-color: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 20px 22px;
+  padding: var(--sp-5) var(--sp-5);
   box-shadow: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .diagnosis-contributors-header {
@@ -330,7 +330,7 @@
   border: 1px solid var(--color-mist, #e3e3e2);
   border-left: 3px solid var(--color-wine, #421d24);
   border-radius: var(--r-lg);
-  padding: 12px 16px;
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -380,7 +380,7 @@
   background: transparent;
   border: 1px dashed var(--color-mist, #e3e3e2);
   color: var(--color-stone, #666666);
-  padding: 8px 12px;
+  padding: 8px var(--sp-3);
   border-radius: var(--r-md);
   font-size: var(--fs-md);
   font-weight: var(--fw-label);

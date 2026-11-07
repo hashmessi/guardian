@@ -37,6 +37,16 @@
   --fw-data: 600;      /* Hero data numbers, gauges, and key metrics */
   --fw-bold: 700;
 
+  /* 3b. Display tier — page heroes and large data numerals.
+     Kept separate from the 5-step TEXT scale: these are display sizes,
+     not body/label hierarchy. Every font-size declaration must still
+     reference a token. */
+  --fs-hero: 32px;    /* Front page hero title */
+  --fs-title: 24px;   /* Screen / card display titles, banner headlines */
+  --fs-num: 30px;     /* Large data numerals (escalation points) */
+  --fs-num-lg: 36px;  /* Verdict numerals, compact breakpoint */
+  --fs-num-xl: 44px;  /* Verdict numerals, full size */
+
   /* 4. Spacing Scale (4px base) */
   --sp-1: 4px;
   --sp-2: 8px;

@@ -15,7 +15,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: var(--sp-4) var(--sp-5);
   background-color: var(--color-white);
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -40,7 +40,7 @@
 .audit-trigger-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .audit-drawer__trigger-btn {
@@ -55,7 +55,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px var(--sp-3);
   border-radius: var(--r-sm);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -71,7 +71,7 @@
   border: 1px solid var(--color-stone);
   color: var(--color-charcoal);
   border-radius: var(--r-md);
-  padding: 6px 14px;
+  padding: 6px var(--sp-3);
   font-size: var(--fs-md);
   font-weight: var(--fw-label);
   cursor: pointer;
@@ -102,14 +102,14 @@
 }
 
 .audit-drawer__content {
-  padding: 20px 24px;
+  padding: var(--sp-5) var(--sp-6);
   max-height: 480px;
   overflow-y: auto;
 }
 
 .audit-timeline {
   position: relative;
-  padding-left: 24px;
+  padding-left: var(--sp-6);
 }
 
 .audit-timeline::before {
@@ -124,7 +124,7 @@
 
 .audit-event {
   position: relative;
-  margin-bottom: 18px;
+  margin-bottom: var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -182,7 +182,7 @@
 }
 
 .audit-empty {
-  padding: 20px 4px;
+  padding: var(--sp-5) 4px;
   margin: 0;
   font-size: var(--fs-lg);
   color: var(--color-stone, #666666);

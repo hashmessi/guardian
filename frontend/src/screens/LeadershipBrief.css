@@ -1,4 +1,4 @@
-/* Leadership Incident Brief — Executive Operations Briefing Styling
+/* Leadership Incident Brief â€” Executive Operations Briefing Styling
    Adheres to Process Guardian token system:
    - Base canvas: --color-parchment (#f2f0eb)
    - Cards: --color-white (#ffffff) with --border-card (1px solid var(--color-mist))
@@ -10,7 +10,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--sp-4) var(--sp-12);
+  padding: 0 var(--sp-1) var(--sp-3);
 }
 
 /* Nav Bar & Scenario Switcher */
@@ -20,22 +20,22 @@
   justify-content: space-between;
   margin-bottom: var(--sp-6);
   flex-wrap: wrap;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   border-bottom: var(--border-hairline);
-  padding-bottom: var(--sp-4);
+  padding-bottom: var(--sp-1);
 }
 
 .brief-nav-left {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
 }
 
 .brief-back-btn {
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-button);
-  padding: 8px 14px;
+  padding: 8px var(--sp-3);
   font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   color: var(--color-charcoal);
@@ -49,7 +49,7 @@
 }
 
 .brief-main-title {
-  font-size: 24px;
+  font-size: var(--fs-title);
   font-weight: var(--fw-editorial);
   color: var(--color-charcoal);
   margin-top: 2px;
@@ -68,7 +68,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 6px var(--sp-3);
   border: none;
   background: transparent;
   border-radius: calc(var(--r-button) - 2px);
@@ -112,8 +112,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--sp-12);
-  gap: var(--sp-4);
+  padding: var(--sp-3);
+  gap: var(--sp-1);
   color: var(--color-stone);
   font-size: var(--fs-lg);
 }
@@ -133,7 +133,7 @@
 
 .brief-error-state {
   text-align: center;
-  padding: var(--sp-8);
+  padding: var(--sp-2);
   border-color: var(--color-wine);
 }
 
@@ -208,11 +208,11 @@
 }
 
 .banner-headline-row {
-  margin: var(--sp-2) 0 var(--sp-4);
+  margin: var(--sp-2) 0 var(--sp-1);
 }
 
 .banner-headline {
-  font-size: 26px;
+  font-size: var(--fs-title);
   line-height: 1.25;
   color: var(--color-charcoal);
   letter-spacing: -0.01em;
@@ -283,7 +283,7 @@
 }
 
 .story-step-card {
-  padding: var(--sp-4);
+  padding: var(--sp-1);
   display: flex;
   flex-direction: column;
   border: var(--border-card);
@@ -599,7 +599,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  padding: 8px 12px;
+  padding: 8px var(--sp-3);
   background-color: #fff8e6;
   border: 1px solid #f0d080;
   border-radius: var(--r-sm);
@@ -645,7 +645,7 @@
   width: 100%;
   height: 12px;
   background-color: var(--color-mist);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   overflow: hidden;
 }
 
@@ -692,16 +692,16 @@
   font-size: var(--fs-lg);
   line-height: 1.55;
   color: var(--color-charcoal);
-  margin-bottom: var(--sp-4);
+  margin-bottom: var(--sp-1);
   font-weight: var(--fw-editorial);
 }
 
 .takeaway-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   border-top: var(--border-hairline);
-  padding-top: var(--sp-4);
+  padding-top: var(--sp-1);
 }
 
 @media (max-width: 768px) {
@@ -732,7 +732,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   flex-wrap: wrap;
 }
 
@@ -780,7 +780,7 @@
   font-size: var(--fs-md);
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
-  padding: 8px 16px;
+  padding: 8px var(--sp-4);
   border-radius: var(--r-button);
   background-color: var(--color-white);
   border: 1px solid currentColor;

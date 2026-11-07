@@ -7,8 +7,8 @@
 .dc {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
-  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  gap: var(--sp-1);
+  padding: var(--sp-5) var(--sp-5) var(--sp-1);
   background: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
@@ -40,14 +40,14 @@
 .dc__verdicts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--sp-4);
+  gap: var(--sp-1);
 }
 
 .dc__verdict {
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
-  padding: var(--sp-4);
+  padding: var(--sp-1);
   border: var(--border-hairline);
   border-radius: var(--r-md);
   background: var(--color-parchment);
@@ -67,7 +67,7 @@
 }
 
 .dc__verdict-value {
-  font-size: 44px;
+  font-size: var(--fs-num-xl);
   line-height: 1;
   font-weight: var(--fw-data);
   font-variant-numeric: tabular-nums;
@@ -144,7 +144,7 @@
 
 .dc__table th,
 .dc__table td {
-  padding: 5px var(--sp-4) 5px 0;
+  padding: 5px var(--sp-1) 5px 0;
   text-align: left;
   border-bottom: var(--border-hairline);
 }
@@ -237,7 +237,7 @@
 
 @media (max-width: 720px) {
   .dc {
-    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+    padding: var(--sp-1) var(--sp-1) var(--sp-3);
   }
 
   .dc__title {
@@ -245,6 +245,6 @@
   }
 
   .dc__verdict-value {
-    font-size: 36px;
+    font-size: var(--fs-num-lg);
   }
 }

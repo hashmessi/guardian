@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 24px;
+  padding: var(--sp-3) var(--sp-6);
   background-color: var(--color-parchment);
   border-bottom: var(--border-hairline);
 }
@@ -18,7 +18,7 @@
 .brand-left {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--sp-3);
   color: inherit;
   text-align: left;
 }
@@ -40,7 +40,7 @@
 .brand-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 .plant-target-badge {
@@ -99,7 +99,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 24px;
+  padding: 10px var(--sp-6);
   background-color: var(--color-parchment);
   border-bottom: var(--border-hairline);
   font-size: var(--fs-md);
@@ -196,12 +196,12 @@
   width: 100%;
   max-width: 1360px;
   margin: 0 auto;
-  padding: 24px;
+  padding: var(--sp-6);
 }
 
 /* Footer Disclaimer */
 .app-shell__footer {
-  padding: 12px 24px;
+  padding: var(--sp-3) var(--sp-6);
   background-color: var(--color-parchment);
   border-top: var(--border-hairline);
   text-align: center;
@@ -242,7 +242,7 @@
   align-items: baseline;
   gap: var(--sp-3);
   margin: var(--sp-3) 0 0;
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-3) var(--sp-1);
   background: var(--color-white);
   border: 2px solid var(--color-wine);
   border-radius: var(--r-card);
@@ -268,7 +268,7 @@
 }
 
 .engine-offline-retry {
-  padding: 7px 12px;
+  padding: 7px var(--sp-3);
   border: 1px solid var(--color-wine);
   border-radius: var(--r-sm);
   background: var(--color-wine);

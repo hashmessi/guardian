@@ -1,5 +1,5 @@
 /* =========================================================================
-   OperationalCheckpointsModal.css — full detail view for the 3 PS02 shop-floor
+   OperationalCheckpointsModal.css â€” full detail view for the 3 PS02 shop-floor
    gates. One column, generous spacing: the 3-up inline card this replaced was
    reported as congested and hard to read at a glance.
    ========================================================================= */
@@ -13,7 +13,7 @@
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(2px);
-  padding: 24px;
+  padding: var(--sp-6);
 }
 
 .ockp-modal {
@@ -39,7 +39,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 28px;
+  padding: var(--sp-5) var(--sp-6);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   position: sticky;
   top: 0;
@@ -75,8 +75,8 @@
 }
 
 .ockp-clearance-banner {
-  margin: 20px 28px 0;
-  padding: 12px 16px;
+  margin: var(--sp-5) var(--sp-6) 0;
+  padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-lg);
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
@@ -99,18 +99,18 @@
 .ockp-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 20px 28px 28px;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
 }
 
 .ockp-gate {
   background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 18px 20px;
+  padding: var(--sp-4) var(--sp-5);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .ockp-gate--pass {
@@ -166,7 +166,7 @@
 .ockp-metric-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 .ockp-metric {
@@ -207,7 +207,7 @@
   color: var(--color-wine, #421d24);
   background: rgba(66, 29, 36, 0.06);
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .ockp-nominal-text {
@@ -217,7 +217,7 @@
   line-height: 1.45;
 }
 
-/* Visible failure feedback for a failed checkpoint recording action —
+/* Visible failure feedback for a failed checkpoint recording action â€”
    never only a console error. */
 .ockp-error-line {
   display: block;
@@ -230,14 +230,14 @@
   width: 100%;
   height: 6px;
   background: var(--color-mist, #e3e3e2);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   overflow: hidden;
 }
 
 .ockp-progress-fill {
   height: 100%;
   background: var(--color-charcoal, #292827);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   transition: width 0.3s ease;
 }
 
@@ -249,7 +249,7 @@
   background: var(--color-wine, #421d24);
   color: #ffffff;
   border: none;
-  padding: 11px 16px;
+  padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-md);
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
@@ -284,7 +284,7 @@
   background: #ffffff;
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-md);
-  padding: 12px 14px;
+  padding: var(--sp-3) var(--sp-3);
 }
 
 .hc-form__label {
@@ -304,9 +304,9 @@
   flex: 1;
   min-width: 0;
   font-size: var(--fs-lg);
-  padding: 9px 12px;
+  padding: 9px var(--sp-3);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 7px;
+  border-radius: var(--r-md);
   background: #ffffff;
   color: var(--color-charcoal, #292827);
 }
@@ -320,8 +320,8 @@
   background: var(--color-charcoal, #292827);
   color: #ffffff;
   border: none;
-  padding: 9px 16px;
-  border-radius: 7px;
+  padding: 9px var(--sp-4);
+  border-radius: var(--r-md);
   font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
   cursor: pointer;
@@ -364,8 +364,8 @@
   .ockp-body {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--sp-4);
+    padding-right: var(--sp-4);
   }
 
   .hc-form__row {
@@ -374,7 +374,7 @@
 }
 
 .op-modal__empty {
-  padding: 28px 24px;
+  padding: var(--sp-6) var(--sp-6);
   margin: 0;
   font-size: var(--fs-lg);
   line-height: 1.6;

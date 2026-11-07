@@ -1,5 +1,5 @@
 /* =========================================================================
-   ScenarioScorecardModal.css — Superhuman Warm Parchment Editorial Theme
+   ScenarioScorecardModal.css â€” Superhuman Warm Parchment Editorial Theme
    Clean Paper White modal on warm blurred canvas with Soft Mist hairlines.
    Strictly adheres to DESIGN (4).md: NO dark navy backgrounds, NO neon glows.
    ========================================================================= */
@@ -36,7 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
+  padding: var(--sp-4) var(--sp-6);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   background: var(--color-parchment, #f2f0eb);
 }
@@ -58,7 +58,7 @@
 .scorecard-title {
   margin: 0;
   font-size: var(--fs-xl);
-  font-weight: var(--fw-editorial, 460);
+  font-weight: var(--fw-editorial);
   color: var(--color-charcoal, #292827);
   letter-spacing: -0.015em;
 }
@@ -66,7 +66,7 @@
 .scorecard-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .status-pill {
@@ -96,7 +96,7 @@
   font-size: var(--fs-xl);
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
@@ -113,7 +113,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 24px;
+  padding: 10px var(--sp-6);
   background: var(--color-parchment);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   font-size: var(--fs-md);
@@ -133,7 +133,7 @@
 
 /* 7 Pillars Grid */
 .scorecard-pillars-grid {
-  padding: 18px 24px;
+  padding: var(--sp-4) var(--sp-6);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -145,7 +145,7 @@
   background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-radius: var(--r-lg);
-  padding: 12px 16px;
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -235,7 +235,7 @@
 
 /* Epistemic Disclaimer */
 .scorecard-disclaimer {
-  padding: 10px 24px;
+  padding: 10px var(--sp-6);
   background: var(--color-parchment);
   border-top: 1px solid var(--color-mist, #e3e3e2);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
@@ -260,7 +260,7 @@
 
 /* Footer */
 .scorecard-footer {
-  padding: 14px 24px;
+  padding: var(--sp-3) var(--sp-6);
   background: var(--color-parchment, #f2f0eb);
   display: flex;
   justify-content: space-between;
@@ -279,7 +279,7 @@
   background: var(--color-wine, #421d24);
   color: #ffffff;
   border: none;
-  padding: 8px 20px;
+  padding: 8px var(--sp-5);
   border-radius: var(--r-lg);
   font-size: var(--fs-md);
   font-weight: var(--fw-label);

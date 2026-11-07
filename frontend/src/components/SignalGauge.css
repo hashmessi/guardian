@@ -1,9 +1,9 @@
 .gauge-container {
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 16px 20px;
+  padding: var(--sp-4) var(--sp-5);
   box-shadow: none;
 }
 
@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--sp-3);
 }
 
 .gauge-label {
@@ -25,7 +25,7 @@
 .gauge-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .gauge-value {
@@ -64,7 +64,7 @@
   top: -4px;
   width: 3px;
   height: 18px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   transform: translateX(-50%);
   z-index: 2;
 }

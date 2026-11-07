@@ -1,5 +1,5 @@
 /* =========================================================================
-   RootCauseBar.css — Sleek Borderless Row Component
+   RootCauseBar.css â€” Sleek Borderless Row Component
    Eliminates nested card boxes and visual noise per DESIGN (4).md.
    ========================================================================= */
 
@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--sp-4);
   padding: 10px 0;
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   background: transparent;
@@ -18,7 +18,7 @@
 }
 
 .root-cause-row--top {
-  padding: 12px 14px;
+  padding: var(--sp-3) var(--sp-3);
   background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
   border-left: 3px solid var(--color-wine, #421d24);
@@ -83,7 +83,7 @@
 .root-cause-row__right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   flex-shrink: 0;
   min-width: 130px;
 }
@@ -99,14 +99,14 @@
   flex: 1;
   height: 4px;
   background-color: var(--color-mist, #e3e3e2);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   overflow: hidden;
 }
 
 .root-cause-row__fill {
   height: 100%;
   background-color: var(--color-charcoal, #292827);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   transition: width 0.3s ease;
 }
 
