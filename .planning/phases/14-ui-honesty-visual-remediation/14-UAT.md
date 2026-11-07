@@ -71,7 +71,7 @@ Phase 14 closes every defect identified during the visual and honesty audit acro
 
 ### 11. Typography & Spacing Scale Adoption
 - **Expected**: Font sizes mapped to `--fs-*`, font weights mapped to `--fw-*`, radii to `--r-*`, structural spacing to `--sp-*`.
-- **Observed**: 22 CSS files normalized; `git grep` confirms 0 raw numeric font-weight literals.
+- **Observed**: 22 CSS files normalized; `git grep` confirms 0 raw numeric font-weight literals. **Addendum (post-review):** initially the 24–44px display sizes and structural spacing were left unsnapped while recorded as done; completed in `d26c27c` — every `font-size`/`border-radius` literal and structural `padding`/`margin`/`gap` now resolves to `--fs-*`, `--r-*`, `--sp-*` tokens (display tier added: `--fs-hero/--fs-title/--fs-num/--fs-num-lg/--fs-num-xl`).
 - **Status**: PASSED
 
 ### 12. Automated Build & Test Validation

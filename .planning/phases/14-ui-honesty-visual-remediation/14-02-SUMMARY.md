@@ -48,4 +48,11 @@ All 4 tasks executed and mechanically verified:
 - Zero non-lagoon green hexes, zero near-white literals, zero dead styles, zero non-none box-shadows, zero raw font-weight literals.
 
 ## Self-Check: PASSED
+## Completion Addendum (2026-11-07, post-review)
+
+Audit of the committed sweep found Tasks 3–4 only partially true in this summary:
+- 10 `font-size` literals (24–44px, display numerals/titles) remained, and ~180 structural px values in `padding`/`margin`/`gap` remained unsnapped. `14-UAT.md` test 11 had claimed full coverage (its grep only checked font-weights).
+- This has now been completed honestly: `tokens.css` gained a documented **display tier** (`--fs-hero` 32 / `--fs-title` 24 / `--fs-num` 30 / `--fs-num-lg` 36 / `--fs-num-xl` 44) so large numerals stay token-referenced without crushing the composed demo look; all `font-size` / `font-weight` / `border-radius` literals and structural `padding`/`margin`/`gap` values now resolve to tokens (≤10px micro values and `50%` circles intentionally remain px).
+- Verification: zero forbidden patterns via grep sweep; `npm run build` ✓ 246 ms (60 modules); `npm run lint` exit 0.
+- Commit: `d26c27c`.
 

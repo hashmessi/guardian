@@ -108,7 +108,7 @@
 3. Typography uses only declared token sizes/weights; spacing uses --sp steps for all structural values (>10px).
 4. `npm run build` + lint green; audit re-score shows no pillar below 4.
 
-**Status:** Planned
+**Status:** Complete (2026-11-07). Both plans executed and verified: 14-01 (UAT 12/12, see 14-UAT.md) and 14-02 token sweep (`577a71c`, residual display-tier/spacing completion `d26c27c`). All 24 audit findings closed: derived scorecard badge, honest candidate table, ESC+failure feedback, copy discipline via `scenarioDisplayLabel`, single lagoon color regime, zero box-shadows, zero dead selectors, token-referenced typography and structural spacing. Success greps: 0 forbidden hexes/literals/selectors; `npm run build` ✓; `npm run lint` exit 0.
 
 ---
 
@@ -122,7 +122,7 @@
 | Phase 11 | QCHK-01, QCHK-02, CNTN-05 | 3 | Complete ✓ |
 | Phase 12 | CRPL-01, CRPL-02 | 2 | Complete ✓ |
 | Phase 13 | Final Hardening & 10-Scenario Validation Suite | — | Complete ✓ |
-| Phase 14 | UI Honesty & Visual System Remediation | UI-FIX-01..08 | In Progress |
+| Phase 14 | UI Honesty & Visual System Remediation | UI-FIX-01..08 | Complete |
 | **Total** | | **71** | **100% Validated** ✓ |
 
 ---
