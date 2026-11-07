@@ -65,7 +65,7 @@ export function RecommendationCard({
     btnDisabled = true;
   } else if (applied) {
     btnClass = 'apply-btn--done';
-    btnLabel = '✓ ACTION RECORDED — CHECKING RECOVERY';
+    btnLabel = 'ACTION RECORDED — CHECKING RECOVERY';
     btnDisabled = true;
   }
 

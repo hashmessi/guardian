@@ -33,12 +33,23 @@ class RecipeParameterSpec(BaseModel):
         return self.nominal + self.tolerance
 
 
-# Automotive R-12 Signed Master Recipe
+# Automotive R-12 Signed Master Recipe (Engineering Resins: PA66 / PBT)
 R12_RECIPE_SPECS: Dict[str, RecipeParameterSpec] = {
     "zone_1_temp": RecipeParameterSpec(name="Zone 1 Temp", nominal=235.0, tolerance=5.0, unit="°C"),
     "zone_2_temp": RecipeParameterSpec(name="Zone 2 Temp", nominal=240.0, tolerance=5.0, unit="°C"),
     "zone_3_temp": RecipeParameterSpec(name="Zone 3 Temp", nominal=245.0, tolerance=5.0, unit="°C"),
     "zone_4_temp": RecipeParameterSpec(name="Zone 4 Temp", nominal=250.0, tolerance=5.0, unit="°C"),
+    "holding_pressure": RecipeParameterSpec(name="Holding Pressure", nominal=75.0, tolerance=8.0, unit="bar"),
+    "injection_speed": RecipeParameterSpec(name="Injection Speed", nominal=45.0, tolerance=5.0, unit="mm/s"),
+    "cooling_time": RecipeParameterSpec(name="Cooling Time", nominal=14.0, tolerance=2.0, unit="s"),
+}
+
+# Automotive PP-V2.1 Master Recipe (Polypropylene Housing: 210–235°C baseline)
+PP_RECIPE_SPECS: Dict[str, RecipeParameterSpec] = {
+    "zone_1_temp": RecipeParameterSpec(name="Zone 1 Temp", nominal=210.0, tolerance=5.0, unit="°C"),
+    "zone_2_temp": RecipeParameterSpec(name="Zone 2 Temp", nominal=220.0, tolerance=5.0, unit="°C"),
+    "zone_3_temp": RecipeParameterSpec(name="Zone 3 Temp", nominal=230.0, tolerance=5.0, unit="°C"),
+    "zone_4_temp": RecipeParameterSpec(name="Zone 4 Temp", nominal=235.0, tolerance=5.0, unit="°C"),
     "holding_pressure": RecipeParameterSpec(name="Holding Pressure", nominal=75.0, tolerance=8.0, unit="bar"),
     "injection_speed": RecipeParameterSpec(name="Injection Speed", nominal=45.0, tolerance=5.0, unit="mm/s"),
     "cooling_time": RecipeParameterSpec(name="Cooling Time", nominal=14.0, tolerance=2.0, unit="s"),
@@ -98,7 +109,19 @@ class OperationalCheckpointsEvaluator:
         self.active_moisture_pct: float = 0.08
         self.active_moisture_inspector: str = "QC-101"
         self.active_batch_id: str = "BATCH-PA66-202610"
+        self.moisture_unverified: bool = False
+        self.moisture_notes: Optional[str] = None
         self.human_channel = HumanChannelClient()
+
+    def set_moisture_unverified(self, notes: Optional[str] = None) -> None:
+        """Mark resin moisture as unverified / failed due to operator report or drying breakdown."""
+        self.moisture_unverified = True
+        self.moisture_notes = notes
+
+    def clear_moisture_unverified(self) -> None:
+        """Clear unverified hold upon physical QC signoff."""
+        self.moisture_unverified = False
+        self.moisture_notes = None
 
     def record_spray(self, cycle_index: int, operator_id: str = "OP-104") -> None:
         """Record mold release spray application at a specific cycle."""
@@ -111,13 +134,17 @@ class OperationalCheckpointsEvaluator:
         """Record moisture check sign-off for resin hopper."""
         self.active_moisture_pct = moisture_pct
         self.active_moisture_inspector = inspector_id
+        self.moisture_unverified = False
+        self.moisture_notes = None
         if batch_id:
             self.active_batch_id = batch_id
 
     def evaluate_recipe(self, active_params: Dict[str, float]) -> RecipeCheckpointStatus:
-        """Evaluate active machine parameters against signed recipe R-12."""
+        """Evaluate active machine parameters against signed recipe R-12 / PP-V2.1."""
+        # Use PP recipe specs if machine is operating around PP thermal baseline (< 225°C in Zone 1)
+        specs = PP_RECIPE_SPECS if active_params.get("zone_1_temp", 235.0) < 225.0 else self.recipe_specs
         deviations: List[str] = []
-        for key, spec in self.recipe_specs.items():
+        for key, spec in specs.items():
             if key in active_params:
                 val = active_params[key]
                 if val < spec.min_val or val > spec.max_val:
@@ -146,7 +173,11 @@ class OperationalCheckpointsEvaluator:
         insp_id = inspector_id if inspector_id is not None else self.active_moisture_inspector
         b_id = batch_id if batch_id is not None else self.active_batch_id
 
-        if m_pct > self.MAX_MOISTURE_PCT:
+        if self.moisture_unverified:
+            status = "FAIL"
+            status_label = "BLOCKED_UNVERIFIED_RESIN"
+            notes = self.moisture_notes or "Unverified resin lot: physical moisture verification required."
+        elif m_pct > self.MAX_MOISTURE_PCT:
             status = "FAIL"
             status_label = "BLOCKED_DRYING_REQUIRED"
             notes = f"Moisture {m_pct:.2f}% exceeds 0.15% max spec. Hydrolysis & splay risk."
@@ -203,11 +234,14 @@ class OperationalCheckpointsEvaluator:
         return self.evaluate_mold_spray(current_cycle=cycle_index), signal
 
     def attest_moisture_signoff_from_text(self, text: str) -> HumanChannelSignal:
-        """Parse a bounded "resin lot dried & signed?" confirmation. Corroborating
-        evidence only -- it never substitutes a measured moisture %; the engine still
-        decides off the sensor reading in evaluate_moisture() (scope_plan.md Sec.6
-        rule 1)."""
-        return self.human_channel.parse(text, CheckpointQuestion.MOISTURE_SIGNED)
+        """Parse a bounded "resin lot dried & signed?" confirmation.
+        A negative confirmation flags moisture unverified, gating the line until physical QC signoff."""
+        signal = self.human_channel.parse(text, CheckpointQuestion.MOISTURE_SIGNED)
+        if signal.choice == BoundedChoice.NO and signal.confidence >= CONFIDENCE_THRESHOLD:
+            self.set_moisture_unverified(notes=f"Operator report: {text}")
+        elif signal.choice == BoundedChoice.YES and signal.confidence >= CONFIDENCE_THRESHOLD:
+            self.clear_moisture_unverified()
+        return signal
 
     def attest_recipe_setpoint_from_text(self, text: str) -> HumanChannelSignal:
         """Parse a bounded "setpoint matches recipe R-12?" confirmation. Corroborating
@@ -233,9 +267,14 @@ class OperationalCheckpointsEvaluator:
                 f"Recipe Lock R-12 violation: {len(recipe_status.parameter_deviations)} parameter(s) out of tolerance"
             )
         if moisture_status.status == "FAIL":
-            blocking_reasons.append(
-                f"Resin Moisture Gate: {moisture_status.moisture_pct:.2f}% exceeds {self.MAX_MOISTURE_PCT:.2f}% limit"
-            )
+            if self.moisture_unverified:
+                blocking_reasons.append(
+                    f"Resin Moisture Gate: {moisture_status.notes or 'Unverified resin lot / drying breakdown'}"
+                )
+            else:
+                blocking_reasons.append(
+                    f"Resin Moisture Gate: {moisture_status.moisture_pct:.2f}% exceeds {self.MAX_MOISTURE_PCT:.2f}% limit"
+                )
         if spray_status.status == "FAIL":
             blocking_reasons.append(
                 f"Mold Spray Gate: {spray_status.cycles_since_spray} cycles since last spray (limit: {self.SPRAY_OVERDUE_LIMIT})"

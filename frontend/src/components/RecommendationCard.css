@@ -5,7 +5,7 @@
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 24px;
+  padding: var(--sp-6);
   box-shadow: none;
 }
 
@@ -13,28 +13,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-4);
 }
 
 /* Dominant Action Headline Callout (Lock 10 & 11) */
 .dominant-action-callout {
-  padding: 20px 24px;
+  padding: var(--sp-5) var(--sp-6);
   background-color: #fbf7f8;
   border-left: 6px solid var(--color-wine);
   border-radius: var(--r-sm);
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
 }
 
 .dominant-action-title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.02em;
   color: var(--color-wine);
   line-height: 1.25;
 }
 
 .dominant-action-subtext {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   margin-top: 6px;
 }
@@ -43,8 +43,8 @@
 .rec-attributes-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
 }
 
 @media (max-width: 768px) {
@@ -57,7 +57,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 14px;
+  padding: var(--sp-3) var(--sp-3);
   background-color: var(--color-parchment);
   border: 1px solid var(--color-mist);
   border-radius: var(--r-sm);
@@ -72,7 +72,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -80,32 +80,32 @@
 }
 
 .rec-attr-value {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   line-height: 1.4;
 }
 
 .econ-modeled-pill {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   letter-spacing: 0.04em;
   padding: 1px 5px;
-  background-color: #d1fae5;
-  color: #065f46;
-  border-radius: 3px;
+  background-color: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon);
+  border-radius: var(--r-sm);
 }
 
 .rec-econ-headline {
-  font-size: 22px;
-  font-weight: 700;
-  color: #047857;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--color-lagoon);
   line-height: 1.1;
   margin-top: 2px;
 }
 
 .rec-econ-detail {
-  font-size: 11px;
-  color: #065f46;
+  font-size: var(--fs-md);
+  color: var(--color-lagoon);
   line-height: 1.35;
   margin-top: 2px;
 }
@@ -116,7 +116,7 @@
   height: 48px;
   border: none;
   border-radius: var(--r-button);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -158,11 +158,11 @@
 }
 
 .apply-error {
-  margin-top: 12px;
-  padding: 10px 14px;
+  margin-top: var(--sp-3);
+  padding: 10px var(--sp-3);
   border-radius: var(--r-md);
   background-color: rgba(66, 29, 36, 0.08);
   border: 1px solid rgba(66, 29, 36, 0.2);
   color: var(--color-wine);
-  font-size: 12px;
+  font-size: var(--fs-md);
 }

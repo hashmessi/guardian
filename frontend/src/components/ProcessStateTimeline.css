@@ -2,7 +2,7 @@
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 20px 24px;
+  padding: var(--sp-5) var(--sp-6);
   box-shadow: none;
 }
 
@@ -10,11 +10,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
 }
 
 .state-timeline__title {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -22,7 +22,7 @@
 }
 
 .state-timeline__raw-state {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-data);
 }
 
@@ -31,7 +31,7 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
-  margin: 10px 0 20px 0;
+  margin: 10px 0 var(--sp-5) 0;
 }
 
 .state-step-item {
@@ -50,7 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-data);
   transition: all 0.3s ease;
   background-color: var(--color-white);
@@ -79,7 +79,7 @@
 
 .state-step-label {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
   position: absolute;
   bottom: -16px;
   color: var(--color-wine);
-  font-size: 10px;
+  font-size: var(--fs-sm);
   line-height: 1;
 }
 

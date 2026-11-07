@@ -1,5 +1,5 @@
 /* =========================================================================
-   ContainmentTag.css — the printable suspect-lot tag.
+   ContainmentTag.css â€” the printable suspect-lot tag.
    On screen: a modal preview. On paper: A5, black on white, nothing else.
    ========================================================================= */
 
@@ -10,7 +10,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: var(--sp-8) var(--sp-4);
+  padding: var(--sp-2) var(--sp-1);
   overflow-y: auto;
   background: rgba(41, 40, 39, 0.45);
 }
@@ -30,10 +30,10 @@
   gap: var(--sp-3);
   align-items: center;
   justify-content: space-between;
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-3) var(--sp-1);
   border-bottom: var(--border-hairline);
   background: var(--color-white);
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
 }
@@ -44,12 +44,12 @@
 }
 
 .ctag-btn {
-  padding: 6px 14px;
+  padding: 6px var(--sp-3);
   border: var(--border-card);
   border-radius: var(--r-pill);
   background: var(--color-white);
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-charcoal);
   cursor: pointer;
@@ -68,7 +68,7 @@
 
 /* ---- The tag itself ---- */
 .ctag {
-  margin: var(--sp-4);
+  margin: var(--sp-1);
   padding: var(--sp-5);
   background: #fff;
   border: 2px solid #000;
@@ -79,7 +79,7 @@
 .ctag__head {
   display: flex;
   align-items: stretch;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   padding-bottom: var(--sp-3);
   border-bottom: 2px solid #000;
 }
@@ -91,8 +91,8 @@
   padding: var(--sp-2) var(--sp-3);
   background: #000;
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
 }
 
@@ -100,20 +100,20 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--fs-md);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .ctag__issuer strong {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   letter-spacing: 0.1em;
 }
 
 .ctag__identity {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--sp-2) var(--sp-4);
+  gap: var(--sp-2) var(--sp-1);
   padding: var(--sp-3) 0;
   border-bottom: 1px solid #000;
 }
@@ -127,15 +127,15 @@
 }
 
 .ctag__field-label {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .ctag__field-value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-data);
   font-variant-numeric: tabular-nums;
 }
 
@@ -143,23 +143,23 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   padding: var(--sp-3) 0;
   border-bottom: 1px solid #000;
 }
 
 .ctag__lot-label {
   display: block;
-  font-size: 9px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .ctag__lot-range,
 .ctag__lot-qty {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: var(--fs-num);
+  font-weight: var(--fw-bold);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
@@ -175,7 +175,7 @@
 
 .ctag__reason p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-md);
   line-height: 1.5;
 }
 
@@ -187,20 +187,20 @@
 .ctag__row {
   display: flex;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   padding: 3px 0;
-  font-size: 11.5px;
+  font-size: var(--fs-md);
 }
 
 .ctag__row-value {
-  font-weight: 600;
+  font-weight: var(--fw-data);
   font-variant-numeric: tabular-nums;
 }
 
 .ctag__signoff {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-4);
+  gap: var(--sp-1);
   padding: var(--sp-5) 0 var(--sp-3);
 }
 
@@ -218,7 +218,7 @@
   display: flex;
   gap: var(--sp-5);
   margin-top: 4px;
-  font-size: 11.5px;
+  font-size: var(--fs-md);
 }
 
 .ctag__boxes label {
@@ -237,7 +237,7 @@
 .ctag__foot {
   padding-top: var(--sp-3);
   border-top: 1px solid #000;
-  font-size: 9.5px;
+  font-size: var(--fs-sm);
   line-height: 1.45;
 }
 

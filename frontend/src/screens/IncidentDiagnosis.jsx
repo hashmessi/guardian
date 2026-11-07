@@ -137,7 +137,7 @@ export function IncidentDiagnosis({ onProceed }) {
               <div className="escalation-point">
                 <span className="escalation-point__label">PROJECTED DEFECT RISK</span>
                 <span className="escalation-point__value escalation-point__value--current num">
-                  {currentRisk.toFixed(1)}%
+                  {currentRisk == null ? '—' : `${currentRisk.toFixed(1)}%`}
                 </span>
               </div>
             </div>
@@ -187,7 +187,7 @@ export function IncidentDiagnosis({ onProceed }) {
           {/* Collapsible Technical Sentinel Evidence */}
           <details className="detector-evidence-details">
             <summary>
-              <span>⚙ Technical Sentinel Statistical Evidence (EWMA, CUSUM, Mahalanobis Distance)</span>
+              <span>Technical Sentinel Statistical Evidence (EWMA, CUSUM, Mahalanobis Distance)</span>
             </summary>
             <table className="drift-evidence-table">
               <thead>

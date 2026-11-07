@@ -2,18 +2,18 @@
   background-color: var(--color-white);
   border: var(--border-card);
   border-radius: var(--r-card);
-  padding: 24px;
+  padding: var(--sp-6);
   box-shadow: none;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 .recovery-status-banner {
   width: 100%;
-  padding: 16px 20px;
+  padding: var(--sp-4) var(--sp-5);
   border-radius: var(--r-md);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   letter-spacing: 0.04em;
   text-align: center;
@@ -38,7 +38,7 @@
 .recovery-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 @media (max-width: 900px) {
@@ -51,41 +51,41 @@
   background-color: var(--color-parchment);
   border: var(--border-card);
   border-radius: var(--r-md);
-  padding: 14px 16px;
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 .recovery-metric__label {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;
 }
 
 .recovery-metric__value {
-  font-size: 22px;
+  font-size: var(--fs-2xl);
   font-weight: var(--fw-data);
 }
 
 .recovery-metric__subtext {
-  font-size: 11px;
+  font-size: var(--fs-md);
   color: var(--color-stone);
 }
 
 .containment-summary-box {
-  background-color: #faf9f6;
+  background-color: var(--color-parchment);
   border: 1px dashed var(--color-mist);
   border-radius: var(--r-md);
-  padding: 16px;
-  font-size: 13px;
+  padding: var(--sp-4);
+  font-size: var(--fs-lg);
   line-height: 1.6;
   color: var(--color-charcoal);
 }
 
 .containment-summary-title {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;

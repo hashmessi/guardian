@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: var(--sp-4);
+  padding: var(--sp-1);
 }
 
 .copq-modal {
@@ -30,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: var(--sp-4) var(--sp-6);
+  padding: var(--sp-1) var(--sp-6);
   border-bottom: 1px solid var(--color-mist);
   background: var(--color-parchment);
 }
@@ -43,7 +43,7 @@
 }
 
 .copq-modal__title {
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   color: var(--color-charcoal);
@@ -51,7 +51,7 @@
 }
 
 .copq-modal__subtitle {
-  font-size: 12px;
+  font-size: var(--fs-md);
   color: var(--color-stone);
   margin: 0;
 }
@@ -67,7 +67,7 @@
   justify-content: center;
   cursor: pointer;
   color: var(--color-stone);
-  font-size: 14px;
+  font-size: var(--fs-lg);
 }
 
 .copq-modal__close:hover {
@@ -104,7 +104,7 @@
 }
 
 .copq-field label {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-charcoal);
 }
@@ -123,7 +123,7 @@
   background: transparent;
   padding: 6px 8px;
   font-family: var(--font-family);
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-data);
   color: var(--color-charcoal);
   width: 100%;
@@ -131,7 +131,7 @@
 }
 
 .input-with-unit span {
-  font-size: 10px;
+  font-size: var(--fs-sm);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   padding-right: 8px;
@@ -148,7 +148,7 @@
   background: var(--color-parchment);
   border: 1px solid var(--color-mist);
   border-radius: var(--r-md);
-  padding: var(--sp-4);
+  padding: var(--sp-1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -159,7 +159,7 @@
   flex-direction: column;
   gap: 8px;
   margin-top: var(--sp-3);
-  font-size: 12px;
+  font-size: var(--fs-md);
 }
 
 .summary-row {
@@ -180,7 +180,7 @@
   border-top: 2px solid var(--color-mist);
   padding-top: 8px;
   margin-top: 4px;
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-bold);
   color: var(--color-wine);
 }
@@ -191,8 +191,8 @@
   border-left: 3px solid var(--color-violet);
   border-radius: var(--r-sm);
   padding: var(--sp-3);
-  margin-top: var(--sp-4);
-  font-size: 11px;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-md);
   line-height: 1.4;
   color: var(--color-charcoal);
 }
@@ -226,7 +226,7 @@
 }
 
 .save-status-msg {
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-lagoon);
 }
@@ -235,9 +235,9 @@
   background: var(--color-white);
   border: 1px solid var(--color-mist);
   border-radius: var(--r-sm);
-  padding: 6px 12px;
+  padding: 6px var(--sp-3);
   font-family: var(--font-family);
-  font-size: 12px;
+  font-size: var(--fs-md);
   color: var(--color-charcoal);
   cursor: pointer;
 }
@@ -250,9 +250,9 @@
   background: var(--color-wine);
   border: 1px solid var(--color-wine);
   border-radius: var(--r-sm);
-  padding: 6px 14px;
+  padding: 6px var(--sp-3);
   font-family: var(--font-family);
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-bold);
   color: var(--color-white);
   cursor: pointer;

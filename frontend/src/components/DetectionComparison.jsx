@@ -17,7 +17,10 @@ export function DetectionComparison() {
     let alive = true;
     fetchExternalBenchmark()
       .then((data) => alive && setState({ status: 'ready', data, error: null }))
-      .catch((err) => alive && setState({ status: 'error', data: null, error: err.message }));
+      .catch((err) => {
+        console.error('Detection comparison fetch failed:', err);
+        if (alive) setState({ status: 'error', data: null, error: null });
+      });
     return () => {
       alive = false;
     };
@@ -38,7 +41,6 @@ export function DetectionComparison() {
         <h2 className="dc__title">Detection comparison unavailable</h2>
         <p className="dc__error-text">
           The engine did not answer, so this panel is showing nothing rather than a remembered number.
-          <span className="dc__error-detail">{state.error}</span>
         </p>
       </section>
     );

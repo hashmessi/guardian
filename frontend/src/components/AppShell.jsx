@@ -4,10 +4,17 @@ import { usePolling, resetDemoSession, selectScenario } from '../hooks/useApi';
 import { CoPQModal } from './CoPQModal';
 import { ScenarioScorecardModal } from './ScenarioScorecardModal';
 import { OperationalCheckpointsModal } from './OperationalCheckpointsModal';
+import { scenarioDisplayLabel } from '../scenarioDisplay';
+
+// Demo order for the locked hero set (scope_plan.md Sec.4): the dropdown always
+// reads Scenario 1 → 2 → 3, matching the front page. Unknown ids sort after.
+const SCENARIO_DEMO_ORDER = ['SCN-06-COMPOUND', 'SCN-FLIP-HUMAN-CHANNEL', 'SCN-08-LOW-CONF-ABSTAIN'];
 
 export function AppShell({
   activeTab,
   onTabChange,
+  activeScenarioId: propActiveScenarioId,
+  onScenarioChange,
   showCoPQModal: propShowCoPQ,
   setShowCoPQModal: propSetShowCoPQ,
   showScorecardModal: propShowScorecard,
@@ -50,9 +57,9 @@ export function AppShell({
   const { data: activeScnData } = usePolling('/api/scenarios/active', 2000);
   const { data: scenariosList } = usePolling('/api/scenarios?hero_only=true', 30000);
 
-  // Active scenario details. Default matches the flagship (S06) until a
+  // Active scenario details. Default matches the flagship (Scenario 1) until a
   // scenario is actually selected.
-  const activeScenarioId = activeScnData?.active_scenario_id || 'SCN-06-COMPOUND';
+  const activeScenarioId = propActiveScenarioId || activeScnData?.active_scenario_id || 'SCN-06-COMPOUND';
   const activeScenario = activeScnData?.scenario;
   const activeScorecard = activeScnData?.scorecard;
 
@@ -73,7 +80,7 @@ export function AppShell({
     setResetStatus('Resetting session...');
     try {
       await resetDemoSession(processData?.machine_id || 'IMM-01');
-      setResetStatus('✓ Baseline reset');
+      setResetStatus('Baseline reset');
       setTimeout(() => {
         window.location.reload();
       }, 400);
@@ -86,13 +93,17 @@ export function AppShell({
   const handleScenarioChange = async (newScnId) => {
     if (newScnId === activeScenarioId || isSwitchingScenario) return;
     setIsSwitchingScenario(true);
-    setResetStatus(`Loading ${newScnId}...`);
+    setResetStatus(`Loading ${scenarioDisplayLabel(newScnId)}...`);
     try {
       await selectScenario(newScnId);
-      setResetStatus(`✓ ${newScnId} active`);
+      if (onScenarioChange) {
+        onScenarioChange(newScnId);
+      }
+      setResetStatus(`${scenarioDisplayLabel(newScnId)} active`);
       setTimeout(() => {
         setResetStatus(null);
       }, 2500);
+      refreshProcess();
     } catch {
       setResetStatus('Could not load that replay. Check the engine connection and try again.');
     } finally {
@@ -112,7 +123,10 @@ export function AppShell({
           aria-label="Process Guardian — return to scenario briefing"
         >
           <span className="brand-wordmark">
-            <span className="brand-icon-hex" aria-hidden="true">⬡</span> PROCESS GUARDIAN
+            <svg className="brand-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2" />
+            </svg>
+            <span>PROCESS GUARDIAN</span>
           </span>
           <span className="brand-subtitle">
             Ragam Polymolds · Plant IMM-01
@@ -148,17 +162,22 @@ export function AppShell({
               title="Select a controlled demo replay"
             >
               {scenariosList && scenariosList.length > 0 ? (
-                scenariosList.map((s) => (
+                [...scenariosList].sort(
+                  (a, b) =>
+                    (SCENARIO_DEMO_ORDER.indexOf(a.scenario_id) + 1 || SCENARIO_DEMO_ORDER.length + 1)
+                    - (SCENARIO_DEMO_ORDER.indexOf(b.scenario_id) + 1 || SCENARIO_DEMO_ORDER.length + 1)
+                ).map((s) => (
                   <option key={s.scenario_id} value={s.scenario_id}>
-                    {s.title}
+                    {scenarioDisplayLabel(s.scenario_id, s.title)}
                   </option>
                 ))
               ) : (
                 // Offline fallback, kept in sync with the locked hero set
                 // (scope_plan.md Sec.4) in case the engine isn't answering yet.
                 <>
-                  <option value="SCN-06-COMPOUND">Scenario 06 — Compound Multi-Signal Drift</option>
-                  <option value="SCN-08-LOW-CONF-ABSTAIN">Scenario 08 — Out-of-Distribution Drift</option>
+                  <option value="SCN-06-COMPOUND">Scenario 1 — Compound Multi-Signal Drift</option>
+                  <option value="SCN-FLIP-HUMAN-CHANNEL">Scenario 2 — Human-Channel Material Risk</option>
+                  <option value="SCN-08-LOW-CONF-ABSTAIN">Scenario 3 — Out-of-Distribution Drift</option>
                 </>
               )}
             </select>
@@ -171,7 +190,17 @@ export function AppShell({
             disabled={isResetting}
             title="Reset scenario to pristine baseline while preserving immutable audit logs"
           >
-            {isResetting ? 'RESETTING...' : '↺ RESET'}
+            {isResetting ? (
+              'RESETTING...'
+            ) : (
+              <>
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M2.5 8a5.5 5.5 0 1 1 1.6 3.9L2 14" />
+                  <polyline points="2 9 2 14 7 14" />
+                </svg>
+                <span>RESET</span>
+              </>
+            )}
           </button>
 
           {activeTab !== 'scenarios' && onTabChange && (
@@ -237,7 +266,9 @@ export function AppShell({
         isOpen={isScorecardOpen}
         onClose={() => setScorecardOpen(false)}
         scorecard={activeScorecard}
-        scenarioTitle={activeScenario?.title}
+        scenarioTitle={activeScenario
+          ? scenarioDisplayLabel(activeScenario.scenario_id || activeScnData?.active_scenario_id, activeScenario.title)
+          : undefined}
       />
 
       {/* Shop-Floor Operational Checkpoints Modal (QCHK-02, P0 human-channel gates) */}

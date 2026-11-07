@@ -35,20 +35,20 @@ export function OperationalCheckpointsCard({ onOpenModal }) {
           const status = report?.[gate.key]?.status;
           const isPass = status === 'PASS';
           const isWarn = status === 'WARNING';
-          const mark = !hasReport ? '–' : isPass ? '✓' : isWarn ? '⚠' : '✕';
+          const mark = !hasReport ? '–' : isPass ? 'PASS' : isWarn ? 'WARN' : 'HOLD';
           return (
             <span
               key={gate.key}
               className={`op-bar-chip ${!hasReport ? 'op-bar-chip--unknown' : isPass ? 'op-bar-chip--pass' : isWarn ? 'op-bar-chip--warn' : 'op-bar-chip--fail'}`}
             >
-              G{gate.num} {gate.label} {mark}
+              G{gate.num} {gate.label} · {mark}
             </span>
           );
         })}
       </div>
 
       <div className={`op-clearance-pill ${overallClearance ? 'op-clearance-pill--cleared' : 'op-clearance-pill--gated'}`}>
-        {!hasReport ? 'GATE STATUS UNKNOWN' : overallClearance ? '✓ CLEARANCE GRANTED' : '🔒 LINE GATED'}
+        {!hasReport ? 'GATE STATUS UNKNOWN' : overallClearance ? 'CLEARANCE GRANTED' : 'LINE GATED'}
       </div>
 
       <span className="op-trigger-cta">VIEW &amp; CONFIRM GATES →</span>

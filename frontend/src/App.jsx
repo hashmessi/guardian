@@ -6,9 +6,11 @@ import { FrontPage } from './screens/FrontPage';
 import { LiveProcess } from './screens/LiveProcess';
 import { IncidentDiagnosis } from './screens/IncidentDiagnosis';
 import { InterventionRecovery } from './screens/InterventionRecovery';
+import { LeadershipBrief } from './screens/LeadershipBrief';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('scenarios');
+  const [activeScenarioId, setActiveScenarioId] = useState('SCN-06-COMPOUND');
   const [showCoPQModal, setShowCoPQModal] = useState(false);
   const [showScorecardModal, setShowScorecardModal] = useState(false);
   const [showCheckpointsModal, setShowCheckpointsModal] = useState(false);
@@ -24,7 +26,11 @@ export function App() {
       case 'overview':
         return (
           <FrontPage
-            onSelectScenario={(scenarioId) => setActiveTab('detect')}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={(scenarioId) => {
+              setActiveScenarioId(scenarioId);
+              setActiveTab('detect');
+            }}
             onOpenScorecard={openScorecardModal}
             onOpenCoPQModal={openCoPQModal}
             onNavigateToLive={(tab) => setActiveTab(tab || 'detect')}
@@ -32,11 +38,17 @@ export function App() {
         );
       case 'detect':
       case 'live':
-        return <LiveProcess onProceed={() => setActiveTab('diagnose')} />;
+        return (
+          <LiveProcess
+            activeScenarioId={activeScenarioId}
+            onProceed={() => setActiveTab('diagnose')}
+          />
+        );
       case 'diagnose':
       case 'diagnosis':
         return (
           <IncidentDiagnosis
+            activeScenarioId={activeScenarioId}
             onProceed={() => setActiveTab('act')}
             onOpenCoPQModal={openCoPQModal}
           />
@@ -46,14 +58,29 @@ export function App() {
       case 'counterfactual':
         return (
           <InterventionRecovery
+            activeScenarioId={activeScenarioId}
             onOpenCoPQModal={openCoPQModal}
             onOpenCheckpointsModal={openCheckpointsModal}
+            onNavigateToBrief={() => setActiveTab('brief')}
+          />
+        );
+      case 'brief':
+      case 'leadership':
+      case 'report':
+        return (
+          <LeadershipBrief
+            activeScenarioId={activeScenarioId}
+            onNavigateBack={() => setActiveTab('act')}
           />
         );
       default:
         return (
           <FrontPage
-            onSelectScenario={(scenarioId) => setActiveTab('detect')}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={(scenarioId) => {
+              setActiveScenarioId(scenarioId);
+              setActiveTab('detect');
+            }}
             onOpenScorecard={openScorecardModal}
             onOpenCoPQModal={openCoPQModal}
             onNavigateToLive={(tab) => setActiveTab(tab || 'detect')}
@@ -66,6 +93,8 @@ export function App() {
     <AppShell
       activeTab={activeTab}
       onTabChange={setActiveTab}
+      activeScenarioId={activeScenarioId}
+      onScenarioChange={(newId) => setActiveScenarioId(newId)}
       showCoPQModal={showCoPQModal}
       setShowCoPQModal={setShowCoPQModal}
       showScorecardModal={showScorecardModal}

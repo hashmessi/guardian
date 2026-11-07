@@ -7,57 +7,10 @@ export function CandidateTable({
   isAbstain = false,
   abstainReason = null,
 }) {
-  // If no candidates from API, supply calibrated surrogate candidate set
-  const items = candidates.length > 0 ? candidates : [
-    {
-      action_id: 'A1',
-      name: 'Decrease Barrel Zone 3 Temp',
-      target_signal: 'barrel_temp_z3',
-      delta_value: -3.0,
-      unit: '°C',
-      cost: 0.15,
-      disruption: 0.10,
-      predicted_risk: 0.08,
-      is_feasible: true,
-      is_selected: true,
-    },
-    {
-      action_id: 'A2',
-      name: 'Increase Holding Pressure',
-      target_signal: 'holding_pressure',
-      delta_value: +4.0,
-      unit: 'MPa',
-      cost: 0.35,
-      disruption: 0.25,
-      predicted_risk: 0.18,
-      is_feasible: true,
-      is_selected: false,
-    },
-    {
-      action_id: 'A3',
-      name: 'Increase Cooling Cycle Time',
-      target_signal: 'cycle_time',
-      delta_value: +2.5,
-      unit: 's',
-      cost: 0.70,
-      disruption: 0.65,
-      predicted_risk: 0.12,
-      is_feasible: true,
-      is_selected: false,
-    },
-    {
-      action_id: 'A4',
-      name: 'Emergency Purge & Reload Lot',
-      target_signal: 'material_moisture',
-      delta_value: 0.0,
-      unit: 'action',
-      cost: 0.95,
-      disruption: 0.90,
-      predicted_risk: 0.05,
-      is_feasible: false,
-      is_selected: false,
-    },
-  ];
+  // No surrogate rows: a failed/empty engine response renders an honest empty
+  // state. Fabricated candidates on this screen were indistinguishable from
+  // engine output and could mislead a real operator (13-UI-REVIEW pillar 6).
+  const items = candidates || [];
 
   return (
     <div className="candidate-table-container" id="candidate-table-container">
@@ -70,7 +23,11 @@ export function CandidateTable({
             Surrogate Constrained Optimization · Minimum-Cost Feasible Selection
           </span>
         </div>
-        <span className="pill pill--mist">4 CANDIDATES EVALUATED</span>
+        {items.length > 0 && (
+          <span className="pill pill--mist">
+            {items.length} {items.length === 1 ? 'CANDIDATE' : 'CANDIDATES'} EVALUATED
+          </span>
+        )}
       </div>
 
       {isAbstain && (
@@ -82,7 +39,13 @@ export function CandidateTable({
         </div>
       )}
 
-      <table className="candidate-table" aria-label="Intervention Candidate Comparison">
+      {items.length === 0 ? (
+        <div className="candidate-empty">
+          Awaiting engine candidate evaluation — the table fills when the engine returns scored
+          intervention candidates.
+        </div>
+      ) : (
+        <table className="candidate-table" aria-label="Intervention Candidate Comparison">
         <thead>
           <tr>
             <th>Action</th>
@@ -95,7 +58,11 @@ export function CandidateTable({
         </thead>
         <tbody>
           {items.map((cand) => {
-            const isRec = !isAbstain && (cand.is_selected || cand.action_id === recommendedId || cand.action_id === 'A1');
+            // Highlight ONLY the engine's actual selection (is_selected flag or
+            // matching recommended action id from the engine result). Never
+            // default to a remembered action id — an unhighlighted table is
+            // honest; a wrong highlight is not.
+            const isRec = !isAbstain && (cand.is_selected || (recommendedId != null && cand.action_id === recommendedId));
             const predRiskPct = (cand.predicted_risk * 100);
 
             let rowClass = '';
@@ -143,7 +110,8 @@ export function CandidateTable({
             );
           })}
         </tbody>
-      </table>
+        </table>
+      )}
     </div>
   );
 }

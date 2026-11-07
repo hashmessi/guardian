@@ -27,6 +27,20 @@ export function CoPQModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  // Escape closes the modal (same pattern as ContainmentTag).
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   const loadParams = async () => {
     try {
       const data = await fetchCoPQParameters();
@@ -62,13 +76,14 @@ export function CoPQModal({ isOpen, onClose }) {
     setSaveStatus(null);
     try {
       await updateCoPQParameters(params);
-      setSaveStatus('✓ Parameters saved & active across decision engine');
+      setSaveStatus('Parameters saved & active across decision engine');
       setTimeout(() => {
         setSaveStatus(null);
         onClose();
       }, 700);
     } catch (err) {
-      setSaveStatus(`Error: ${err.message}`);
+      console.error('Failed to save CoPQ parameters:', err);
+      setSaveStatus('Could not save the parameters. Check the engine connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -298,7 +313,7 @@ export function CoPQModal({ isOpen, onClose }) {
               Cancel
             </button>
             <button type="button" className="btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? 'Saving...' : '✓ Apply Parameters to Decision Loop'}
+              {loading ? 'Saving...' : 'Apply Parameters to Decision Loop'}
             </button>
           </div>
         </div>

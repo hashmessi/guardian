@@ -149,6 +149,25 @@ def submit_human_channel_text(
 
     if payload.question == CheckpointQuestion.MOISTURE_SIGNED:
         signal = evaluator.attest_moisture_signoff_from_text(payload.text)
+        if signal.choice == BoundedChoice.NO and container.orchestrator and container.orchestrator.cycle_records:
+            latest = container.orchestrator.cycle_records[-1]
+            latest_cycle = latest.cycle_index
+            container.orchestrator.active_human_channel_signal = signal
+            if container.orchestrator.state_machine.current_state == ProcessState.HEALTHY:
+                container.orchestrator.state_machine.transition_to(
+                    to_state=ProcessState.DRIFT_CONFIRMED,
+                    cycle_index=latest_cycle,
+                    timestamp=latest.timestamp,
+                    reason=f'Operator shift note flags material risk: "{signal.raw_text}"',
+                    metadata={"human_channel_question": signal.question.value},
+                )
+                container.orchestrator.containment_engine.record_drift_detection(latest_cycle)
+                container.orchestrator.state_machine.transition_to(
+                    to_state=ProcessState.QC_REQUIRED,
+                    cycle_index=latest_cycle,
+                    timestamp=latest.timestamp,
+                    reason="Material provenance unconfirmed -- physical moisture/QC verification requested.",
+                )
         return HumanChannelResponse(signal=signal, applied=False)
 
     signal = evaluator.attest_recipe_setpoint_from_text(payload.text)

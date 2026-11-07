@@ -8,13 +8,13 @@ import { AuditDrawer } from '../components/AuditDrawer';
 import { ContainmentBoundaryCard } from '../components/ContainmentBoundaryCard';
 import { OperationalCheckpointsCard } from '../components/OperationalCheckpointsCard';
 
-export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }) {
+export function InterventionRecovery({ activeScenarioId, onOpenCoPQModal, onOpenCheckpointsModal, onNavigateToBrief }) {
   const { data: recommendationData } = usePolling('/api/interventions/recommendation', 2000);
   const { data: recoveryData } = usePolling('/api/recovery/status', 2000);
   const { data: containmentData } = usePolling('/api/containment/window', 2000);
   const { data: driftData } = usePolling('/api/process/drift', 2000);
   const { data: riskData } = usePolling('/api/quality/risk', 2000);
-  const { data: cfData } = usePolling('/api/counterfactual/compare?total_cycles=156', 5000);
+  const { data: cfData } = usePolling('/api/counterfactual/compare', 5000);
   const { data: econData } = usePolling('/api/economics/decision-value', 2000);
 
   const [isApplying, setIsApplying] = useState(false);
@@ -45,7 +45,8 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
       await applyIntervention(recommendedActionId);
       setApplied(true);
     } catch (err) {
-      setApplyError(err.message || 'Failed to apply intervention');
+      console.error('Failed to apply intervention:', err);
+      setApplyError('Could not apply that recommendation. Check the engine connection and try again.');
     } finally {
       setIsApplying(false);
     }
@@ -102,7 +103,7 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
           </div>
 
           {/* Section 4: Policy impact, shown only once the replay has actually run */}
-          {cfData && (
+          {cfData && cfData.scrap_reduction_pct > 0 && activeScenarioId !== 'SCN-FLIP-HUMAN-CHANNEL' && (
             <div className="intervention-section">
               <div className="counterfactual-embedded-card">
                 <div className="cf-embedded-header">
@@ -156,13 +157,81 @@ export function InterventionRecovery({ onOpenCoPQModal, onOpenCheckpointsModal }
           <div className="intervention-section">
             <AuditDrawer />
           </div>
+
+          {/* Section 6: Action for Material Hold (SCN-FLIP) to View Leadership Brief */}
+          {!isAbstain && (activeScenarioId === 'SCN-FLIP-HUMAN-CHANNEL' || driftData?.dominant_signal === 'human_channel' || recommendationData?.operator_mode === 'QC_HOLD') && onNavigateToBrief && (
+            <div className="intervention-section">
+              <div className="leadership-brief-callout-banner card">
+                <div className="callout-left">
+                  <span className="pill pill--violet">QC HOLD ENFORCED</span>
+                  <h3 className="callout-title">Material Risk Contained — Physical QC Checkpoint Required</h3>
+                  <p className="callout-desc">
+                    Operator human-channel report caught unverified resin moisture. Production held at QC gate before defective parts were molded.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-view-leadership-brief"
+                  onClick={onNavigateToBrief}
+                >
+                  View Leadership Incident Brief →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Section 7: Action for Abstain Scenarios to View Leadership Brief */}
+          {isAbstain && onNavigateToBrief && (
+            <div className="intervention-section">
+              <div className="leadership-brief-callout-banner card">
+                <div className="callout-left">
+                  <span className="pill pill--wine">ABSTAIN GATE ENFORCED</span>
+                  <h3 className="callout-title">Risk Contained Without Speculative Automation</h3>
+                  <p className="callout-desc">
+                    Guardian locked out uncalibrated parameter shifts and contained the suspect window.
+                    Open the executive incident report to review the safety outcome.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-view-leadership-brief"
+                  onClick={onNavigateToBrief}
+                >
+                  View Leadership Incident Brief →
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         /* =========================================================================
            STATE B: AFTER ACTION — RECOVERY & SCRAP CONTAINMENT MODE
-           Recovery Verification -> Mandatory Poka-Yoke QC Gate -> Checkpoints -> Audit
+           Recovery Verification -> Mandatory Poka-Yoke QC Gate -> Checkpoints -> Audit -> Brief
            ========================================================================= */
         <>
+          {/* Section: Action Banner at End of Replay */}
+          {onNavigateToBrief && (
+            <div className="intervention-section">
+              <div className="leadership-brief-callout-banner card">
+                <div className="callout-left">
+                  <span className="pill pill--lagoon">INCIDENT CONTAINED</span>
+                  <h3 className="callout-title">Recovery Verified & Decision Traceability Complete</h3>
+                  <p className="callout-desc">
+                    Operational telemetry, constrained setpoint action, and suspect quarantine are locked.
+                    View the one-page leadership incident brief.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-view-leadership-brief"
+                  onClick={onNavigateToBrief}
+                >
+                  View Leadership Incident Brief →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Section 1: Dominant Recovery Verification Panel (5-Cycle Stability) */}
           <div className="intervention-section">
             <RecoveryPanel

@@ -1,5 +1,5 @@
 /* =========================================================================
-   ScenarioScorecardModal.css — Superhuman Warm Parchment Editorial Theme
+   ScenarioScorecardModal.css â€” Superhuman Warm Parchment Editorial Theme
    Clean Paper White modal on warm blurred canvas with Soft Mist hairlines.
    Strictly adheres to DESIGN (4).md: NO dark navy backgrounds, NO neon glows.
    ========================================================================= */
@@ -7,13 +7,13 @@
 .scenario-scorecard-modal {
   background: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   width: 92vw;
   max-width: 860px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 48px rgba(41, 40, 39, 0.12);
+  box-shadow: none;
   color: var(--color-charcoal, #292827);
   font-family: var(--font-family);
   overflow: hidden;
@@ -36,7 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
+  padding: var(--sp-4) var(--sp-6);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   background: var(--color-parchment, #f2f0eb);
 }
@@ -48,8 +48,8 @@
 }
 
 .scorecard-tag {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   color: var(--color-wine, #421d24);
   text-transform: uppercase;
@@ -57,8 +57,8 @@
 
 .scorecard-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: var(--fw-editorial, 460);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-editorial);
   color: var(--color-charcoal, #292827);
   letter-spacing: -0.015em;
 }
@@ -66,14 +66,14 @@
 .scorecard-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .status-pill {
   padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-data);
   letter-spacing: 0.04em;
 }
 
@@ -93,10 +93,10 @@
   background: transparent;
   border: none;
   color: var(--color-stone, #666666);
-  font-size: 16px;
+  font-size: var(--fs-xl);
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
@@ -113,19 +113,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 24px;
-  background: #faf9f6;
+  padding: 10px var(--sp-6);
+  background: var(--color-parchment);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
-  font-size: 12px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
 }
 
 .scorecard-category-badge {
   background: var(--color-parchment, #f2f0eb);
   padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10.5px;
-  font-weight: 600;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   color: var(--color-charcoal, #292827);
   border: 1px solid var(--color-mist, #e3e3e2);
   letter-spacing: 0.04em;
@@ -133,7 +133,7 @@
 
 /* 7 Pillars Grid */
 .scorecard-pillars-grid {
-  padding: 18px 24px;
+  padding: var(--sp-4) var(--sp-6);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -142,10 +142,10 @@
 }
 
 .pillar-card {
-  background: #fbfbf9;
+  background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: var(--r-lg);
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -172,16 +172,16 @@
 }
 
 .pillar-label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-data);
   color: var(--color-charcoal, #292827);
 }
 
 .pillar-badge {
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: var(--r-sm);
   letter-spacing: 0.03em;
 }
 
@@ -198,15 +198,15 @@
 }
 
 .pillar-status-code {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-data);
   color: var(--color-violet, #714cb6);
   letter-spacing: 0.02em;
 }
 
 .pillar-detail {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
   line-height: 1.45;
 }
@@ -221,8 +221,8 @@
 .metric-chip {
   background: var(--color-parchment, #f2f0eb);
   padding: 2px 7px;
-  border-radius: 4px;
-  font-size: 11px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-md);
   color: var(--color-charcoal, #292827);
   border: 1px solid var(--color-mist, #e3e3e2);
   font-variant-numeric: tabular-nums;
@@ -230,13 +230,13 @@
 
 .metric-chip strong {
   color: var(--color-stone, #666666);
-  font-weight: 500;
+  font-weight: var(--fw-label);
 }
 
 /* Epistemic Disclaimer */
 .scorecard-disclaimer {
-  padding: 10px 24px;
-  background: #f7f6f2;
+  padding: 10px var(--sp-6);
+  background: var(--color-parchment);
   border-top: 1px solid var(--color-mist, #e3e3e2);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   display: flex;
@@ -245,22 +245,22 @@
 }
 
 .disclaimer-badge {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
   color: var(--color-stone, #666666);
 }
 
 .scorecard-disclaimer p {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
   line-height: 1.35;
 }
 
 /* Footer */
 .scorecard-footer {
-  padding: 14px 24px;
+  padding: var(--sp-3) var(--sp-6);
   background: var(--color-parchment, #f2f0eb);
   display: flex;
   justify-content: space-between;
@@ -269,7 +269,7 @@
 }
 
 .scorecard-summary-text {
-  font-size: 12px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
   max-width: 68%;
   line-height: 1.4;
@@ -279,10 +279,10 @@
   background: var(--color-wine, #421d24);
   color: #ffffff;
   border: none;
-  padding: 8px 20px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 8px var(--sp-5);
+  border-radius: var(--r-lg);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-label);
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: background-color 0.15s ease;

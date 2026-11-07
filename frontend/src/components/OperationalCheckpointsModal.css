@@ -1,5 +1,5 @@
 /* =========================================================================
-   OperationalCheckpointsModal.css — full detail view for the 3 PS02 shop-floor
+   OperationalCheckpointsModal.css â€” full detail view for the 3 PS02 shop-floor
    gates. One column, generous spacing: the 3-up inline card this replaced was
    reported as congested and hard to read at a glance.
    ========================================================================= */
@@ -13,20 +13,20 @@
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(2px);
-  padding: 24px;
+  padding: var(--sp-6);
 }
 
 .ockp-modal {
   background: var(--color-white, #ffffff);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   width: 92vw;
   max-width: 820px;
   max-height: 90vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 48px rgba(41, 40, 39, 0.16);
+  box-shadow: none;
   animation: ockpSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -39,7 +39,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 28px;
+  padding: var(--sp-5) var(--sp-6);
   border-bottom: 1px solid var(--color-mist, #e3e3e2);
   position: sticky;
   top: 0;
@@ -54,8 +54,8 @@
 }
 
 .ockp-header__title {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.03em;
   color: var(--color-charcoal, #292827);
 }
@@ -63,7 +63,7 @@
 .ockp-close {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: var(--fs-2xl);
   color: var(--color-stone, #666666);
   cursor: pointer;
   line-height: 1;
@@ -75,11 +75,11 @@
 }
 
 .ockp-clearance-banner {
-  margin: 20px 28px 0;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
+  margin: var(--sp-5) var(--sp-6) 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.02em;
   text-align: center;
 }
@@ -99,18 +99,18 @@
 .ockp-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 20px 28px 28px;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
 }
 
 .ockp-gate {
-  background: #fbfaf7;
+  background: var(--color-parchment);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 12px;
-  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
 .ockp-gate--pass {
@@ -131,8 +131,8 @@
 }
 
 .ockp-gate__num {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
   color: var(--color-stone, #666666);
   letter-spacing: 0.04em;
 }
@@ -140,16 +140,16 @@
 .ockp-gate__title {
   flex: 1;
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
   color: var(--color-charcoal, #292827);
 }
 
 .ockp-status-pill {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   letter-spacing: 0.02em;
 }
 
@@ -166,7 +166,7 @@
 .ockp-metric-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 .ockp-metric {
@@ -176,22 +176,22 @@
 }
 
 .ockp-metric__label {
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-stone, #666666);
 }
 
 .ockp-metric__value {
-  font-size: 19px;
-  font-weight: 700;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
   color: var(--color-charcoal, #292827);
 }
 
 .ockp-metric__sub {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-label);
   color: var(--color-stone, #666666);
 }
 
@@ -202,17 +202,26 @@
 }
 
 .ockp-deviation {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-data);
   color: var(--color-wine, #421d24);
   background: rgba(66, 29, 36, 0.06);
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .ockp-nominal-text {
   margin: 0;
-  font-size: 12.5px;
+  font-size: var(--fs-lg);
+  color: var(--color-stone, #666666);
+  line-height: 1.45;
+}
+
+/* Visible failure feedback for a failed checkpoint recording action â€”
+   never only a console error. */
+.ockp-error-line {
+  display: block;
+  font-size: var(--fs-lg);
   color: var(--color-stone, #666666);
   line-height: 1.45;
 }
@@ -221,14 +230,14 @@
   width: 100%;
   height: 6px;
   background: var(--color-mist, #e3e3e2);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   overflow: hidden;
 }
 
 .ockp-progress-fill {
   height: 100%;
   background: var(--color-charcoal, #292827);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   transition: width 0.3s ease;
 }
 
@@ -240,10 +249,10 @@
   background: var(--color-wine, #421d24);
   color: #ffffff;
   border: none;
-  padding: 11px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -260,7 +269,7 @@
 
 .ockp-gate__footer {
   margin: 0;
-  font-size: 11.5px;
+  font-size: var(--fs-md);
   color: var(--color-stone, #666666);
   line-height: 1.4;
   border-top: 1px solid var(--color-mist, #e3e3e2);
@@ -274,13 +283,13 @@
   gap: 6px;
   background: #ffffff;
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 8px;
-  padding: 12px 14px;
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-3);
 }
 
 .hc-form__label {
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-violet, #714cb6);
@@ -294,10 +303,10 @@
 .hc-form__input {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  padding: 9px 12px;
+  font-size: var(--fs-lg);
+  padding: 9px var(--sp-3);
   border: 1px solid var(--color-mist, #e3e3e2);
-  border-radius: 7px;
+  border-radius: var(--r-md);
   background: #ffffff;
   color: var(--color-charcoal, #292827);
 }
@@ -311,10 +320,10 @@
   background: var(--color-charcoal, #292827);
   color: #ffffff;
   border: none;
-  padding: 9px 16px;
-  border-radius: 7px;
-  font-size: 12.5px;
-  font-weight: 700;
+  padding: 9px var(--sp-4);
+  border-radius: var(--r-md);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -329,8 +338,8 @@
 }
 
 .hc-form__result {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.02em;
 }
 
@@ -344,8 +353,8 @@
 }
 
 .hc-form__error {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-data);
   color: var(--color-wine, #421d24);
 }
 
@@ -355,8 +364,8 @@
   .ockp-body {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--sp-4);
+    padding-right: var(--sp-4);
   }
 
   .hc-form__row {
@@ -365,9 +374,9 @@
 }
 
 .op-modal__empty {
-  padding: 28px 24px;
+  padding: var(--sp-6) var(--sp-6);
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-lg);
   line-height: 1.6;
   color: var(--color-stone, #666666);
   text-align: center;
