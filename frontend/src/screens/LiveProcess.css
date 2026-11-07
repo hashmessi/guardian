@@ -10,7 +10,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid transparent;
   gap: 16px;
 }
@@ -21,8 +21,8 @@
 }
 
 .process-state-banner--healthy {
-  background-color: #f0fdf4;
-  border-color: #bbf7d0;
+  background-color: rgba(12, 66, 67, 0.06);
+  border-color: rgba(12, 66, 67, 0.2);
 }
 
 .process-state-banner--unavailable {
@@ -43,7 +43,7 @@
 }
 
 .process-state-banner__title {
-  font-size: 16px;
+  font-size: var(--fs-xl);
   font-weight: var(--fw-label);
   letter-spacing: 0.5px;
 }
@@ -53,11 +53,11 @@
 }
 
 .process-state-banner--healthy .process-state-banner__title {
-  color: #166534;
+  color: var(--color-lagoon);
 }
 
 .process-state-banner__subtext {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   line-height: 1.4;
 }
@@ -71,7 +71,7 @@
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   cursor: pointer;
   white-space: nowrap;
@@ -102,7 +102,7 @@
 }
 
 .contract-expander__summary {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   letter-spacing: 0.04em;
   color: var(--color-charcoal);
@@ -136,7 +136,7 @@
 }
 
 .quality-contract-table th {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -147,7 +147,7 @@
 }
 
 .quality-contract-table td {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   padding: 10px 4px;
   border-bottom: var(--border-hairline);
@@ -180,7 +180,7 @@
 }
 
 .context-item__label {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;
@@ -188,7 +188,7 @@
 }
 
 .context-item__value {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-editorial);
   color: var(--color-charcoal);
 }
@@ -213,6 +213,6 @@
 }
 
 .system-status-state {
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-data);
 }

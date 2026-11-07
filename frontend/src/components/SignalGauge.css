@@ -15,7 +15,7 @@
 }
 
 .gauge-label {
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -29,13 +29,13 @@
 }
 
 .gauge-value {
-  font-size: 17px;
+  font-size: var(--fs-xl);
   font-weight: var(--fw-data);
   color: var(--color-charcoal);
 }
 
 .gauge-unit {
-  font-size: 12px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-normal);
   color: var(--color-stone);
   margin-left: 3px;
@@ -82,7 +82,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: var(--fs-md);
   color: var(--color-stone);
 }
 

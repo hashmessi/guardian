@@ -13,7 +13,7 @@
   width: 100%;
   padding: 16px 20px;
   border-radius: var(--r-md);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   letter-spacing: 0.04em;
   text-align: center;
@@ -58,34 +58,34 @@
 }
 
 .recovery-metric__label {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;
 }
 
 .recovery-metric__value {
-  font-size: 22px;
+  font-size: var(--fs-2xl);
   font-weight: var(--fw-data);
 }
 
 .recovery-metric__subtext {
-  font-size: 11px;
+  font-size: var(--fs-md);
   color: var(--color-stone);
 }
 
 .containment-summary-box {
-  background-color: #faf9f6;
+  background-color: var(--color-parchment);
   border: 1px dashed var(--color-mist);
   border-radius: var(--r-md);
   padding: 16px;
-  font-size: 13px;
+  font-size: var(--fs-lg);
   line-height: 1.6;
   color: var(--color-charcoal);
 }
 
 .containment-summary-title {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;

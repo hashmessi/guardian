@@ -26,6 +26,11 @@
 
   /* 3. Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --fs-2xl: 20px;  /* Hero title */
+  --fs-xl: 16px;   /* Card titles, section emphasis */
+  --fs-lg: 13px;   /* Body, descriptions */
+  --fs-md: 11px;   /* Labels, meta, table data */
+  --fs-sm: 10px;   /* Badges, tags, micro labels */
   --fw-normal: 400;
   --fw-editorial: 460; /* Signature Superhuman-adapted editorial weight */
   --fw-label: 540;     /* Field and table headers */
@@ -43,7 +48,7 @@
   --sp-10: 40px;
   --sp-12: 48px;
 
-  /* 5. Radii */
+  /* 5. Radii (16px flagship-card radius inherits --r-lg) */
   --r-gauge: 4px;
   --r-sm: 4px;
   --r-tabs-outer: 8px;

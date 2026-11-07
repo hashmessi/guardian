@@ -35,7 +35,7 @@ body {
 }
 
 .label-section {
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   color: var(--color-stone);
   text-transform: uppercase;
@@ -52,7 +52,7 @@ body {
   gap: 4px;
   padding: 3px 10px;
   border-radius: var(--r-pill);
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   line-height: 1.2;
   letter-spacing: 0.04em;

@@ -27,14 +27,14 @@
 
 .dominant-action-title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.02em;
   color: var(--color-wine);
   line-height: 1.25;
 }
 
 .dominant-action-subtext {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   margin-top: 6px;
 }
@@ -72,7 +72,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: var(--fs-md);
   font-weight: var(--fw-label);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -80,32 +80,32 @@
 }
 
 .rec-attr-value {
-  font-size: 13px;
+  font-size: var(--fs-lg);
   color: var(--color-charcoal);
   line-height: 1.4;
 }
 
 .econ-modeled-pill {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-data);
   letter-spacing: 0.04em;
   padding: 1px 5px;
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: rgba(12, 66, 67, 0.08);
+  color: var(--color-lagoon);
   border-radius: 3px;
 }
 
 .rec-econ-headline {
-  font-size: 22px;
-  font-weight: 700;
-  color: #047857;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--color-lagoon);
   line-height: 1.1;
   margin-top: 2px;
 }
 
 .rec-econ-detail {
-  font-size: 11px;
-  color: #065f46;
+  font-size: var(--fs-md);
+  color: var(--color-lagoon);
   line-height: 1.35;
   margin-top: 2px;
 }
@@ -116,7 +116,7 @@
   height: 48px;
   border: none;
   border-radius: var(--r-button);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: var(--fw-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -164,5 +164,5 @@
   background-color: rgba(66, 29, 36, 0.08);
   border: 1px solid rgba(66, 29, 36, 0.2);
   color: var(--color-wine);
-  font-size: 12px;
+  font-size: var(--fs-md);
 }
