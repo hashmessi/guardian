@@ -18,8 +18,8 @@ Every requirement has a **Done when** check that must be shown with evidence (te
   Done when: install SOP timed on a real press at ≤30 min; no PLC access logged.
 - [ ] **EDGE-02**: The edge node detects each molding cycle from the pump-motor current pattern.
   Done when: cycle count matches the press shot counter within ±2% over ≥500 cycles on 2 different presses.
-- [ ] **EDGE-03**: The edge node reports per-cycle RMS current for each heater zone and the pump motor.
-  Done when: readings match a reference clamp meter within ±3% at 3 load levels.
+- [ ] **EDGE-03**: The edge node reports, per cycle and per heater zone, the on-state current (RMS while the heater is energised) and the on-time fraction separately, plus pump-motor RMS current. Average current alone is not enough: the press temperature controller compensates a weak band by raising on-time, which keeps average power nearly flat.
+  Done when: on-state current matches a reference clamp meter within ±3% at 3 load levels; on-time fraction matches a known switching pattern within ±2%.
 - [ ] **EDGE-04**: A probe at the dryer outlet reports air temperature and dew point every cycle.
   Done when: compared against a reference hygrometer, temperature within ±1 °C and dew point within ±2 °C over 24 h.
 - [ ] **EDGE-05**: The edge node buffers at least 12 hours of cycles offline and replays them in order on reconnect, with gaps reported, never silently dropped.
@@ -48,8 +48,8 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 ### SIG — Failure signatures and sensor health
 
-- [ ] **SIG-01**: Signature A: a sustained heater-zone current drop raises an advisory naming the zone, before part defects appear.
-  Done when: bench test (one heater element disconnected) flags the correct zone within ≤5 cycles; threshold tuned on pilot data.
+- [ ] **SIG-01**: Signature A: a sustained drop in a zone's on-state current together with a rise in its on-time (partial heater failure that the press controller is masking) raises an advisory naming the zone, before part defects appear.
+  Done when: bench test with one of two parallel heater elements disconnected, under a closed-loop temperature controller, flags the correct zone within ≤5 cycles while the zone temperature still reads in band; threshold tuned on pilot data.
 - [ ] **SIG-02**: Signature B: dryer outlet temperature below band or dew point above limit raises a material-risk soft lock before suspect resin reaches the barrel.
   Done when: bench test (dryer heater off / humid air) triggers the lock; timing accounts for hopper + barrel residence.
 - [ ] **SIG-03**: Cross-sensor fault check tells a burnt-out heater apart from a disconnected or failed sensor; sensor faults raise a maintenance ticket, not a production lock.
