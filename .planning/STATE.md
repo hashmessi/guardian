@@ -1,3 +1,18 @@
+---
+gsd_state_version: 1.0
+milestone: v2.0
+milestone_name: Plant-Ready Guardian
+status: planning
+last_updated: "2026-11-17T06:26:21.031Z"
+last_activity: 2026-11-17
+progress:
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # Project State: Process Guardian
 
 ## Project Reference
@@ -10,6 +25,7 @@ See: `.planning/PROJECT.md` (updated 2026-10-01 for Milestone v1.1)
 ## Current Milestone
 
 **v1.1 — Dynamic Quality Reaction & Counterfactual Evidence Engine**
+
 - Build window: 2026-10-01 to 2026-10-02 (Final Evaluation Prep)
 - Goal: Prove to automotive industry evaluators that Process Guardian's dynamic quality reaction policy reduces modeled scrap exposure and suspect containment using real-world measured molding benchmarks, cost-of-waiting economics, and controlled counterfactual replay.
 - Status: Phases 9, 10, 11, 12, & 13 Complete (156/156 tests green); Milestone v1.1 Complete & Ready for Final Demonstration
@@ -17,6 +33,7 @@ See: `.planning/PROJECT.md` (updated 2026-10-01 for Milestone v1.1)
 ## Milestone v1.0 Shipped Summary
 
 Completed 2026-10-01 (Demo Freeze Enacted, 97/97 tests green, 10/10 scenarios passed):
+
 - Phase 1: Digital Factory + Data Foundation (SIM-01..05, DADP-01..03)
 - Phase 2: Process Fingerprint + Drift Sentinel (FPRN-01..03, DRFT-01..04)
 - Phase 3: Quality Risk + Root-Cause Evidence (QRSK-01..04, ROOT-01..03)
@@ -121,11 +138,13 @@ input.
 `scope_plan.md` (repo root) is the locked source of truth for all remaining scope — read it first.
 
 **Done, verified (gate passed at each step):**
+
 - Noise cutdown (scope_plan Sec.4): live scenarios trimmed, dead components removed, unjustified ₹ card cut.
 - P0 operational checkpoint gates: `src/process_guardian/llm/human_channel.py` (bounded multilingual yes/no parser, deterministic + optional real Laya), wired into `quality/operational_checkpoints.py`, `api/routes/qc.py` (`POST /api/checkpoints/human-channel`), and the frontend (`OperationalCheckpointsCard.jsx` trigger bar + `OperationalCheckpointsModal.jsx`).
 - **Laya wired for real** (not a stub): `pip install laya`, real multilingual checkpoint downloaded and cached locally, real inference confirmed working via `RUN_LAYA_INTEGRATION_TESTS=1 python -m pytest tests/test_human_channel_laya_integration.py`. **Important finding, keep this documented**: measured zero-shot accuracy is poor — `noul` question type returned "False" on every one of 13 trivial inputs including the bare word "yes" (documented vendor bug, laya GitHub #156); the vendor's documented `choice` workaround (now what's implemented) only reached 5/8 (62.5%), still missing "yes" alone. Laya stays `enable_laya=False` by default — deterministic parser is what this product's correctness rests on. Full writeup in `human_channel.py`'s module docstring.
 
 **P1 (human-channel fusion + S-FLIP scenario) — COMPLETE, hostile-reviewed, 203/203 tests green:**
+
 - Persistence bug fixed (`lifecycle.py`): `ClosedLoopOrchestrator.active_human_channel_signal` now carries the triggering signal forward every cycle the QC_REQUIRED hold stays active, clearing on return to HEALTHY. Before this, root-cause attribution flickered to noise-driven sensor z-scores from cycle 151 onward.
 - Dominance strengthened past the fix's first pass (fresh-context hostile review caught this): once a signal is *confirmed* (already drove the flip on a prior cycle, not the triggering cycle itself), `root_cause/analyzer.py` guarantees its score exceeds the max sensor score that cycle (`human_channel_confirmed` flag threaded through `quality/pipeline.py` → `lifecycle.py`). Verified: `human_channel` is the dominant signal for **151/151** hold cycles (was ~91% before this pass — rare multi-signal noise spikes across 14 signals × 150 cycles occasionally out-scored the uncapped base weight).
 - Scorecard containment exception (`scenario/scorecard.py`): a material-checkpoint scenario with no machine-side action holds the suspect window open by design; gated specifically on `expected.action_class == "material_checkpoint"` (not the broader `not expected.allow_intervention`, which the review found would also silently swallow a real containment overflow on SCN-08's ABSTAIN path if a future change routed it to QC_REQUIRED).
@@ -135,6 +154,7 @@ input.
 - Added the signal-acquisition-path one-liner (scope_plan Sec.5.2) to `AppShell.jsx`'s footer: Euromap 63/77 where it exists, ~$20 clamp thermocouple + hopper hygrometer retrofit where it doesn't.
 
 **Remaining scope_plan.md §5 ceiling-breakers — NOT started, two need a decision/input only the user can give:**
+
 1. **One real anchor** — a real citation, sensor trace, or captured Ragam Polymolds operator quote. **Blocked on the user**; cannot be fabricated (would violate the project's own honesty contract, scope_plan Sec.6).
 2. Signal-acquisition path line — **done** (see above).
 3. **Headline metric reframe to avoided customer PPM/escape** (vs scrap %) — a real feature change touching the economics/CoPQ hero card; a product-framing decision close to demo time, not started pending confirmation this is still wanted.
@@ -142,3 +162,10 @@ input.
 
 ---
 *Last updated: 2026-10-13 — P0+P1 complete, hostile-reviewed, gate green (203/203 tests); §5 items 1 and 3 need user input/decision before proceeding, items 2 and 4 are the next small, unblocked tasks.*
+
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-11-17 — Milestone v2.0 started
