@@ -1,129 +1,172 @@
 # Roadmap: Process Guardian
 
-**Milestone:** v1.1 — Dynamic Quality Reaction & Counterfactual Evidence Engine  
-**Status:** In Progress (Continuing from Milestone v1.0 Phases 1–8)  
-**Phases:** 13 total (Phases 1–8 Complete; Phases 9–13 Scoped)  
-**Requirements:** 71 total (61 Validated in v1.0, 10 Scoped in v1.1)
+**Milestone:** v2.0 — Plant-Ready Guardian
+**Status:** Planning (Phase 16 not started)
+**Phases:** 16–24 (9 phases)
+**Requirements:** 42 v2.0 requirements (EDGE 8, LIVE 6, SIG 6, GATE 5, OPS 4, FLEET 6, PILOT 4, COMM 3), 42/42 mapped
 
 ---
 
-## Completed Milestone v1.0 (Phases 1–8)
+## Previous Milestones
 
-- **Phase 1: Digital Factory + Data Foundation** (SIM-01..05, DADP-01..03) — 13/13 tests green
-- **Phase 2: Process Fingerprint + Drift Sentinel** (FPRN-01..03, DRFT-01..04) — 21/21 tests green
-- **Phase 3: Quality Risk + Root-Cause Evidence** (QRSK-01..04, ROOT-01..03) — 30/30 tests green
-- **Phase 4: Intervention Engine + Recommendation** (INTV-01..05, RCMD-01..03) — 44/44 tests green
-- **Phase 5: Recovery Verifier + Scrap Containment + State Machine** (RECV-01..05, CNTN-01..04, STMC-01..02) — 61/61 tests green
-- **Phase 6: API + Storage Integration** (API-01..05, STOR-01..02) — 79/79 tests green
-- **Phase 7: Industrial UI + Audit Trail** (UI-01..03, TRST-01..03) — Clean Vite build, 3 screens, E2E verified
-- **Phase 8: Validation + Hardening + Demo Freeze** (DEMO-01..03, SAFE-01..04) — 97/97 tests green, 10/10 scenarios passed, DEMO_FREEZE.md enacted
+- v1.0 (Phases 1–8) and v1.1 (Phases 9–15): complete. Full roadmap in `.planning/milestones/v1.1-ROADMAP.md`; requirements in `.planning/milestones/v1.1-REQUIREMENTS.md`.
 
 ---
 
-## Milestone v1.1 Phases
+## Phases
 
-### Phase 9: Real-World Molding Evidence & Grounding
-**Goal:** Integrate external measured injection-molding production dataset adapter (public SKZ/Fraunhofer 564-part PP/ABS, 334 features, OK/NOK quality) and generate an automated grounding benchmark report comparing digital factory drift against published 2026 automotive study findings. Enforce strict 4-level epistemic evidence separation.
+- [ ] **Phase 16: Live Data Path & Replay** - Clamp-on signals flow through `/cycles` into a live, versioned baseline; recorded sessions replay deterministically
+- [ ] **Phase 17: Edge Kit Bench Bring-up** - ESP32 kit measures heater/pump current and dryer air on the bench, buffers offline, reports health, drives the andon, at a quoted BOM
+- [ ] **Phase 18: Failure Signatures & Sensor Health** - Signature A (heater burnout) and B (dryer/moisture) fire on live data; sensor faults are told apart from process faults
+- [ ] **Phase 19: Enforced QC Gate, Quarantine & Release** - Signature B locks production behind a compliant QC reading; quarantine sized by barrel residence; 5-cycle verified release
+- [ ] **Phase 20: Operator Tablet** - Tamil/English offline PWA on a budget tablet with QR golden-recipe check and shift handover
+- [ ] **Phase 21: Plant-Network Security** - Authenticated, role-checked API; per-device credentials claimed by QR; TLS edge-to-cloud
+- [ ] **Phase 22: Ragam Pilot** - Signed agreement, safe install on a PA6 press, 2 weeks shadow + 2 weeks active with QC rejection logs
+- [ ] **Phase 23: Fleet Minimum Slice** - Postgres with tenant isolation and backups, plant-manager fleet view, signed OTA with rollback
+- [ ] **Phase 24: Evidence & Commercial Pack** - Countersigned pilot evidence, Ragam-specific ROI, per-press pricing and SLA
 
-**Requirements:** EVID-01, EVID-02, EVID-03  
-**UI hint:** yes (Evidence tags and Level 2 benchmark card)
+### Parallelism
 
-**Success Criteria:**
-1. Public measured injection-molding dataset parsed, normalized, and benchmarked against feature relationships.
-2. Automated grounding benchmark verifies non-linear moisture threshold (3% vs 22% scrap) and within-limits defect detection.
-3. Epistemic tags (Level 1 Challenge, Level 2 External Measured, Level 3 Software Invariant, Level 4 Controlled Counterfactual) assigned to all system indicators.
+| Phase | Can run in parallel with | Hard dependency |
+|---|---|---|
+| 16 | 17 | none |
+| 17 | 16, 21 | none (agree the `/cycles` payload contract with 16 on day one) |
+| 18 | 21 | 16, 17 (bench rig for A/B tests) |
+| 19 | 20, 21 | 18 (Signature B trigger) |
+| 20 | 19, 21 | 16 (source badge); lock screens consume 19's states |
+| 21 | 17, 18, 19, 20 | 16 |
+| 22 | 23 (fleet work during the 4 pilot weeks) | 17, 18, 19, 20, 21 and PILOT-01 signed |
+| 23 | 22, 24 | 21 |
+| 24 | 23 | 22 (pilot data); COMM-01 can draft once 17's BOM is quoted |
 
----
-
-### Phase 10: Cost-of-Waiting Decision Economics
-**Goal:** Build parametric Cost of Poor Quality (CoPQ) engine (resin weight, hourly machine burden, kWh tariff, secondary sorting) and the real-time Cost of Waiting vs Cost of Acting decision evaluator ($ExpectedLoss_{wait} - Cost_{act} = DecisionValue$).
-
-**Requirements:** ECON-01, ECON-02  
-**UI hint:** yes (Cost of Waiting vs Cost of Acting hero card)
-
-**Success Criteria:**
-1. Configurable CoPQ model replaces flat ₹450 with granular breakdown (resin weight, hourly rate, energy, sorting).
-2. Real-time decision evaluator calculates Expected Loss vs Action Cost and outputs signed Decision Value.
-3. Engine only advises intervention when Decision Value > 0, preventing premature line interruptions.
-**Status:** Complete (122/122 tests green, ECON-01..02)
-
----
-
-### Phase 11: Physical QC Verification & Operational Poka-Yoke
-**Goal:** Integrate `MANDATORY_QC_CHECKPOINT` into the state machine requiring recorded CTQ measurement before release, integrate PS02 shop-floor operational checkpoints, and generate physical scrap containment boundary tracing.
-
-**Requirements:** QCHK-01, QCHK-02, CNTN-05  
-**UI hint:** yes (QC checkpoint modal/panel & physical containment boundary card)
-
-**Success Criteria:**
-1. State machine refuses release until physical QC CTQ measurement (part weight / visual blemish) passes.
-2. PS02 operational checkpoints evaluate recipe lock, moisture sign-off, and mold-release interval.
-3. Physical scrap containment boundary card tracks exact cycle boundaries (Last Good → Drift Start → Suspect Lot → Action Applied → Stabilized → QC Passed → Release).
-**Status:** Complete (138/138 tests green, QCHK-01..02, CNTN-05)
+**Long-lead, start now:** PILOT-01 (signed Ragam agreement) is mapped to Phase 22 but the conversation with Ragam should start alongside Phase 16; the pilot cannot begin without it. Supplier quotes for EDGE-08 (Phase 17) are also lead-time bound and should be requested on day one.
 
 ---
 
-### Phase 12: Controlled Counterfactual Replay Canvas
-**Goal:** Build the dual-mode counterfactual replay engine running identical event streams in Guardian OFF vs Guardian ON, and present side-by-side comparative evidence showing suspect lot collapse (>75%) and net avoided loss.
+## Phase Details
 
-**Requirements:** CRPL-01, CRPL-02  
-**UI hint:** yes (Side-by-side counterfactual replay view)
+### Phase 16: Live Data Path & Replay
+**Goal**: The backend runs the full decision loop on real clamp-on signals (or a replay of them) instead of the simulator, with the source always visible.
+**Depends on**: Nothing (first v2.0 phase; uses recorded/bench data, no hardware required)
+**Requirements**: LIVE-01, LIVE-02, LIVE-03, LIVE-04, LIVE-05, LIVE-06
+**Success Criteria** (what must be TRUE):
+  1. `/cycles` accepts heater-zone currents, pump current, dryer temperature and dew point; API tests cover valid, out-of-bounds and missing values (LIVE-01), and a heater + dryer-only payload runs the full loop with no validity failures (LIVE-04).
+  2. A supervisor starts a live baseline; after 30–50 good cycles the fingerprint for that machine + mold + recipe is fitted from live data, and a test proves the simulator fingerprint is not used (LIVE-02).
+  3. Two baselines for one press are stored and versioned, and the active one is selected by mold/recipe context (LIVE-03).
+  4. Every screen shows LIVE device ID or SIMULATOR; a UI test asserts the badge in both modes (LIVE-05).
+  5. Replaying a recorded session file through the same ingest path twice gives identical state transitions (LIVE-06).
+**Plans**: TBD
+**UI hint**: yes
 
-**Success Criteria:**
-1. Dual-stream deterministic replay executes identical drift event with Guardian OFF vs Guardian ON.
-2. Side-by-side comparative view shows divergence: Guardian OFF accumulates 80+ scrap cycles; Guardian ON recovers and releases in ~10 cycles.
-3. Net economic benefit and avoided suspect lot containment explicitly rendered with honest simulation disclosures.
-**Status:** Complete (144/144 tests green, CRPL-01..02)
+### Phase 17: Edge Kit Bench Bring-up
+**Goal**: A clamp-on ESP32 kit produces trustworthy per-cycle readings on the bench, never loses data silently, and costs ≤ ₹6,000 per press with quotes on file.
+**Depends on**: Nothing hard; parallel with Phase 16 (shares the `/cycles` payload contract)
+**Requirements**: EDGE-02, EDGE-03, EDGE-04, EDGE-05, EDGE-06, EDGE-07, EDGE-08
+**Success Criteria** (what must be TRUE):
+  1. Per-cycle RMS current for each heater zone and the pump motor matches a reference clamp meter within ±3% at 3 load levels (EDGE-03); dryer probe matches a reference hygrometer within ±1 °C / ±2 °C dew point over 24 h (EDGE-04).
+  2. Cycle detection from the pump-motor pattern counts within ±2% of the press shot counter over ≥500 cycles on 2 presses (EDGE-02). Bench rig proves the detector first; the 2-press count needs plant access and closes at the latest during Phase 22 install.
+  3. With Wi-Fi off for 12 h the node loses 0 cycles, replays them in order, and the backend shows the gap window (EDGE-05); unplugging any sensor raises SENSOR_FAULT within 3 cycles, and heartbeat and firmware version are reported (EDGE-06).
+  4. The andon follows backend state within 2 s from the kit's own isolated relay, with isolation signed off by an electrician (EDGE-07).
+  5. A costed BOM with written supplier quotes at 10 and 100 units is committed at ≤ ₹6,000 per press, IP54 enclosure with magnet/DIN mount (EDGE-08).
+**Plans**: TBD
+
+### Phase 18: Failure Signatures & Sensor Health
+**Goal**: Guardian names a failing heater zone or a failing dryer before defective parts appear, and never mistakes a broken sensor for a broken process.
+**Depends on**: Phase 16 (live ingest), Phase 17 (bench rig)
+**Requirements**: SIG-01, SIG-02, SIG-03, SIG-04, SIG-05
+**Success Criteria** (what must be TRUE):
+  1. With one heater element disconnected on the bench, an advisory names the correct zone within ≤5 cycles (SIG-01).
+  2. Dryer heater off or humid air triggers the material-risk soft lock, with timing that accounts for hopper + barrel residence (SIG-02).
+  3. A burnt-out heater and a disconnected/failed sensor produce different outcomes in tests: the sensor case raises a maintenance ticket, never a production lock (SIG-03).
+  4. On recorded ramps the drift countdown is within ±30% of actual cycles-to-limit, and is hidden when R² is below threshold (SIG-04).
+  5. Dryer and moisture limits are configurable per material and recipe (PA6, filled/recycled PP), each with a datasheet reference; the hardcoded 0.15% constant is gone (SIG-05).
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 19: Enforced QC Gate, Quarantine & Release
+**Goal**: On a material-risk signal, production cannot resume without a compliant QC reading, only the cycles that could be affected are quarantined, and release requires a verified stability window.
+**Depends on**: Phase 18 (Signature B)
+**Requirements**: GATE-01, GATE-02, GATE-03, GATE-04, GATE-05
+**Success Criteria** (what must be TRUE):
+  1. On Signature B the tablet locks to the material QC checklist, and a test proves the state machine has no transition back to production without a compliant reading (GATE-01, closes the Phase 15 gap).
+  2. A failed reading keeps the lock and shows corrective steps; a supervisor override needs a PIN and a reason and leaves an audit record (GATE-02).
+  3. The quarantine window reproduces the 98–103 example from shot weight and barrel capacity, and a recipe without residence data falls back to a conservative window and says so (GATE-03).
+  4. Release requires a 5-cycle stability pass, following cycles are tagged VERIFIED, and a failed window restarts (GATE-04).
+  5. A supervisor exports a shift quarantine report (cycles, bins, disposition, who released) as PDF/CSV, validated by Ragam's QC lead (GATE-05).
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 20: Operator Tablet
+**Goal**: An operator on a budget Android tablet can work every lock, checklist and recipe check in Tamil or English, even when plant Wi-Fi drops.
+**Depends on**: Phase 16; lock and checklist screens consume Phase 19 states (i18n, PWA shell and QR recipe check can start in parallel with 19)
+**Requirements**: OPS-01, OPS-02, OPS-03, OPS-04
+**Success Criteria** (what must be TRUE):
+  1. All lock, checklist and alert screens switch between Tamil and English, with native-speaker sign-off on the wording (OPS-01).
+  2. The app installs as a PWA on a budget Android tablet; entries made offline sync on reconnect without loss (OPS-02).
+  3. Scanning a mold QR loads the golden recipe; a wrong setpoint blocks the start confirmation (OPS-03).
+  4. A shift handover summary (locks, quarantines, open tickets) is generated at shift end from a replayed shift, ready to run in the pilot (OPS-04).
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 21: Plant-Network Security
+**Goal**: Nothing reaches or controls Guardian without an identity: users are role-checked, each device has its own revocable credentials, and telemetry is encrypted, before any device joins a plant network.
+**Depends on**: Phase 16
+**Requirements**: FLEET-01, FLEET-03, FLEET-06
+**Success Criteria** (what must be TRUE):
+  1. Every endpoint requires authentication with roles operator / supervisor / plant manager / Guardian admin; tests show unauthenticated and wrong-role calls rejected, including `/containment/release`; CORS limited to known origins (FLEET-01).
+  2. A Guardian admin claims a device to a plant and press by scanning its QR; each device gets its own credentials, and revoked credentials are rejected (FLEET-03).
+  3. A traffic capture between edge and backend shows no plaintext telemetry (FLEET-06).
+**Plans**: TBD
+
+### Phase 22: Ragam Pilot
+**Goal**: Guardian runs on a real Ragam PA6 press under a signed agreement, first silently, then live, with QC logging every rejection by cause.
+**Depends on**: Phases 17, 18, 19, 20, 21; PILOT-01 signed (start the agreement in parallel with Phase 16)
+**Requirements**: PILOT-01, EDGE-01, COMM-02, PILOT-02, SIG-06
+**Success Criteria** (what must be TRUE):
+  1. A signed pilot agreement covering one PA6 press, data use and consent is on file (PILOT-01).
+  2. A licensed electrician installs the kit using the installer checklist and electrical safety SOP, timed at ≤30 min with no PLC access and the press running (EDGE-01, COMM-02).
+  3. 2 weeks shadow mode (no alerts) then 2 weeks active complete, each with daily logs and Ragam QC rejection logs by cause (PILOT-02).
+  4. False soft locks measured over the active weeks are ≤1 per press per shift (SIG-06).
+**Plans**: TBD
+
+### Phase 23: Fleet Minimum Slice
+**Goal**: Guardian can serve more than one plant safely: isolated data, a manager view across presses, and firmware updates that cannot brick a kit.
+**Depends on**: Phase 21; runs during the Phase 22 pilot weeks
+**Requirements**: FLEET-02, FLEET-04, FLEET-05
+**Success Criteria** (what must be TRUE):
+  1. Data persists in Postgres with plant-level tenant isolation; a cross-tenant read test fails as expected, and restore from a daily backup is rehearsed (FLEET-02).
+  2. A plant manager sees all presses (status, open locks, quarantines, device health, scrap avoided) for ≥2 plants with seeded data (FLEET-04).
+  3. Firmware updates are signed and delivered over the air, and a bad image auto-rolls back on a bench device (FLEET-05).
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 24: Evidence & Commercial Pack
+**Goal**: The pilot's numbers are countersigned by Ragam, and a prospect can see what Guardian costs per press, what it saved, and what service they get.
+**Depends on**: Phase 22 (pilot data); COMM-01 needs Phase 17's quoted BOM
+**Requirements**: PILOT-03, PILOT-04, COMM-01, COMM-03
+**Success Criteria** (what must be TRUE):
+  1. The evidence pack reports rejection % before/after, incidents caught, false alarms, and parts quarantined vs the status-quo estimate, labelled as plant evidence and countersigned by Ragam's QC lead (PILOT-03).
+  2. The ROI calculator uses Ragam's incident rate and part cost with every assumption visible and editable; no hardcoded ₹450 or incident count remains (PILOT-04).
+  3. A committed pricing sheet (kit + monthly service) shows Guardian's 12-month TCO below the ₹10,700 kit, Trevoga ₹25,200 and MoldSense, or the gap justified by measured scrap avoided (COMM-01).
+  4. A service SLA (response times, spare-kit swap, remote support hours) is published and accepted by Ragam (COMM-03).
+**Plans**: TBD
+**UI hint**: yes
 
 ---
 
-### Phase 13: Scenario Engine & Operational Validation Suite
-**Goal:** Upgrade Process Guardian into a deterministic, scenario-driven industrial validation engine running 10 distinct automotive operating scenarios through the unified decision pipeline with counterfactual proof and the 7-pillar objective evidence scorecard.
+## Progress
 
-**Success Criteria:**
-1. Zero regressions across test suite: 156/156 tests green.
-2. 10 data-driven scenarios covering thermal, pressure, moisture, recipe, mold spray, compound, normal variation, abstention, failed intervention, and release.
-3. 7-pillar objective evidence scorecard and interactive validation suite modal in the UI.
-4. Demo playbook directly answers judge questions ("Why intervene?", "Where is real proof?", "How is recovery verified?").
-**Status:** Complete (156/156 tests green)
-
----
-
-### Phase 14: UI Honesty & Visual System Remediation
-**Goal:** Close every finding from the Phase 13 retroactive 6-pillar UI audit (13-UI-REVIEW.md, overall 13/24) to reach a clean 24/24: kill all fabricated-fallback and self-contradiction defects, unify the color/typography/spacing systems onto tokens.css, and remove dead style systems.
-
-**Requirements:** UI-FIX-01..08 (derived from audit findings):
-- UI-FIX-01 Scorecard pillar-count honesty (derive badge from array; 6 pillars everywhere)
-- UI-FIX-02 CandidateTable honest empty state (no fabricated rows, real count, correct highlight)
-- UI-FIX-03 Interaction integrity (ESC/focus handling on modals, visible failure feedback on spray record, null-safe risk rendering)
-- UI-FIX-04 Copy discipline (no internal IDs/judge vocabulary/raw err.message in user-facing text; ordered dropdown)
-- UI-FIX-05 Color token unification (58 off-token hex → tokens.css; one healthy-green regime; no box-shadows per token rule; dead styles removed)
-- UI-FIX-06 Typography scale (type-size scale in tokens; sizes/weights map to tokens)
-- UI-FIX-07 Spacing scale adoption (structural px → --sp steps)
-- UI-FIX-08 Planning-record correction (13-SUMMARY.md false components claim noted per DEMO_FREEZE)
-
-**Success Criteria:**
-1. Zero fabricated values reachable on any screen (grep-verified: no hardcoded candidate rows/count, no 7/7 literal, no hardcoded envelope where live value exists).
-2. No off-token hex color values in frontend CSS that duplicate token semantics; no box-shadow declarations remaining except none.
-3. Typography uses only declared token sizes/weights; spacing uses --sp steps for all structural values (>10px).
-4. `npm run build` + lint green; audit re-score shows no pillar below 4.
-
-**Status:** Complete (2026-11-07). Both plans executed and verified: 14-01 (UAT 12/12, see 14-UAT.md) and 14-02 token sweep (`577a71c`, residual display-tier/spacing completion `d26c27c`). All 24 audit findings closed: derived scorecard badge, honest candidate table, ESC+failure feedback, copy discipline via `scenarioDisplayLabel`, single lagoon color regime, zero box-shadows, zero dead selectors, token-referenced typography and structural spacing. Success greps: 0 forbidden hexes/literals/selectors; `npm run build` ✓; `npm run lint` exit 0.
-
----
-
-## Coverage Summary
-
-| Phase | Requirements | Count | Status |
+| Phase | Plans Complete | Status | Completed |
 |---|---|---|---|
-| Phases 1–8 | SIM-01..05, DADP-01..03, FPRN-01..03, DRFT-01..04, QRSK-01..04, ROOT-01..03, INTV-01..05, RCMD-01..03, RECV-01..05, CNTN-01..04, STMC-01..02, API-01..05, STOR-01..02, UI-01..03, TRST-01..03, DEMO-01..03, SAFE-01..04 | 61 | Complete ✓ |
-| Phase 9 | EVID-01, EVID-02, EVID-03 | 3 | Complete ✓ |
-| Phase 10 | ECON-01, ECON-02 | 2 | Complete ✓ |
-| Phase 11 | QCHK-01, QCHK-02, CNTN-05 | 3 | Complete ✓ |
-| Phase 12 | CRPL-01, CRPL-02 | 2 | Complete ✓ |
-| Phase 13 | Final Hardening & 10-Scenario Validation Suite | — | Complete ✓ |
-| Phase 14 | UI Honesty & Visual System Remediation | UI-FIX-01..08 | Complete |
-| **Total** | | **71** | **100% Validated** ✓ |
+| 16. Live Data Path & Replay | 0/TBD | Not started | - |
+| 17. Edge Kit Bench Bring-up | 0/TBD | Not started | - |
+| 18. Failure Signatures & Sensor Health | 0/TBD | Not started | - |
+| 19. Enforced QC Gate, Quarantine & Release | 0/TBD | Not started | - |
+| 20. Operator Tablet | 0/TBD | Not started | - |
+| 21. Plant-Network Security | 0/TBD | Not started | - |
+| 22. Ragam Pilot | 0/TBD | Not started | - |
+| 23. Fleet Minimum Slice | 0/TBD | Not started | - |
+| 24. Evidence & Commercial Pack | 0/TBD | Not started | - |
 
 ---
-*Roadmap updated: 2026-10-02 after Phase 13 completion*
+*Created: 2026-11-17 for Milestone v2.0*

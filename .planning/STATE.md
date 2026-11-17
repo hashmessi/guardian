@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Plant-Ready Guardian
-status: planning
+status: ready_to_plan
 last_updated: "2026-11-17T06:26:21.031Z"
 last_activity: 2026-11-17
 progress:
-  total_phases: 0
+  total_phases: 9
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,10 +17,10 @@ progress:
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-10-01 for Milestone v1.1)
+See: `.planning/PROJECT.md` (updated 2026-11-17 for Milestone v2.0)
 
-**Core value:** The closed operational decision loop: detect drift → diagnose cause → evaluate cost of waiting vs cost of acting → recommend minimum-effective action → verify recovery via physical QC sample → contain affected suspect lot.
-**Current focus:** Phase 13 — Automotive Judge Hardening & Final Rehearsal
+**Core value:** Stop bad parts before they are molded; when drift happens, quarantine 6 parts instead of a shift. Clamp-on, no PLC access, cheaper per press than competing kits.
+**Current focus:** Milestone v2.0 Plant-Ready Guardian — Phase 16 (Live Data Path & Replay). Roadmap: `.planning/ROADMAP.md` (Phases 16–24). Long-lead: start PILOT-01 (Ragam agreement) and EDGE-08 supplier quotes now.
 
 ## Current Milestone
 
@@ -165,7 +165,10 @@ input.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Milestone: v2.0 Plant-Ready Guardian (Phases 16–24, 42 requirements)
+Phase: 16 of 16–24 (Live Data Path & Replay) — not started
 Plan: —
-Status: Defining requirements
-Last activity: 2026-11-17 — Milestone v2.0 started
+Status: Ready to plan
+Last activity: 2026-11-17 — v2.0 roadmap created
+Progress: [░░░░░░░░░░] 0% (0/9 phases)
+Parallel-ready: Phases 16 and 17 start together; 21 can run alongside 17–20 once 16 lands

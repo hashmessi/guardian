@@ -147,5 +147,47 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 | Requirement | Phase | Status |
 |---|---|---|
+| EDGE-01 | Phase 22 | Pending |
+| EDGE-02 | Phase 17 | Pending |
+| EDGE-03 | Phase 17 | Pending |
+| EDGE-04 | Phase 17 | Pending |
+| EDGE-05 | Phase 17 | Pending |
+| EDGE-06 | Phase 17 | Pending |
+| EDGE-07 | Phase 17 | Pending |
+| EDGE-08 | Phase 17 | Pending |
+| LIVE-01 | Phase 16 | Pending |
+| LIVE-02 | Phase 16 | Pending |
+| LIVE-03 | Phase 16 | Pending |
+| LIVE-04 | Phase 16 | Pending |
+| LIVE-05 | Phase 16 | Pending |
+| LIVE-06 | Phase 16 | Pending |
+| SIG-01 | Phase 18 | Pending |
+| SIG-02 | Phase 18 | Pending |
+| SIG-03 | Phase 18 | Pending |
+| SIG-04 | Phase 18 | Pending |
+| SIG-05 | Phase 18 | Pending |
+| SIG-06 | Phase 22 | Pending |
+| GATE-01 | Phase 19 | Pending |
+| GATE-02 | Phase 19 | Pending |
+| GATE-03 | Phase 19 | Pending |
+| GATE-04 | Phase 19 | Pending |
+| GATE-05 | Phase 19 | Pending |
+| OPS-01 | Phase 20 | Pending |
+| OPS-02 | Phase 20 | Pending |
+| OPS-03 | Phase 20 | Pending |
+| OPS-04 | Phase 20 | Pending |
+| FLEET-01 | Phase 21 | Pending |
+| FLEET-02 | Phase 23 | Pending |
+| FLEET-03 | Phase 21 | Pending |
+| FLEET-04 | Phase 23 | Pending |
+| FLEET-05 | Phase 23 | Pending |
+| FLEET-06 | Phase 21 | Pending |
+| PILOT-01 | Phase 22 | Pending |
+| PILOT-02 | Phase 22 | Pending |
+| PILOT-03 | Phase 24 | Pending |
+| PILOT-04 | Phase 24 | Pending |
+| COMM-01 | Phase 24 | Pending |
+| COMM-02 | Phase 22 | Pending |
+| COMM-03 | Phase 24 | Pending |
 
-*Filled by the roadmap.*
+**Coverage:** 42/42 v2.0 requirements mapped, no duplicates.
