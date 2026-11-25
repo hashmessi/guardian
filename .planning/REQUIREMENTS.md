@@ -14,14 +14,14 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 ### EDGE — Clamp-on sensor kit and firmware
 
-- [ ] **EDGE-01**: An installer can clamp split-core CTs onto up to 5 heater-zone feeds and 1 pump-motor feed in the press panel without opening the PLC or stopping the press.
+- [ ] **EDGE-01**: An installer can clamp split-core CTs onto the pump-motor feed and the dryer heater and blower feeds, plus optionally up to 5 heater-zone feeds, without opening the PLC or stopping the press. (Sensor list: `docs/SENSOR_INTEGRATION_SPEC.md`.)
   Done when: install SOP timed on a real press at ≤30 min; no PLC access logged.
 - [ ] **EDGE-02**: The edge node detects each molding cycle from the pump-motor current pattern.
   Done when: cycle count matches the press shot counter within ±2% over ≥500 cycles on 2 different presses.
-- [ ] **EDGE-03**: The edge node reports, per cycle and per heater zone, the on-state current (RMS while the heater is energised) and the on-time fraction separately, plus pump-motor RMS current. Average current alone is not enough: the press temperature controller compensates a weak band by raising on-time, which keeps average power nearly flat.
+- [ ] **EDGE-03**: The edge node reports, per cycle and per heater zone, the on-state current (RMS while the heater is energised) and the on-time fraction separately, the same pair for the dryer heater, plus pump-motor and dryer-blower RMS current. Average current alone is not enough: the press temperature controller compensates a weak band by raising on-time, which keeps average power nearly flat.
   Done when: on-state current matches a reference clamp meter within ±3% at 3 load levels; on-time fraction matches a known switching pattern within ±2%.
-- [ ] **EDGE-04**: A probe at the dryer outlet reports air temperature and dew point every cycle.
-  Done when: compared against a reference hygrometer, temperature within ±1 °C and dew point within ±2 °C over 24 h.
+- [ ] **EDGE-04**: The kit reports every cycle: drying-air temperature at the hopper inlet and return-air temperature at the hopper top (DS18B20 probes rated ≥100 °C), and ambient temperature and RH beside the hopper (SHT30). The SHT30 is not used for dryer dew point: at 80 °C outlet air, −40 °C and +10 °C dew points read 0.03% and 2.6% RH, inside its ±2% RH error. Desiccant-dryer dew point comes from the dryer's own meter (tablet entry or its 4–20 mA output); a dew-point transmitter is added only for a dryer without one, after a quote.
+  Done when: hopper probes within ±1 °C of a reference thermometer at 3 setpoints up to 100 °C; ambient within ±1 °C / ±3% RH of a reference hygrometer over 24 h.
 - [ ] **EDGE-05**: The edge node buffers at least 12 hours of cycles offline and replays them in order on reconnect, with gaps reported, never silently dropped.
   Done when: test with Wi-Fi off for 12 h shows 0 lost cycles and the backend shows the gap window.
 - [ ] **EDGE-06**: The edge node reports health (heartbeat, firmware version, per-sensor connected/disconnected).
@@ -33,7 +33,7 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 ### LIVE — Live data path
 
-- [ ] **LIVE-01**: The backend accepts heater-zone currents, pump current, dryer temperature and dew point on `/cycles`, with physical bounds validation.
+- [ ] **LIVE-01**: The backend accepts heater-zone currents, pump current, dryer heater current/on-time, blower current, hopper inlet and return-air temperatures, ambient temperature/RH and an optional dryer dew point on `/cycles`, with physical bounds validation. Press signals (recovery time, peak pressure, cushion) are optional, read-only, and only where the controller offers Euromap 63/77.
   Done when: API tests cover valid, out-of-bounds and missing values.
 - [ ] **LIVE-02**: A supervisor can start a live baseline; after 30–50 good cycles the fingerprint is fitted from live data for that machine + mold + recipe, replacing the simulator baseline.
   Done when: test shows the live fingerprint is used and the simulator fingerprint is not.
@@ -50,8 +50,8 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 - [ ] **SIG-01**: Signature A: a sustained drop in a zone's on-state current together with a rise in its on-time (partial heater failure that the press controller is masking) raises an advisory naming the zone, before part defects appear.
   Done when: bench test with one of two parallel heater elements disconnected, under a closed-loop temperature controller, flags the correct zone within ≤5 cycles while the zone temperature still reads in band; threshold tuned on pilot data.
-- [ ] **SIG-02**: Signature B: dryer outlet temperature below band or dew point above limit raises a material-risk soft lock before suspect resin reaches the barrel.
-  Done when: bench test (dryer heater off / humid air) triggers the lock; timing accounts for hopper + barrel residence.
+- [ ] **SIG-02**: Signature B: dryer heater current lost or on-time pinned, blower current out of band, hopper inlet air below setpoint, return air showing insufficient drying for the current throughput, or (desiccant dryers) dew point above limit raises a material-risk soft lock before suspect resin reaches the barrel.
+  Done when: bench tests (dryer heater off; blower filter blocked; throughput above dryer capacity) each trigger the lock; timing accounts for hopper + barrel residence.
 - [ ] **SIG-03**: Cross-sensor fault check tells a burnt-out heater apart from a disconnected or failed sensor; sensor faults raise a maintenance ticket, not a production lock.
   Done when: tests for both cases give different outcomes; pilot logs show 0 production locks caused by sensor faults.
 - [ ] **SIG-04**: Drift countdown shows estimated cycles until a limit is crossed, only when the trend fit is confident.
@@ -63,7 +63,7 @@ Every requirement has a **Done when** check that must be shown with evidence (te
 
 ### GATE — Enforced QC gate, quarantine, release
 
-- [ ] **GATE-01**: On Signature B the operator tablet locks to the material QC checklist (dryer temp, moisture reading, purge check), and production view returns only after a compliant reading is logged — enforced by the state machine, with no path around it.
+- [ ] **GATE-01**: On Signature B the operator tablet locks to the material QC checklist (dryer temp, moisture reading from the plant's shared halogen analyzer with 0.01% MC readability, purge check), and production view returns only after a compliant reading is logged — enforced by the state machine, with no path around it.
   Done when: test proves no transition to production without a compliant reading (closes the Phase 15 gap).
 - [ ] **GATE-02**: A failed reading keeps the lock and shows corrective steps; a supervisor override needs a PIN and a reason, and is audited.
   Done when: tests cover failed reading, override and audit record.

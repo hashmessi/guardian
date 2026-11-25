@@ -50,7 +50,7 @@
 **Depends on**: Nothing (first v2.0 phase; uses recorded/bench data, no hardware required)
 **Requirements**: LIVE-01, LIVE-02, LIVE-03, LIVE-04, LIVE-05, LIVE-06
 **Success Criteria** (what must be TRUE):
-  1. `/cycles` accepts heater-zone currents, pump current, dryer temperature and dew point; API tests cover valid, out-of-bounds and missing values (LIVE-01), and a heater + dryer-only payload runs the full loop with no validity failures (LIVE-04).
+  1. `/cycles` accepts heater-zone currents, pump current, dryer heater/blower currents, hopper inlet and return-air temperatures, ambient temperature/RH and optional dew point; API tests cover valid, out-of-bounds and missing values (LIVE-01), and a heater + dryer-only payload runs the full loop with no validity failures (LIVE-04).
   2. A supervisor starts a live baseline; after 30–50 good cycles the fingerprint for that machine + mold + recipe is fitted from live data, and a test proves the simulator fingerprint is not used (LIVE-02).
   3. Two baselines for one press are stored and versioned, and the active one is selected by mold/recipe context (LIVE-03).
   4. Every screen shows LIVE device ID or SIMULATOR; a UI test asserts the badge in both modes (LIVE-05).
@@ -63,7 +63,7 @@
 **Depends on**: Nothing hard; parallel with Phase 16 (shares the `/cycles` payload contract)
 **Requirements**: EDGE-02, EDGE-03, EDGE-04, EDGE-05, EDGE-06, EDGE-07, EDGE-08
 **Success Criteria** (what must be TRUE):
-  1. Per-cycle RMS current for each heater zone and the pump motor matches a reference clamp meter within ±3% at 3 load levels (EDGE-03); dryer probe matches a reference hygrometer within ±1 °C / ±2 °C dew point over 24 h (EDGE-04).
+  1. Per-cycle RMS current for each heater zone, the dryer heater, the blower and the pump motor matches a reference clamp meter within ±3% at 3 load levels (EDGE-03); hopper probes are within ±1 °C of a reference thermometer up to 100 °C and the ambient probe within ±1 °C / ±3% RH over 24 h (EDGE-04).
   2. Cycle detection from the pump-motor pattern counts within ±2% of the press shot counter over ≥500 cycles on 2 presses (EDGE-02). Bench rig proves the detector first; the 2-press count needs plant access and closes at the latest during Phase 22 install.
   3. With Wi-Fi off for 12 h the node loses 0 cycles, replays them in order, and the backend shows the gap window (EDGE-05); unplugging any sensor raises SENSOR_FAULT within 3 cycles, and heartbeat and firmware version are reported (EDGE-06).
   4. The andon follows backend state within 2 s from the kit's own isolated relay, with isolation signed off by an electrician (EDGE-07).
@@ -76,7 +76,7 @@
 **Requirements**: SIG-01, SIG-02, SIG-03, SIG-04, SIG-05
 **Success Criteria** (what must be TRUE):
   1. With one heater element disconnected on the bench, an advisory names the correct zone within ≤5 cycles (SIG-01).
-  2. Dryer heater off or humid air triggers the material-risk soft lock, with timing that accounts for hopper + barrel residence (SIG-02).
+  2. Dryer heater off, a blocked blower filter, or throughput above dryer capacity triggers the material-risk soft lock, with timing that accounts for hopper + barrel residence (SIG-02).
   3. A burnt-out heater and a disconnected/failed sensor produce different outcomes in tests: the sensor case raises a maintenance ticket, never a production lock (SIG-03).
   4. On recorded ramps the drift countdown is within ±30% of actual cycles-to-limit, and is hidden when R² is below threshold (SIG-04).
   5. Dryer and moisture limits are configurable per material and recipe (PA6, filled/recycled PP), each with a datasheet reference; the hardcoded 0.15% constant is gone (SIG-05).

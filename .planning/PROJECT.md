@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Process Guardian is a clamp-on drift-prevention and lot-containment system for plastic injection-molding presses. A non-invasive edge kit, made up of split-core current transformers on the barrel heater zones and a temperature/dew-point probe at the dryer outlet, streams live readings to a decision engine. The engine catches heater burnout and drying failure before bad parts are molded. It runs an enforced material-QC gate, quarantines only the cycles that could be affected (sized by barrel residence), and releases production after a stability window. It never writes to the press (SAFE-01). The first customer is Ragam Polymoulds (Ponneri, Tamil Nadu: PP/PA6 furniture parts, plus a PU foaming shop). The target market is Indian MSME molders, served as a per-press managed service.
+Process Guardian is a clamp-on drift-prevention and lot-containment system for plastic injection-molding presses. A non-invasive edge kit, made up of split-core current transformers on the dryer heater, dryer blower, pump motor and (optionally) barrel heater zones, plus hopper air-temperature and room-humidity probes, streams live readings to a decision engine. The engine catches heater burnout and drying failure before bad parts are molded. It runs an enforced material-QC gate, quarantines only the cycles that could be affected (sized by barrel residence), and releases production after a stability window. It never writes to the press (SAFE-01). The first customer is Ragam Polymoulds (Ponneri, Tamil Nadu: PP/PA6 furniture parts, plus a PU foaming shop). The target market is Indian MSME molders, served as a per-press managed service.
 
 ## Core Value
 
@@ -13,7 +13,7 @@ Process Guardian is a clamp-on drift-prevention and lot-containment system for p
 **Goal:** Turn the simulator prototype into a clamp-on edge kit that runs live on a Ragam press, proves scrap reduction in a 2-week pilot, and scales to many plants as a managed service, at a lower cost per press than competing PS02 kits.
 
 **Target features:**
-- Edge kit: ESP32 + split-core CTs on heater zones + dryer-outlet temp/dew-point probe, offline buffering
+- Edge kit (moisture-first): ESP32 + CTs on dryer heater, blower and pump (heater zones optional) + hopper inlet/return-air probes + ambient RH probe, offline buffering; one shared halogen moisture analyzer per plant for the QC gate
 - Live ingest + per-recipe live baseline (replaces the simulator fingerprint)
 - Signature A heater burnout, Signature B dryer/moisture, cross-sensor fault check, drift countdown
 - Soft-lock QC gate (tablet lockout + andon light), barrel-residence quarantine, 5-cycle release. Still read-only (SAFE-01)
@@ -98,6 +98,7 @@ Process Guardian is a clamp-on drift-prevention and lot-containment system for p
 | Soft lock (tablet + andon), not press interlock | Keeps SAFE-01 and OEM warranties | 2026-11-17 |
 | Lead the moisture story with PA6, not virgin PP | PP barely absorbs water; PA6 is hygroscopic | 2026-11-17 |
 | Skip upfront research; verify BOM prices and limits inside the phases | User choice; prices verified as phase tasks | 2026-11-17 |
+| Moisture-first kit; no added pressure/barrel sensors; SHT30 moved from dryer outlet to ambient | Mentor: presses already have pressure/temperature sensors and moisture is the main loss; SHT30 cannot resolve dryer dew point (0.03–2.6% RH at 80 °C). See `docs/SENSOR_INTEGRATION_SPEC.md` | 2026-11-25 |
 
 ## Evolution
 
